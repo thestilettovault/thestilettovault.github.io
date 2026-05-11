@@ -175,6 +175,32 @@
       transform: translateX(3px);
     }
 
+    /* ── section label ── */
+    .section-label {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 4px;
+    }
+
+    .section-label span {
+      font-family: 'Cinzel', serif;
+      font-size: 8px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-label::before,
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
     /* ── featured badge ── */
     .featured .link-btn {
       border-color: rgba(139,0,0,0.5);
@@ -311,6 +337,24 @@
     <a class="link-btn" href="https://gthic.com/products/damaged-half-face-antique-skull-pendant?aff=826" target="_blank" rel="noopener">
       <span class="link-icon">💎</span>
       <span class="link-label">Skull Pendant Necklace</span>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <div class="section-label"><span>Dark Fashion</span></div>
+
+    <a class="link-btn" href="https://www.darkinlove.com/products/asymmetric-punk-leather-shoulder-cape-zipper-collar-strap-laced-sleeve-bw166?sca_ref=ll249558.3UXnWnByxo" target="_blank" rel="noopener">
+      <span class="link-icon">🖤</span>
+      <span class="link-label">Punk Leather Shoulder Cape</span>
+      <span class="link-arrow">→</span>
+    </a>
+    <a class="link-btn" href="https://www.darkinlove.com/products/alternative-fashion-cat-haunt-zipper-top-bw108?sca_ref=ll249558.3UXnWnByxo" target="_blank" rel="noopener">
+      <span class="link-icon">🐈‍⬛</span>
+      <span class="link-label">Cat Haunt Zipper Top</span>
+      <span class="link-arrow">→</span>
+    </a>
+    <a class="link-btn" href="https://www.darkinlove.com/products/angel-wing-doll-mini-dress-dw518?sca_ref=ll249558.3UXnWnByxo" target="_blank" rel="noopener">
+      <span class="link-icon">🦋</span>
+      <span class="link-label">Angel Wing Doll Dress</span>
       <span class="link-arrow">→</span>
     </a>
   </div>
