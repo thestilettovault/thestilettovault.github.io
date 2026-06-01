@@ -208,6 +208,19 @@
       color: var(--gold-lt);
     }
 
+    /* ── single card (full width) ── */
+    .single-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .single-grid .product-card img {
+      height: 220px;
+    }
+
     /* ── pair separator ── */
     .pair-sep {
       font-family: 'Cinzel', serif;
@@ -400,6 +413,21 @@
         <div class="card-info">
           <span class="card-name">Retro Denim Bag</span>
           <span class="card-price">$63</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="pair-sep">· · ·</div>
+
+    <div class="tour-label"><span>Dark Fashion</span></div>
+
+    <!-- BW108: Cat Haunt Zipper Top -->
+    <div class="single-grid">
+      <a class="product-card" href="https://www.darkinlove.com/products/alternative-fashion-cat-haunt-zipper-top-bw108?sca_ref=ll249558.3UXnWnByxo" target="_blank" rel="noopener">
+        <img src="img/BW108.jpg" alt="Cat Haunt Zipper Top" loading="lazy">
+        <div class="card-info">
+          <span class="card-name">Cat Haunt Zipper Top</span>
+          <span class="card-price">$63.50</span>
         </div>
       </a>
     </div>
