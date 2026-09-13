@@ -164,11 +164,14 @@ def _zernio_post(content, platform, account_id, media_url, media_type,
         "platforms": [target],
         "mediaItems": media_items,
     }
-    # NOTE: sending tiktokSettings with privacy PUBLIC_TO_EVERYONE fails Zernio
-    # preflight for this (unaudited) app — posts land in the TikTok inbox as drafts
-    # to finalize in-app. Left off until the account is audited for direct posting.
-    # if platform == "tiktok":
-    #     payload["tiktokSettings"] = TIKTOK_SETTINGS
+    # TikTok VIDEO direct-posting is chronically throttled ("at capacity" /
+    # tiktokUnreachableAttempts) even with a healthy connection — it caused a
+    # 10-day publishing gap (2026-09). Deliver video via the Creator Inbox as a
+    # draft (a different, un-throttled path); Ofer taps publish in the app. Images
+    # go out direct (they are light and reliable). Root-level tiktokSettings must
+    # be sent together with `platforms` in the same request (Zernio requirement).
+    if platform == "tiktok" and media_type == "video":
+        payload["tiktokSettings"] = {"draft": True}
     import requests
     r = requests.post(
         f"{ZERNIO_API_URL}/posts",
