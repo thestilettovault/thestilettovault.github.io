@@ -164,14 +164,19 @@ def _zernio_post(content, platform, account_id, media_url, media_type,
         "platforms": [target],
         "mediaItems": media_items,
     }
-    # TikTok VIDEO direct-posting is chronically throttled ("at capacity" /
-    # tiktokUnreachableAttempts) even with a healthy connection — it caused a
-    # 10-day publishing gap (2026-09). Deliver video via the Creator Inbox as a
-    # draft (a different, un-throttled path); Ofer taps publish in the app. Images
-    # go out direct (they are light and reliable). Root-level tiktokSettings must
-    # be sent together with `platforms` in the same request (Zernio requirement).
+    # TikTok video: publish PUBLIC and direct. The account is on TikTok's Business
+    # app lane (reconnected 2026-09-14), which is EXEMPT from the developer-lane
+    # "at capacity" cap that caused the 10-day gap — so no draft/Inbox step is
+    # needed and video posts go live automatically. Business lane allows video
+    # privacy = public only; TikTok requires the consent flags on every post.
+    # (If you ever see "at capacity" again, the account slipped back to the
+    # developer lane — reconnect it in Zernio, don't switch to draft.)
     if platform == "tiktok" and media_type == "video":
-        payload["tiktokSettings"] = {"draft": True}
+        payload["tiktokSettings"] = {
+            "privacy_level": "PUBLIC_TO_EVERYONE",
+            "allow_comment": True, "allow_duet": True, "allow_stitch": True,
+            "content_preview_confirmed": True, "express_consent_given": True,
+        }
     import requests
     r = requests.post(
         f"{ZERNIO_API_URL}/posts",
