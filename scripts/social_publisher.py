@@ -40,7 +40,7 @@ sys.stdout.reconfigure(encoding="utf-8") if sys.stdout else None
 sys.path.insert(0, os.path.dirname(__file__))
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 except Exception:
     pass
 
@@ -316,7 +316,14 @@ def schedule_drop(item, slots=None, do_publish=False, date=None):
         base = datetime.datetime.combine(date, datetime.time(0, 0))
 
     full_caption = build_caption(item)
-    tiktok_img_caption = f"{item.get('title','').strip()[:60]} 🖤 thestilettovault.github.io"
+    # Include the deal so generic "Stiletto Heels" titles stay UNIQUE per shoe —
+    # TikTok photo posts use this as the title and Zernio 409s on duplicate content.
+    _d = item.get("deal", {}) or {}
+    _disc = str(_d.get("discount", "") or "").strip()
+    _sale = _d.get("sale")
+    _deal_bit = (f" · {_disc} OFF" if _disc and _disc not in ("0%", "0") else "") + \
+                (f" · ${_sale}" if _sale else "")
+    tiktok_img_caption = f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤 thestilettovault.github.io"
 
     any_ok = False
     for post, hhmm in zip(posts, slots):
