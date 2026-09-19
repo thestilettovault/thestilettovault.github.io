@@ -1,13 +1,30 @@
 {
-  "generated_at": "2026-09-18T10:00:36",
+  "generated_at": "2026-09-19T10:07:16",
   "funnel": {
     "scanned": 64,
-    "approved": 56,
-    "produced": 40,
+    "approved": 57,
+    "produced": 41,
     "scheduled": 17,
     "published": 38
   },
   "shoes": [
+    {
+      "slug": "stiletto-heels-3256813014380485",
+      "title": "Stiletto Heels",
+      "name": "Stiletto Heels · 78% OFF",
+      "price": "$44.04",
+      "was": "$200.2",
+      "discount": "78%",
+      "rating": "",
+      "sold": "",
+      "status": "produced",
+      "on_site": true,
+      "subid": "stiletto-heels-3256813014380485",
+      "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256813014380485.html",
+      "date": "2026-09-18",
+      "clicks": null,
+      "sales": null
+    },
     {
       "slug": "pointed-toe-pump-3256811354738154",
       "title": "Pointed-Toe Pump",
