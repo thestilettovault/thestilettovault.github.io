@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-22T10:07:00",
+  "generated_at": "2026-09-22T13:06:43",
   "funnel": {
     "scanned": 64,
     "approved": 58,
     "produced": 42,
     "scheduled": 17,
-    "published": 38
+    "published": 41
   },
   "shoes": [
     {
@@ -17,7 +17,7 @@
       "discount": "30%",
       "rating": "4",
       "sold": "4 sold",
-      "status": "produced",
+      "status": "published",
       "on_site": true,
       "subid": "stiletto-heels-2255800912705100",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2255800912705100.html",
@@ -34,7 +34,7 @@
       "discount": "78%",
       "rating": "",
       "sold": "",
-      "status": "produced",
+      "status": "published",
       "on_site": true,
       "subid": "stiletto-heels-3256813014380485",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256813014380485.html",
@@ -51,7 +51,7 @@
       "discount": "50%",
       "rating": "4",
       "sold": "5 sold",
-      "status": "produced",
+      "status": "published",
       "on_site": true,
       "subid": "pointed-toe-pump-3256811354738154",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811354738154.html",
