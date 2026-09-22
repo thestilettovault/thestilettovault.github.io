@@ -1,13 +1,30 @@
 {
-  "generated_at": "2026-09-21T10:00:26",
+  "generated_at": "2026-09-22T10:07:00",
   "funnel": {
     "scanned": 64,
-    "approved": 57,
-    "produced": 41,
+    "approved": 58,
+    "produced": 42,
     "scheduled": 17,
     "published": 38
   },
   "shoes": [
+    {
+      "slug": "stiletto-heels-2255800912705100",
+      "title": "Stiletto Heels",
+      "name": "Stiletto Heels · 30% OFF",
+      "price": "$14.34",
+      "was": "$20.49",
+      "discount": "30%",
+      "rating": "4",
+      "sold": "4 sold",
+      "status": "produced",
+      "on_site": true,
+      "subid": "stiletto-heels-2255800912705100",
+      "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2255800912705100.html",
+      "date": "2026-09-22",
+      "clicks": null,
+      "sales": null
+    },
     {
       "slug": "stiletto-heels-3256813014380485",
       "title": "Stiletto Heels",
