@@ -437,13 +437,25 @@
     "url": "https://www.publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
     "aff_link": "https://www.publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
     "domain": "www.publicdesire.com",
-    "image_url": "https://www.publicdesire.com/cdn/shop/files/hallie-black-butterfly-embelishment-ankle-tie-high-heels.jpg",
+    "image_url": "https://thestilettovault.github.io/img/heels/hallie-black-butterfly-embelishment-ankle-tie/ig_image_1.jpg",
     "commission": "8%",
     "date": "2026-08-23T21:30:24.141667",
     "local_asset": "GELEM/2026-08-23/hallie-black-butterfly-embellishment-ankle-tie-high-heels",
     "image_ok": true,
     "downloaded": "2026-08-23",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/hallie-black-butterfly-embelishment-ankle-tie/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/hallie-black-butterfly-embelishment-ankle-tie/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/hallie-black-butterfly-embelishment-ankle-tie/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "Black Red-Soled 10cm Pointed-Toe Stiletto Pumps",
@@ -1657,33 +1669,60 @@
     "date": "2026-09-23T08:39:56.404942",
     "local_asset": "GELEM/2026-09-23/pointed-toe-pump-3256810301489471",
     "image_ok": true,
-    "downloaded": "2026-09-23"
+    "downloaded": "2026-09-23",
+    "on_site": true
   },
   {
     "title": "Ti Amo Silver Metallic Pu Padlock Detail Barely There Pointed Toe Stilettos Heels",
     "url": "https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels",
     "aff_link": "https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels",
     "domain": "publicdesire.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/TIAMOSILVER-1.jpg?v=1760389752",
+    "image_url": "https://thestilettovault.github.io/img/heels/ti-amo-silver-metallic-pu-padlock-detail-bare/ig_image_1.jpg",
     "commission": "Publicdesire · ~10% via Skimlinks · $32.99",
     "deal": {},
     "date": "2026-09-23T10:41:47.618583",
     "local_asset": "GELEM/2026-09-23/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointe",
     "image_ok": true,
-    "downloaded": "2026-09-23"
+    "downloaded": "2026-09-23",
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/ti-amo-silver-metallic-pu-padlock-detail-bare/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/ti-amo-silver-metallic-pu-padlock-detail-bare/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/ti-amo-silver-metallic-pu-padlock-detail-bare/ig_image_1.jpg"
+    },
+    "variations_ready": true,
+    "on_site": true
   },
   {
     "title": "Rotate Burgundy Croc Gold Toe Detail Court High Heels",
     "url": "https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
     "aff_link": "https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
     "domain": "publicdesire.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/ROTATEBURGUNDY-1.jpg?v=1761209864",
+    "image_url": "https://thestilettovault.github.io/img/heels/rotate-burgundy-croc-gold-toe-detail-court-hi/ig_image_1.jpg",
     "commission": "Publicdesire · ~10% via Skimlinks · $32.99",
     "deal": {},
     "date": "2026-09-23T10:41:51.897765",
     "local_asset": "GELEM/2026-09-23/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
     "image_ok": true,
-    "downloaded": "2026-09-23"
+    "downloaded": "2026-09-23",
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/rotate-burgundy-croc-gold-toe-detail-court-hi/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/rotate-burgundy-croc-gold-toe-detail-court-hi/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/rotate-burgundy-croc-gold-toe-detail-court-hi/ig_image_1.jpg"
+    },
+    "variations_ready": true,
+    "on_site": true
   },
   {
     "title": "Hallie Black Butterfly Embellishment Ankle Tie High Heels",
@@ -1696,6 +1735,7 @@
     "date": "2026-09-23T10:41:59.242804",
     "local_asset": "GELEM/2026-09-23/hallie-black-butterfly-embellishment-ankle-tie-high-heels",
     "image_ok": true,
-    "downloaded": "2026-09-23"
+    "downloaded": "2026-09-23",
+    "on_site": true
   }
 ]
