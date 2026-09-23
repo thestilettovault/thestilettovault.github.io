@@ -76,16 +76,21 @@ def main(board, limit):
         rows.append({
             "Title": deal_title(deal),
             "Media URL": img,
-            "Board": board,
+            "Pinterest board": board,
+            "Thumbnail": "",
             "Description": deal_desc(deal),
             "Link": link,
+            "Publish date": "",
             "Keywords": "high heels, stilettos, heels, shoe finds, affordable heels, party shoes",
         })
         if len(rows) >= limit:
             break
     OUT.parent.mkdir(exist_ok=True)
-    with open(OUT, "w", newline="", encoding="utf-8-sig") as f:
-        w = csv.DictWriter(f, fieldnames=["Title", "Media URL", "Board", "Description", "Link", "Keywords"])
+    # Exact Pinterest bulk-create template headers (order + casing matter).
+    with open(OUT, "w", newline="", encoding="utf-8") as f:   # no BOM — Pinterest reads the raw header
+        w = csv.DictWriter(f, fieldnames=["Title", "Media URL", "Pinterest board",
+                                          "Thumbnail", "Description", "Link",
+                                          "Publish date", "Keywords"])
         w.writeheader(); w.writerows(rows)
     print(f"✅ {len(rows)} pins -> {OUT}")
 
