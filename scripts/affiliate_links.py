@@ -26,6 +26,49 @@ ALIEXPRESS_DEEPLINK_BASE = os.getenv(
 
 AMAZON_TAG = os.getenv("AMAZON_TAG", "thegothicvaul-20")
 
+# ── Awin (higher-commission brand merchants; also the network Public Desire runs
+# on, and ShareASale's successor after Awin absorbed it in 2025) ───────────────
+# One publisher id for the account; each approved MERCHANT has its own numeric
+# awinmid. Fill both via env once the Awin account + merchant approvals land:
+#   AWIN_PUBLISHER_ID=123456
+#   AWIN_MERCHANTS=publicdesire.com:9999,asos.com:8888   (domain:awinmid, comma-sep)
+# Until AWIN_PUBLISHER_ID is set, nothing routes to Awin — the config is inert.
+AWIN_PUBLISHER_ID = os.getenv("AWIN_PUBLISHER_ID", "").strip()
+
+
+def _awin_merchants():
+    """Parse AWIN_MERCHANTS ('domain:mid,domain:mid') into {domain: awinmid}."""
+    out = {}
+    for pair in os.getenv("AWIN_MERCHANTS", "").split(","):
+        pair = pair.strip()
+        if ":" in pair:
+            dom, mid = pair.rsplit(":", 1)
+            dom, mid = dom.strip().lower(), mid.strip()
+            if dom and mid:
+                out[dom] = mid
+    return out
+
+
+def awin(url, merchant_id, subid=""):
+    """Standard Awin deeplink. clickref carries our per-shoe subid (== slug) so a
+    sale is attributable to THIS heel, exactly like the Admitad subid flow."""
+    q = {"awinmid": merchant_id, "awinaffid": AWIN_PUBLISHER_ID,
+         "ued": url}
+    if subid:
+        q["clickref"] = subid
+    return "https://www.awin1.com/cread.php?" + urllib.parse.urlencode(q)
+
+
+def _awin_for(url, domain, subid=""):
+    """Return an Awin link if this domain is an approved Awin merchant AND we have
+    a publisher id; else None (caller falls back to the next program)."""
+    if not AWIN_PUBLISHER_ID:
+        return None
+    for dom, mid in _awin_merchants().items():
+        if dom in domain or dom in url:
+            return awin(url, mid, subid)
+    return None
+
 
 def aliexpress(url, subid=""):
     """Wrap an AliExpress product/category URL in our Admitad deeplink."""
@@ -48,6 +91,11 @@ def affiliate_link(item, subid=""):
     Falls back to any pre-set aff_link, then the raw url."""
     url = item.get("url", "") or item.get("aff_link", "")
     domain = (item.get("domain", "") or url).lower()
+    # Awin first — it holds the high-commission brand merchants (incl. Public
+    # Desire). Only fires when AWIN_PUBLISHER_ID is set and the domain is approved.
+    awin_link = _awin_for(url, domain, subid)
+    if awin_link:
+        return awin_link
     if "aliexpress." in domain:
         return aliexpress(url, subid)
     if "amazon." in domain:
