@@ -42,12 +42,43 @@ def hosted_image(it):
     return None
 
 
-def deal_title(it, deal):
-    """A UNIQUE, natural pin title. Pinterest bulk-create rejects duplicate
-    titles, so we lead with the product's own name (distinct per shoe) and add
-    the deal when there is one."""
+# Editorial openers for heels whose catalog title is a bare category
+# ("Stiletto Heels" / "Pointed-Toe Pump"). A price-only title like
+# "Stiletto Heels — only $X" is NOT enough: Pinterest Bulk Create dedups on the
+# LEADING WORDS, not the exact string, so 27 such rows were silently dropped
+# on 2026-09-23 (only the 17 distinctly-named rows published). Leading each
+# generic heel with a different opener makes every pin genuinely unique.
+GENERIC_TITLES = {"", "stiletto heels", "pointed-toe pump",
+                  "platform high heels", "high heels"}
+OPENERS = [
+    "Glossy Black Pointed-Toe Stilettos", "Sleek Party Heels You'll Live In",
+    "Date-Night Stilettos That Do The Talking", "The Little Black Heel, Perfected",
+    "Barely-There Strappy Stilettos", "Editor-Approved Everyday Heels",
+    "Sky-High Pointed Pumps", "Minimalist Stilettos, Maximum Impact",
+    "Your New Going-Out Heel", "Classic Court Heels, Reworked",
+    "Sharp Pointed-Toe Pumps", "The Under-$20 Heel Worth Hoarding",
+    "Runway-Ready Stiletto Pumps", "Sultry Slingback Stilettos",
+    "Statement Platform Heels", "The Heel That Elevates Everything",
+    "Polished Pointed Pumps", "Wear-With-Anything Black Stilettos",
+    "Elegant High-Shine Heels", "Bold Pointed-Toe Party Pumps",
+    "Timeless Stiletto Court Shoes", "The 'Where'd-You-Get-Those' Heel",
+    "Chic Closet-Staple Stilettos", "Effortless Evening Heels",
+    "Modern Pointed Stilettos", "The Quiet-Luxury Black Heel",
+    "Show-Stopping Stiletto Pumps", "Sleek Platform Party Stilettos",
+    "Refined Pointed-Toe Heels", "Everyday Luxe Stilettos",
+]
+
+
+def deal_title(it, deal, idx=0):
+    """A UNIQUE, natural pin title. Pinterest bulk-create dedups on the leading
+    words, so a distinctly-named heel leads with its own name; a generic-titled
+    heel leads with a rotating editorial opener (distinct per pin)."""
     sale = deal.get("sale"); disc = str(deal.get("discount", "") or "").strip()
-    name = short_name((it.get("title") or "Stiletto heels").strip(), 55)
+    raw = (it.get("title") or "").strip()
+    if raw.lower() in GENERIC_TITLES:
+        name = OPENERS[idx % len(OPENERS)]
+    else:
+        name = short_name(raw, 55)
     if sale and disc and disc not in ("0%", "0"):
         return f"{name} — only ${sale} \U0001f92f ({disc} off)"
     if sale:
@@ -110,22 +141,24 @@ def main(board, limit, remaining=False, out=None):
     rows = []
     skipped = 0
     seen = set()
+    gidx = 0                                      # rotates the editorial openers
     for it in catalog:
         img = hosted_image(it)
         if not img:
             continue
-        # `remaining`: only the no-deal rows (the ones the first bulk upload
-        # rejected for duplicate generic titles) — avoids re-pinning the ~27
-        # unique-deal rows that already published.
-        if remaining and (it.get("deal", {}) or {}).get("sale"):
+        # `remaining`: re-emit only the generic-titled heels — the ones Bulk
+        # Create dropped as near-duplicates — skipping the distinctly-named
+        # rows that already published.
+        if remaining and (it.get("title") or "").strip().lower() not in GENERIC_TITLES:
             continue
         if not _live(img):                       # drop dead/phantom images
             skipped += 1; continue
         slug = space_runner.slugify(it)
         link = affiliate_links.affiliate_link(it, subid=slug)
         deal = it.get("deal", {}) or {}
+        is_generic = (it.get("title") or "").strip().lower() in GENERIC_TITLES
         rows.append({
-            "Title": unique(deal_title(it, deal)[:90], seen),   # unique per Pinterest
+            "Title": unique(deal_title(it, deal, gidx)[:90], seen),   # unique per Pinterest
             "Media URL": img,
             "Pinterest board": board,
             "Thumbnail": "",
@@ -134,6 +167,8 @@ def main(board, limit, remaining=False, out=None):
             "Publish date": "",
             "Keywords": "high heels, stilettos, heels, shoe finds, affordable heels, party shoes",
         })
+        if is_generic:
+            gidx += 1
         if len(rows) >= limit:
             break
     OUT.parent.mkdir(exist_ok=True)
