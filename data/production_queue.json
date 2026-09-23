@@ -330,5 +330,95 @@
     "status": "done",
     "approved_ts": "2026-09-15T08:09:06.733740",
     "scheduled_img": true
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256811354738154.html",
+    "title": "Pointed-Toe Pump",
+    "local_asset": "GELEM/2026-09-17/pointed-toe-pump-3256811354738154",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Sf72715e99ed6457e9d6cfcd2886a804eO.jpg",
+    "deal": {
+      "sale": 15.12,
+      "was": 30.24,
+      "discount": "50%",
+      "rating": "4",
+      "sold": "5 sold"
+    },
+    "status": "done",
+    "approved_ts": "2026-09-17T08:02:33.871325",
+    "scheduled_img": true
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256813014380485.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-18/stiletto-heels-3256813014380485",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S7f130998c78e4623ab4f8045fc70b3fbL.jpg",
+    "deal": {
+      "sale": 44.04,
+      "was": 200.2,
+      "discount": "78%",
+      "rating": "",
+      "sold": ""
+    },
+    "status": "done",
+    "approved_ts": "2026-09-18T22:12:35.279737",
+    "scheduled_img": true
+  },
+  {
+    "url": "https://www.aliexpress.com/item/2255800912705100.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-22/stiletto-heels-2255800912705100",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Hb9c9461428d240b68f2f8c3c93b95ffaw.jpg",
+    "deal": {
+      "sale": 14.34,
+      "was": 20.49,
+      "discount": "30%",
+      "rating": "4",
+      "sold": "4 sold"
+    },
+    "status": "done",
+    "approved_ts": "2026-09-22T08:40:31.357558",
+    "scheduled_img": true
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256810301489471.html",
+    "title": "Pointed-Toe Pump",
+    "local_asset": "GELEM/2026-09-23/pointed-toe-pump-3256810301489471",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S4d2e130dfaa9400abde4e6a4ecea8387k.jpg",
+    "deal": {
+      "sale": 17.06,
+      "was": 34.12,
+      "discount": "50%",
+      "rating": "5",
+      "sold": "4 sold"
+    },
+    "status": "awaiting_choice",
+    "approved_ts": "2026-09-23T08:39:56.438293"
+  },
+  {
+    "url": "https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels",
+    "title": "Ti Amo Silver Metallic Pu Padlock Detail Barely There Pointed Toe Stilettos Heels",
+    "local_asset": "GELEM/2026-09-23/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointe",
+    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/TIAMOSILVER-1.jpg?v=1760389752",
+    "deal": {},
+    "status": "approved",
+    "approved_ts": "2026-09-23T10:41:47.632883"
+  },
+  {
+    "url": "https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
+    "title": "Rotate Burgundy Croc Gold Toe Detail Court High Heels",
+    "local_asset": "GELEM/2026-09-23/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
+    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/ROTATEBURGUNDY-1.jpg?v=1761209864",
+    "deal": {},
+    "status": "approved",
+    "approved_ts": "2026-09-23T10:41:51.908047"
+  },
+  {
+    "url": "https://publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
+    "title": "Hallie Black Butterfly Embellishment Ankle Tie High Heels",
+    "local_asset": "GELEM/2026-09-23/hallie-black-butterfly-embellishment-ankle-tie-high-heels",
+    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/HALLIEBLACK-1.jpg?v=1776330741",
+    "deal": {},
+    "status": "approved",
+    "approved_ts": "2026-09-23T10:41:59.248354"
   }
 ]

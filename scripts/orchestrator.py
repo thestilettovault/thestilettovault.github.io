@@ -67,23 +67,26 @@ def get_state(slug):
 # ---------------- Telegram ----------------
 
 def _send_photo(path, caption, buttons=None):
-    """POST a local photo to the chat with an optional inline keyboard."""
-    import mimetypes, uuid
-    boundary = uuid.uuid4().hex
-    fields = {"chat_id": CHAT_ID, "caption": caption, "parse_mode": "Markdown"}
+    """POST a local photo to the chat with an optional inline keyboard.
+    Uses requests' multipart (the hand-rolled body 400'd on large 2K images);
+    drops parse_mode so long slugs/captions can't break Markdown parsing, and
+    retries the transient Telegram "internal Server Error / 404 during file
+    upload" a few times."""
+    import requests, time as _t
+    data = {"chat_id": CHAT_ID, "caption": caption}
     if buttons:
-        fields["reply_markup"] = json.dumps({"inline_keyboard": buttons})
-    body = b""
-    for k, v in fields.items():
-        body += (f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n").encode("utf-8")
-    img = Path(path).read_bytes()
-    body += (f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; "
-             f"filename=\"{Path(path).name}\"\r\nContent-Type: image/jpeg\r\n\r\n").encode("utf-8")
-    body += img + b"\r\n" + f"--{boundary}--\r\n".encode("utf-8")
-    req = urllib.request.Request(f"{API}/sendPhoto", data=body,
-                                 headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.loads(r.read().decode("utf-8")).get("ok", False)
+        data["reply_markup"] = json.dumps({"inline_keyboard": buttons})
+    for attempt in range(4):
+        try:
+            with open(path, "rb") as fh:
+                r = requests.post(f"{API}/sendPhoto", data=data,
+                                  files={"photo": fh}, timeout=90)
+            if r.ok:
+                return True
+        except Exception:
+            pass
+        _t.sleep(3)
+    return False
 
 def send_ad_choice(slug):
     """Send all candidate ads (ad_A.jpg, ad_B.jpg, ...) so Ofer picks ONE winner.

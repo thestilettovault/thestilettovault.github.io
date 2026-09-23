@@ -1568,7 +1568,9 @@
       "image_1x1": "https://thestilettovault.github.io/img/heels/pointed-toe-pump-3256811354738154/ig_image_1.jpg"
     },
     "variations_ready": true,
-    "on_site": true
+    "on_site": true,
+    "posted": true,
+    "posted_date": "2026-09-22T13:06:21.584855"
   },
   {
     "title": "Stiletto Heels",
@@ -1600,7 +1602,9 @@
       "image_1x1": "https://thestilettovault.github.io/img/heels/stiletto-heels-3256813014380485/ig_image_1.jpg"
     },
     "variations_ready": true,
-    "on_site": true
+    "on_site": true,
+    "posted": true,
+    "posted_date": "2026-09-22T13:06:24.791080"
   },
   {
     "title": "Stiletto Heels",
@@ -1632,6 +1636,66 @@
       "image_1x1": "https://thestilettovault.github.io/img/heels/stiletto-heels-2255800912705100/ig_image_1.jpg"
     },
     "variations_ready": true,
-    "on_site": true
+    "on_site": true,
+    "posted": true,
+    "posted_date": "2026-09-22T13:06:26.786445"
+  },
+  {
+    "title": "Pointed-Toe Pump",
+    "url": "https://www.aliexpress.com/item/3256810301489471.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810301489471.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S4d2e130dfaa9400abde4e6a4ecea8387k.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 17.06,
+      "was": 34.12,
+      "discount": "50%",
+      "rating": "5",
+      "sold": "4 sold"
+    },
+    "date": "2026-09-23T08:39:56.404942",
+    "local_asset": "GELEM/2026-09-23/pointed-toe-pump-3256810301489471",
+    "image_ok": true,
+    "downloaded": "2026-09-23"
+  },
+  {
+    "title": "Ti Amo Silver Metallic Pu Padlock Detail Barely There Pointed Toe Stilettos Heels",
+    "url": "https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels",
+    "aff_link": "https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels",
+    "domain": "publicdesire.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/TIAMOSILVER-1.jpg?v=1760389752",
+    "commission": "Publicdesire · ~10% via Skimlinks · $32.99",
+    "deal": {},
+    "date": "2026-09-23T10:41:47.618583",
+    "local_asset": "GELEM/2026-09-23/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointe",
+    "image_ok": true,
+    "downloaded": "2026-09-23"
+  },
+  {
+    "title": "Rotate Burgundy Croc Gold Toe Detail Court High Heels",
+    "url": "https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
+    "aff_link": "https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
+    "domain": "publicdesire.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/ROTATEBURGUNDY-1.jpg?v=1761209864",
+    "commission": "Publicdesire · ~10% via Skimlinks · $32.99",
+    "deal": {},
+    "date": "2026-09-23T10:41:51.897765",
+    "local_asset": "GELEM/2026-09-23/rotate-burgundy-croc-gold-toe-detail-court-high-heels",
+    "image_ok": true,
+    "downloaded": "2026-09-23"
+  },
+  {
+    "title": "Hallie Black Butterfly Embellishment Ankle Tie High Heels",
+    "url": "https://publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
+    "aff_link": "https://publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
+    "domain": "publicdesire.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/HALLIEBLACK-1.jpg?v=1776330741",
+    "commission": "Publicdesire · ~10% via Skimlinks · $29.99",
+    "deal": {},
+    "date": "2026-09-23T10:41:59.242804",
+    "local_asset": "GELEM/2026-09-23/hallie-black-butterfly-embellishment-ankle-tie-high-heels",
+    "image_ok": true,
+    "downloaded": "2026-09-23"
   }
 ]

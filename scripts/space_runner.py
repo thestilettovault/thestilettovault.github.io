@@ -81,9 +81,11 @@ def slugify(item):
         label = re.sub(r"[^a-z0-9]+", "-", item.get("title", "heel").lower()).strip("-")[:30]
         slug = f"{label}-{m.group(1)}".strip("-")
         return slug[:60] or m.group(1)
-    m = re.search(r"/products/([^/?#]+)", url)   # Shopify (GTHIC / darkinlove)
+    m = re.search(r"/products/([^/?#]+)", url)   # Shopify (GTHIC / darkinlove / Public Desire / Simmi)
     base = m.group(1) if m else item.get("title", "item")
-    return (re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-")[:60]) or "item"
+    # Cap at 45 so the Telegram A/B/C/D pick's callback_data ("adpick|<slug>|A")
+    # stays under Telegram's 64-byte limit (long brand handles overflowed it).
+    return (re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-")[:45]).strip("-") or "item"
 
 
 def queue():
