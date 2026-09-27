@@ -185,7 +185,7 @@ def scout(write=False, per_term=8):
             })
             kept += 1
         print(f"  '{term}': {len(items)} scanned → {kept} added")
-    print(f"\nTOTAL unique high heels: {len(found)}")
+    print(f"\nTOTAL proven high heels: {len(found)}  (rejected: {skipped})")
     for h in found[:8]:
         print(f"  ${h['price']}  {h['title'][:55]}")
     if write:
