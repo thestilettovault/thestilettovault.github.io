@@ -75,6 +75,28 @@ def fetch_conversions():
             "pending": pending, "per_shoe": per_shoe}
 
 
+def fetch_clicks(date_start="01.08.2026"):
+    """{total_clicks, per_shoe:{subid:clicks}} from /statistics/sub_ids/.
+    Clicks with an empty subid (old links / bio) land under "(untagged)"."""
+    hdr = {"Authorization": "Bearer " + _token()}
+    per_shoe, total, offset = {}, 0, 0
+    while True:
+        r = requests.get(f"{API}/statistics/sub_ids/", headers=hdr, timeout=20,
+                         params={"limit": 500, "offset": offset, "date_start": date_start})
+        r.raise_for_status()
+        page = r.json().get("results", [])
+        for row in page:
+            n = int(row.get("clicks") or 0)
+            sub = row.get("subid") or "(untagged)"
+            per_shoe[sub] = per_shoe.get(sub, 0) + n
+            total += n
+        if len(page) < 500:
+            break
+        offset += 500
+    return {"total_clicks": total, "per_shoe": per_shoe}
+
+
 if __name__ == "__main__":
     import json
     print(json.dumps(fetch_conversions(), ensure_ascii=False, indent=2))
+    print(json.dumps(fetch_clicks(), ensure_ascii=False, indent=2))

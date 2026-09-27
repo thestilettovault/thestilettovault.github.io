@@ -50,7 +50,8 @@ def _fetch(term):
     # curl passes AliExpress' TLS bot-check where python requests/urllib get punished.
     # AliExpress still rate-limits by IP, so keep volume low and space requests out.
     slug = term.strip().replace(" ", "-")
-    url = f"https://www.aliexpress.com/w/wholesale-{slug}.html?g=y"
+    # SortType=total_tranpro_desc = best-sellers first → proven converters surface
+    url = f"https://www.aliexpress.com/w/wholesale-{slug}.html?g=y&SortType=total_tranpro_desc"
     # Force US region / USD / English so prices come back as $ and sold-counts as
     # English ("286 sold"), not the IP-geo default (₪ / "נמכרו"). AliExpress reads
     # region+currency+locale from the aep_usuc_f cookie.
@@ -110,10 +111,46 @@ def _deal(it):
             "rating": str(rating), "sold": str(sold)}
 
 
+# Proven-converter gate (2026-09-27): 64 Admitad clicks → 0 sales on heels with
+# "1-4 sold". Buyers on AliExpress decide by social proof, so only keep heels that
+# already sell. Commission is ~6.9% of price, so a price floor lifts $/sale too.
+MIN_SOLD = 300
+MIN_RATING = 4.6
+MIN_PRICE = 20.0
+
+
+def _sold_n(txt):
+    m = re.search(r"([\d,.]+)\s*(k)?\+?", str(txt or "").lower())
+    if not m:
+        return 0
+    n = float(m.group(1).replace(",", ""))
+    return int(n * 1000) if m.group(2) else int(n)
+
+
+def _proven(deal, price):
+    """(ok, reason). Missing sold/rating = unproven → rejected (don't guess)."""
+    sold, rating = _sold_n(deal.get("sold")), deal.get("rating") or ""
+    try:
+        rating = float(rating)
+    except ValueError:
+        rating = 0.0
+    try:
+        price = float(price or 0)
+    except ValueError:
+        price = 0.0
+    if sold < MIN_SOLD:
+        return False, f"sold {sold}<{MIN_SOLD}"
+    if rating < MIN_RATING:
+        return False, f"rating {rating}<{MIN_RATING}"
+    if price < MIN_PRICE:
+        return False, f"price ${price}<${MIN_PRICE}"
+    return True, ""
+
+
 def scout(write=False, per_term=8):
     """Grab up to `per_term` heels from each search (variety over volume)."""
     import time, random
-    seen, found = set(), []
+    seen, found, skipped = set(), [], {}
     for term, label in SEARCHES:
         try:
             items = _items(_fetch(term))
@@ -128,6 +165,11 @@ def scout(write=False, per_term=8):
             if not pid or pid in seen:
                 continue
             seen.add(pid)
+            deal = _deal(it)
+            ok, why = _proven(deal, _price(it))
+            if not ok:
+                skipped[why.split()[0]] = skipped.get(why.split()[0], 0) + 1
+                continue
             img = (it.get("image") or {}).get("imgUrl", "")
             if img.startswith("//"): img = "https:" + img
             url = f"https://www.aliexpress.com/item/{pid}.html"
@@ -137,7 +179,7 @@ def scout(write=False, per_term=8):
                 "aff_link": affiliate_links.aliexpress(url),   # Admitad deeplink 6.9%
                 "image_url": img,
                 "price": _price(it),
-                "deal": _deal(it),                             # sale/was/discount/rating/sold
+                "deal": deal,                                  # sale/was/discount/rating/sold
                 "commission": "6.9%",
                 "domain": "aliexpress.com",
             })

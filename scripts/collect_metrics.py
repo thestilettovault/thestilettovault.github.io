@@ -141,6 +141,14 @@ def sales():
         import admitad_stats  # optional helper; added when Admitad scope is confirmed
         data = admitad_stats.fetch_conversions()
         data["source_status"] = "admitad"
+        try:                                     # clicks per subid → conversion rate
+            c = admitad_stats.fetch_clicks()
+            data["total_clicks"] = c["total_clicks"]
+            data["clicks_per_shoe"] = c["per_shoe"]
+            data["conversion_rate"] = round(data["total_sales"] / c["total_clicks"], 4) \
+                if c["total_clicks"] else None
+        except Exception as e:
+            data["clicks_note"] = str(e)[:120]
         return data
     except Exception as e:
         base = {"source_status": "manual" if manual else "unavailable",
@@ -179,12 +187,18 @@ def main(push=False):
     per_shoe = sales_data.get("per_shoe", {}) if isinstance(sales_data, dict) else {}
     traffic_data = traffic()
     clicks_by_shoe = traffic_data.get("per_shoe", {}) if isinstance(traffic_data, dict) else {}
+    adm_clicks = sales_data.get("clicks_per_shoe", {}) if isinstance(sales_data, dict) else {}
     sh = shoes(catalog)
     for s in sh:                                 # merge sales + clicks into each shoe
         rec = per_shoe.get(s["subid"])
         if rec:
             s["sales"] = rec.get("sales")
-            s["clicks"] = rec.get("clicks")
+        if s["subid"] in adm_clicks:             # Admitad subids may be truncated slugs
+            s["clicks"] = adm_clicks[s["subid"]]
+        else:
+            m = [v for k, v in adm_clicks.items() if k and (k in s["subid"] or s["subid"] in k)]
+            if m:
+                s["clicks"] = sum(m)
         crec = clicks_by_shoe.get(s["subid"])
         if crec and s.get("clicks") is None:
             s["clicks"] = crec.get("clicks")
