@@ -1,13 +1,47 @@
 {
-  "generated_at": "2026-09-27T10:00:33",
+  "generated_at": "2026-09-28T10:14:37",
   "funnel": {
-    "scanned": 64,
-    "approved": 63,
-    "produced": 48,
+    "scanned": 52,
+    "approved": 65,
+    "produced": 50,
     "scheduled": 17,
     "published": 44
   },
   "shoes": [
+    {
+      "slug": "stiletto-heels-3256808036641274",
+      "title": "Stiletto Heels",
+      "name": "Stiletto Heels · 62% OFF",
+      "price": "$26.12",
+      "was": "$68.25",
+      "discount": "62%",
+      "rating": "4.9",
+      "sold": "500+ sold",
+      "status": "produced",
+      "on_site": true,
+      "subid": "stiletto-heels-3256808036641274",
+      "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808036641274.html",
+      "date": "2026-09-28",
+      "clicks": 2,
+      "sales": null
+    },
+    {
+      "slug": "stiletto-heels-3256807554485090",
+      "title": "Stiletto Heels",
+      "name": "Stiletto Heels · 62% OFF",
+      "price": "$24.12",
+      "was": "$64.25",
+      "discount": "62%",
+      "rating": "4.8",
+      "sold": "600+ sold",
+      "status": "produced",
+      "on_site": true,
+      "subid": "stiletto-heels-3256807554485090",
+      "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807554485090.html",
+      "date": "2026-09-28",
+      "clicks": 2,
+      "sales": null
+    },
     {
       "slug": "stiletto-heels-3256812048305063",
       "title": "Stiletto Heels",
@@ -22,7 +56,7 @@
       "subid": "stiletto-heels-3256812048305063",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812048305063.html",
       "date": "2026-09-24",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -107,7 +141,7 @@
       "subid": "stiletto-heels-2255800912705100",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2255800912705100.html",
       "date": "2026-09-22",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -124,7 +158,7 @@
       "subid": "stiletto-heels-3256813014380485",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256813014380485.html",
       "date": "2026-09-18",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -141,7 +175,7 @@
       "subid": "pointed-toe-pump-3256811354738154",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811354738154.html",
       "date": "2026-09-17",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -158,7 +192,7 @@
       "subid": "stiletto-heels-3256812977575450",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812977575450.html",
       "date": "2026-09-15",
-      "clicks": null,
+      "clicks": 5,
       "sales": null
     },
     {
@@ -175,7 +209,7 @@
       "subid": "stiletto-heels-3256811752850876",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811752850876.html",
       "date": "2026-09-15",
-      "clicks": null,
+      "clicks": 4,
       "sales": null
     },
     {
@@ -192,7 +226,7 @@
       "subid": "stiletto-heels-2251832643910985",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2251832643910985.html",
       "date": "2026-09-14",
-      "clicks": null,
+      "clicks": 3,
       "sales": null
     },
     {
@@ -209,7 +243,7 @@
       "subid": "stiletto-heels-3256812919764230",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812919764230.html",
       "date": "2026-09-14",
-      "clicks": null,
+      "clicks": 4,
       "sales": null
     },
     {
@@ -226,7 +260,7 @@
       "subid": "stiletto-heels-3256807138421381",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807138421381.html",
       "date": "2026-09-14",
-      "clicks": null,
+      "clicks": 4,
       "sales": null
     },
     {
@@ -243,7 +277,7 @@
       "subid": "stiletto-heels-3256806021490378",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256806021490378.html",
       "date": "2026-09-13",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -260,7 +294,7 @@
       "subid": "stiletto-heels-3256812924512778",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812924512778.html",
       "date": "2026-09-13",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -277,7 +311,7 @@
       "subid": "stiletto-heels-3256812400190367",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812400190367.html",
       "date": "2026-09-11",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -294,7 +328,7 @@
       "subid": "stiletto-heels-3256808986169728",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808986169728.html",
       "date": "2026-09-11",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -311,7 +345,7 @@
       "subid": "stiletto-heels-3256808105408571",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808105408571.html",
       "date": "2026-09-11",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -328,7 +362,7 @@
       "subid": "platform-high-heels-3256807448476023",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807448476023.html",
       "date": "2026-09-08",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -345,7 +379,7 @@
       "subid": "stiletto-heels-3256812746878100",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812746878100.html",
       "date": "2026-09-07",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -362,7 +396,7 @@
       "subid": "stiletto-heels-3256808838061313",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808838061313.html",
       "date": "2026-09-07",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -379,7 +413,7 @@
       "subid": "stiletto-heels-3256812889137855",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812889137855.html",
       "date": "2026-09-06",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -396,7 +430,7 @@
       "subid": "stiletto-heels-3256808873806820",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808873806820.html",
       "date": "2026-09-06",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -413,7 +447,7 @@
       "subid": "stiletto-heels-3256812737369387",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812737369387.html",
       "date": "2026-09-06",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -430,7 +464,7 @@
       "subid": "pointed-toe-pump-3256802169872778",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256802169872778.html",
       "date": "2026-09-06",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -447,7 +481,7 @@
       "subid": "stiletto-heels-3256808461627848",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808461627848.html",
       "date": "2026-09-04",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -464,7 +498,7 @@
       "subid": "stiletto-heels-3256809453131649",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256809453131649.html",
       "date": "2026-09-03",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -481,7 +515,7 @@
       "subid": "stiletto-heels-3256812851886473",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812851886473.html",
       "date": "2026-09-03",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -498,7 +532,7 @@
       "subid": "pointed-toe-pump-3256812471729513",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812471729513.html",
       "date": "2026-09-02",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -515,7 +549,7 @@
       "subid": "pointed-toe-pump-3256807553221348",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553221348.html",
       "date": "2026-09-01",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -532,7 +566,7 @@
       "subid": "stiletto-heels-3256805980328073",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256805980328073.html",
       "date": "2026-09-01",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -549,7 +583,7 @@
       "subid": "stiletto-heels-3256812312762342",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812312762342.html",
       "date": "2026-08-31",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -566,7 +600,7 @@
       "subid": "stiletto-heels-3256804258242217",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256804258242217.html",
       "date": "2026-08-30",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -583,7 +617,7 @@
       "subid": "stiletto-heels-3256809453216545",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256809453216545.html",
       "date": "2026-08-30",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -600,7 +634,7 @@
       "subid": "stiletto-heels-3256812060926205",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812060926205.html",
       "date": "2026-08-30",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -617,7 +651,7 @@
       "subid": "stiletto-heels-3256811894434344",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811894434344.html",
       "date": "2026-08-29",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -634,7 +668,7 @@
       "subid": "stiletto-heels-3256811883989555",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811883989555.html",
       "date": "2026-08-29",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -651,7 +685,7 @@
       "subid": "stiletto-heels-1005012080749096",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F1005012080749096.html",
       "date": "2026-08-28",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -668,7 +702,7 @@
       "subid": "stiletto-heels-1005010561772609",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F1005010561772609.html",
       "date": "2026-08-28",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -685,7 +719,7 @@
       "subid": "stiletto-heels-1005009639531297",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F1005009639531297.html",
       "date": "2026-08-28",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -702,7 +736,7 @@
       "subid": "stiletto-heels-1005005176387324",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F1005005176387324.html",
       "date": "2026-08-27",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -719,7 +753,7 @@
       "subid": "black-red-soled-10cm-pointed-t-3256810250961501",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810250961501.html",
       "date": "2026-08-24",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -753,7 +787,7 @@
       "subid": "11cm-slingback-pointed-toe-sti-3256808390900535",
       "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808390900535.html",
       "date": "2026-08-24",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -787,7 +821,7 @@
       "subid": "foklysp-studded-spike-pointed-toe-stiletto-pu",
       "aff_link": "https://www.amazon.com/dp/B0FT2YGHWR?tag=thegothicvaul-20",
       "date": "2026-08-23",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -838,7 +872,7 @@
       "subid": "dream-pairs-4-classic-pointed-toe-stiletto-pu",
       "aff_link": "https://www.amazon.com/dp/B08F7G1ZCW?tag=thegothicvaul-20",
       "date": "2026-08-18",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -855,7 +889,7 @@
       "subid": "show-story-punk-x-strap-gothic-platform-stile",
       "aff_link": "https://www.amazon.com/dp/B01GA4U2QQ?tag=thegothicvaul-20",
       "date": "2026-08-17",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -872,7 +906,7 @@
       "subid": "demoshine-black-patent-pointed-toe-stiletto-p",
       "aff_link": "https://www.amazon.com/dp/B0DDPVY6KZ?tag=thegothicvaul-20",
       "date": "2026-08-17",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -889,7 +923,7 @@
       "subid": "mucccute-red-metallic-chrome-stiletto-thigh-h",
       "aff_link": "https://www.amazon.com/dp/B0CB2F7W3W?tag=thegothicvaul-20",
       "date": "2026-08-17",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -906,7 +940,7 @@
       "subid": "vogel-vere-glitter-sparkly-pointed-toe-stilet",
       "aff_link": "https://www.amazon.com/dp/B0H29ZB7SK?tag=thegothicvaul-20",
       "date": "2026-08-17",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -957,7 +991,7 @@
       "subid": "pleaser-adore-1020-7-stiletto-lace-up-platfor",
       "aff_link": "https://www.amazon.com/dp/B00775OA34?tag=thegothicvaul-20",
       "date": "2026-08-13",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -974,7 +1008,7 @@
       "subid": "soireelady-platform-stiletto-t-strap-sandal-p",
       "aff_link": "https://www.amazon.com/dp/B0DSJ68LMN?tag=thegothicvaul-20",
       "date": "2026-08-11",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -991,7 +1025,7 @@
       "subid": "fancyqueen-knee-high-gladiator-stiletto-suede",
       "aff_link": "https://www.amazon.com/dp/B0F7LSL3G1?tag=thegothicvaul-20",
       "date": "2026-08-10",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -1025,7 +1059,7 @@
       "subid": "pleaser-adore-1061-black-suede-slouch-7-stile",
       "aff_link": "https://www.amazon.com/dp/B0DPLLM13G?tag=thegothicvaul-20",
       "date": "2026-08-10",
-      "clicks": null,
+      "clicks": 1,
       "sales": null
     },
     {
@@ -1042,7 +1076,7 @@
       "subid": "ojiaoer-studded-spike-pointed-toe-stiletto-pu",
       "aff_link": "https://www.amazon.com/dp/B0G3PGSC6P?tag=thegothicvaul-20",
       "date": "2026-08-10",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -1059,7 +1093,7 @@
       "subid": "lishan-lace-up-gladiator-stiletto-knee-high-b",
       "aff_link": "https://www.amazon.com/dp/B088DYDY5T?tag=thegothicvaul-20",
       "date": "2026-08-10",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     },
     {
@@ -1076,7 +1110,7 @@
       "subid": "tracieshoes-thigh-high-gladiator-4-3-stiletto",
       "aff_link": "https://www.amazon.com/dp/B0GXV38CD7?tag=thegothicvaul-20",
       "date": "2026-08-10",
-      "clicks": null,
+      "clicks": 2,
       "sales": null
     }
   ],
@@ -1223,7 +1257,43 @@
     "total_revenue": 0.0,
     "pending": 0,
     "per_shoe": {},
-    "source_status": "admitad"
+    "source_status": "admitad",
+    "total_clicks": 64,
+    "clicks_per_shoe": {
+      "(untagged)": 9,
+      "11cm-slingback-pointed-toe-sti-3256808390900535": 1,
+      "black-red-soled-10cm-pointed-t-3256810250961501": 1,
+      "platform-high-heels-3256807448476023": 1,
+      "pointed-toe-pump-3256802169872778": 2,
+      "pointed-toe-pump-3256807553221348": 1,
+      "pointed-toe-pump-3256811354738154": 2,
+      "pointed-toe-pump-3256812471729513": 1,
+      "sti": 1,
+      "stilett": 1,
+      "stiletto-heels-2251832643910985": 3,
+      "stiletto-heels-2255800912705100": 2,
+      "stiletto-heels-3256805980328073": 1,
+      "stiletto-heels-3256806021490378": 2,
+      "stiletto-heels-3256807138421381": 4,
+      "stiletto-heels-3256808105408571": 2,
+      "stiletto-heels-3256808461627848": 1,
+      "stiletto-heels-3256808838061313": 1,
+      "stiletto-heels-3256808873806820": 1,
+      "stiletto-heels-3256808986169728": 2,
+      "stiletto-heels-3256809453131649": 1,
+      "stiletto-heels-3256811752850876": 4,
+      "stiletto-heels-3256812312762342": 1,
+      "stiletto-heels-3256812400190367": 2,
+      "stiletto-heels-3256812737369387": 1,
+      "stiletto-heels-3256812746878100": 1,
+      "stiletto-heels-3256812851886473": 2,
+      "stiletto-heels-3256812889137855": 1,
+      "stiletto-heels-3256812919764230": 4,
+      "stiletto-heels-3256812924512778": 1,
+      "stiletto-heels-3256812977575450": 5,
+      "stiletto-heels-3256813014380485": 2
+    },
+    "conversion_rate": 0.0
   },
   "traffic": {
     "source_status": "unavailable",
