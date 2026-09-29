@@ -11,9 +11,10 @@
       "signup_url": "https://nakedwolfe.com/pages/affiliate-program",
       "requirements": "Who can join? Anyone who has made a purchase from nakedwolfe.",
       "signup_link": "https://app.socialsnowball.io",
-      "status": "to_register",
+      "status": "carded",
       "value_per_sale": 30.0,
-      "updated": "2026-09-29"
+      "updated": "2026-09-29",
+      "carded": "2026-09-29"
     },
     "publicdesire.com": {
       "domain": "publicdesire.com",
@@ -106,6 +107,132 @@
       "affiliate_ref": "?aff=826",
       "shopify": true,
       "note": "jewelry+boots; already wired"
+    },
+    "jessicasimpson.com": {
+      "domain": "jessicasimpson.com",
+      "shopify": true,
+      "avg_price": 99.0,
+      "heel_count": 184,
+      "program": "ShareASale",
+      "network": true,
+      "signup_url": "https://jessicasimpson.com/pages/jessica-simpson-affiliate-program",
+      "status": "carded",
+      "value_per_sale": 7.92,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)",
+      "carded": "2026-09-29"
+    },
+    "larroude.com": {
+      "domain": "larroude.com",
+      "shopify": true,
+      "avg_price": 330.0,
+      "heel_count": 200,
+      "program": "Direct",
+      "network": false,
+      "commission": 7.0,
+      "signup_url": "https://larroude.com/pages/ambassadorsprogram",
+      "requirements": "Requirements Content Creators Minimum 5K followers (Instagram or TikTok), 80%+ of content in fashion, lifestyle, or culture.",
+      "status": "carded",
+      "value_per_sale": 23.1,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)",
+      "carded": "2026-09-29"
+    },
+    "tonybianco.com": {
+      "domain": "tonybianco.com",
+      "shopify": true,
+      "avg_price": 170.0,
+      "heel_count": 237,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)"
+    },
+    "billini.com": {
+      "domain": "billini.com",
+      "shopify": true,
+      "avg_price": 50.0,
+      "heel_count": 175,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)"
+    },
+    "tajnaclub.com": {
+      "domain": "tajnaclub.com",
+      "shopify": true,
+      "avg_price": 159.0,
+      "heel_count": 219,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)"
+    },
+    "azaleawang.com": {
+      "domain": "azaleawang.com",
+      "shopify": true,
+      "avg_price": 89.0,
+      "heel_count": 98,
+      "program": "Direct",
+      "network": false,
+      "signup_url": "https://azaleawang.com/pages/affiliates",
+      "status": "carded",
+      "value_per_sale": 7.12,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)",
+      "carded": "2026-09-29"
+    },
+    "schutz-shoes.com": {
+      "domain": "schutz-shoes.com",
+      "shopify": true,
+      "avg_price": 189.0,
+      "heel_count": 233,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)"
+    },
+    "circusny.com": {
+      "domain": "circusny.com",
+      "shopify": false,
+      "avg_price": 0,
+      "heel_count": 0,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)"
+    },
+    "stevemadden.com": {
+      "domain": "stevemadden.com",
+      "shopify": true,
+      "avg_price": 109.95,
+      "heel_count": 159,
+      "program": "Direct",
+      "network": false,
+      "commission": 5.0,
+      "signup_url": "https://www.stevemadden.com/pages/sm-ambassadors-terms-and-conditions",
+      "requirements": "com/s/files/1/2170/8465/files/Summer_26_Site_AssetsNAV_MENS_LP_-_MUST_HAVES.",
+      "status": "carded",
+      "value_per_sale": 5.5,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)",
+      "carded": "2026-09-29"
+    },
+    "heelsocietyofficial.com": {
+      "domain": "heelsocietyofficial.com",
+      "shopify": false,
+      "avg_price": 0,
+      "heel_count": 0,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29",
+      "note": "heel_hunter run 1 (2026-09-29)"
     }
   }
 }
