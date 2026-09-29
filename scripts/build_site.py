@@ -14,7 +14,7 @@ Image priority per product:
 Usage:
     python build_site.py           # rebuild index.html (no push)
     python build_site.py --push    # rebuild + git commit + push live
-    python build_site.py --limit 12
+    python build_site.py --limit 12   # (default = all)
 """
 import sys, os, re, json, shutil, subprocess, argparse
 from pathlib import Path
@@ -233,7 +233,7 @@ def git_push():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--push", action="store_true", help="git commit + push after build")
-    ap.add_argument("--limit", type=int, default=12, help="max cards to show")
+    ap.add_argument("--limit", type=int, default=500, help="max cards (default: all — every posted heel must be on the site, the bio link points here)")
     args = ap.parse_args()
 
     if rebuild(args.limit) and args.push:
