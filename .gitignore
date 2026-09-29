@@ -32,3 +32,4 @@ Thumbs.db
 # control center — private, local only (public Pages repo)
 niches/*/hub.json
 data/jobs_history.json
+dashboard/
