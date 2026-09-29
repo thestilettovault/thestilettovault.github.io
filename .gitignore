@@ -33,3 +33,4 @@ Thumbs.db
 niches/*/hub.json
 data/jobs_history.json
 dashboard/
+data/thumb_cache.json
