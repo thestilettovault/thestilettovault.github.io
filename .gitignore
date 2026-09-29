@@ -1,0 +1,33 @@
+# Secrets
+.env
+*.env.*
+
+# Logs & state
+*.log
+*.jsonl
+boards_temp.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Media binaries (large files — commit selectively)
+*.mp4
+*.mov
+*.avi
+*.wav
+*.mp3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+.claude/
+.playwright-mcp/
+
+# control center — private, local only (public Pages repo)
+niches/*/hub.json

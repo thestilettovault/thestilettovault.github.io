@@ -1,0 +1,50 @@
+{
+  "identity": {
+    "id": "stiletto",
+    "name": "The Stiletto Vault",
+    "emoji": "👠",
+    "product_noun": "heel",
+    "site": "https://thestilettovault.github.io"
+  },
+  "sourcing": {
+    "aliexpress_searches": [
+      ["stiletto heels", "Stiletto Heels"],
+      ["pointed toe pumps", "Pointed-Toe Pump"],
+      ["platform high heels", "Platform High Heels"],
+      ["ankle boots heels", "Heeled Ankle Boots"],
+      ["slingback heels", "Slingback Heels"],
+      ["knee high heel boots", "Knee-High Heel Boots"],
+      ["thigh high heel boots", "Thigh-High Heel Boots"],
+      ["high heel sandals", "High-Heel Sandals"]
+    ],
+    "shops": [
+      "caperobbin.com",
+      "www.publicdesire.com",
+      "www.simmi.com",
+      "nakedwolfe.com",
+      "www.killstar.com",
+      "www.darkinlove.com",
+      "tukshoes.co.uk"
+    ]
+  },
+  "thresholds": {
+    "MIN_SOLD": 300,
+    "MIN_RATING": 4.6,
+    "MIN_PRICE": 20.0,
+    "BATCH": 5,
+    "BRAND_MIN_PRICE": 100.0,
+    "NO_REPEAT_DAYS": 10,
+    "MIN_VALUE": 5.0
+  },
+  "schedule": {
+    "slots": ["14:00", "18:00", "22:00"],
+    "skip_weekdays": [5]
+  },
+  "research": {
+    "trend_queries": [
+      "viral heels tiktok this week",
+      "tiktok made me buy it heels",
+      "trending stilettos tiktok"
+    ]
+  }
+}
