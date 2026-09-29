@@ -22,6 +22,7 @@ from flask import Flask, Response, jsonify, redirect, request, send_file
 
 from . import hub as _hub
 from . import thumbs as _thumbs
+from . import engagement as _engagement
 from . import niche as _niche
 from . import services as _services
 from . import jobs as _jobs
@@ -456,7 +457,12 @@ def api_events_summary():
         jl = _jobs.list_jobs()
         running_jobs = len(jl.get("active", []))
         last_metrics_time = ov.get("generated_at") if isinstance(ov, dict) else None
+        try:
+            eng = {} if app.config.get("TESTING") else _engagement.summary()   # tests never hit Zernio
+        except Exception:
+            eng = {}
         return jsonify({
+            "engagement": eng,
             "needs_you": needs_you,
             "running_jobs": running_jobs,
             "failed_posts": failed_posts,
@@ -489,6 +495,15 @@ def api_thumb():
     if kind == "url":
         return redirect(val, 302)
     return Response(_thumbs.PLACEHOLDER_SVG, mimetype="image/svg+xml")
+
+
+# ── engagement (likes / views / followers, Zernio ~hourly sync) ─────
+@app.route("/api/engagement")
+def api_engagement():
+    d = _engagement.get(fresh=request.args.get("fresh") == "1")
+    if request.args.get("posts") != "1":
+        d = {k: v for k, v in d.items() if k != "per_post"}
+    return jsonify(d)
 
 
 # ── shutdown (header "סגור" button) ─────────────────────────────────

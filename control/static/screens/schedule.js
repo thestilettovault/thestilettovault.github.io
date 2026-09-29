@@ -8,7 +8,13 @@
   var HE_DAYS = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"]; // Sunday-first, matches Date.getDay()
   var PLATFORM_ICON = { tiktok: "🎵 TT", instagram: "📷 IG" };
 
-  var state = { cursor: new Date(), view: "calendar", allPosts: [], cacheAge: null };
+  var state = { cursor: new Date(), view: "day", allPosts: [], cacheAge: null, eng: {} };
+
+  function engLine(id) {
+    var e = state.eng[id];
+    if (!e) return "";
+    return '<span class="sc-eng">👁 ' + e.views + " · ❤️ " + e.likes + " · 💬 " + e.comments + " · ↗ " + e.shares + "</span>";
+  }
 
   function jerusalemYMD(iso) {
     if (!iso) return null;
@@ -26,6 +32,12 @@
     return y + "-" + m + "-" + day;
   }
 
+  function jerusalemHour(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return null;
+    return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Jerusalem", hour: "2-digit", hour12: false }).format(d)) % 24;
+  }
+
   function ymd(date) {
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
   }
@@ -39,7 +51,11 @@
         '<button class="btn small secondary" id="sc-today" type="button">היום</button>' +
         '<button class="btn small secondary" id="sc-next" type="button">הבא ›</button>' +
         '<h2 class="section-title" id="sc-title" style="margin:0;flex:1;text-align:center"></h2>' +
-        '<button class="btn small secondary" id="sc-toggle-view" type="button">תצוגת רשימה</button>' +
+        '<div class="sc-seg" role="tablist">' +
+          '<button type="button" class="btn small secondary" data-view="day">יום</button>' +
+          '<button type="button" class="btn small secondary" data-view="calendar">חודש</button>' +
+          '<button type="button" class="btn small secondary" data-view="list">רשימה</button>' +
+        "</div>" +
         '<button class="btn small" id="sc-refresh" type="button">רענן</button>' +
       "</div>" +
       '<div class="kpi-sub" id="sc-cache-age" style="margin-bottom:10px"></div>' +
@@ -48,28 +64,24 @@
       '<div id="sc-modal-root"></div>';
 
     document.getElementById("sc-prev").addEventListener("click", function () {
-      state.cursor = new Date(state.cursor.getFullYear(), state.cursor.getMonth() - 1, 1);
+      var c = state.cursor;
+      state.cursor = state.view === "day" ? new Date(c.getFullYear(), c.getMonth(), c.getDate() - 1)
+                                          : new Date(c.getFullYear(), c.getMonth() - 1, 1);
       renderBody();
     });
     document.getElementById("sc-next").addEventListener("click", function () {
-      state.cursor = new Date(state.cursor.getFullYear(), state.cursor.getMonth() + 1, 1);
+      var c = state.cursor;
+      state.cursor = state.view === "day" ? new Date(c.getFullYear(), c.getMonth(), c.getDate() + 1)
+                                          : new Date(c.getFullYear(), c.getMonth() + 1, 1);
       renderBody();
     });
     document.getElementById("sc-today").addEventListener("click", function () {
       state.cursor = new Date();
-      if (state.view !== "calendar") { state.view = "calendar"; var tv = document.getElementById("sc-toggle-view"); if (tv) tv.textContent = "תצוגת רשימה"; }
+      state.view = "day";
       renderBody();
-      setTimeout(function () {
-        var t = document.querySelector(".sc-day-today");
-        if (!t) return;
-        t.scrollIntoView({ behavior: "smooth", block: "center" });
-        t.classList.remove("sc-flash"); void t.offsetWidth; t.classList.add("sc-flash");
-      }, 60);
     });
-    document.getElementById("sc-toggle-view").addEventListener("click", function () {
-      state.view = state.view === "calendar" ? "list" : "calendar";
-      this.textContent = state.view === "calendar" ? "תצוגת רשימה" : "תצוגת לוח שנה";
-      renderBody();
+    document.querySelectorAll(".sc-seg [data-view]").forEach(function (btn) {
+      btn.addEventListener("click", function () { state.view = btn.dataset.view; renderBody(); });
     });
     document.getElementById("sc-refresh").addEventListener("click", function () { load(true); });
 
@@ -84,6 +96,9 @@
           return;
         }
         state.allPosts = Array.isArray(res.data) ? res.data : [];
+        safeFetch(api("/engagement?posts=1")).then(function (e) {
+          if (e.ok && e.data && e.data.per_post) { state.eng = e.data.per_post; renderBody(); }
+        });
         safeFetch(api("/posts/meta")).then(function (m) {
           state.cacheAge = (m.ok && m.data) ? m.data.cached_seconds_ago : null;
           renderCacheAge();
@@ -100,8 +115,65 @@
     }
 
     function renderBody() {
-      document.getElementById("sc-title").textContent = state.cursor.toLocaleDateString("he-IL", { month: "long", year: "numeric" });
-      if (state.view === "list") renderListView(); else renderCalendarView();
+      document.querySelectorAll(".sc-seg [data-view]").forEach(function (b) {
+        b.classList.toggle("active", b.dataset.view === state.view);
+      });
+      document.getElementById("sc-title").textContent = state.view === "day"
+        ? state.cursor.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+        : state.cursor.toLocaleDateString("he-IL", { month: "long", year: "numeric" });
+      if (state.view === "list") renderListView();
+      else if (state.view === "day") renderDayView();
+      else renderCalendarView();
+    }
+
+    function renderDayView() {
+      var dstr = ymd(state.cursor);
+      var dayPosts = state.allPosts.filter(function (p) { return jerusalemYMD(p.scheduledFor) === dstr; })
+        .sort(function (a, b) { return String(a.scheduledFor).localeCompare(String(b.scheduledFor)); });
+      var byHour = {};
+      dayPosts.forEach(function (p) { var hr = jerusalemHour(p.scheduledFor); (byHour[hr] = byHour[hr] || []).push(p); });
+      var counts = { scheduled: 0, published: 0, failed: 0 };
+      dayPosts.forEach(function (p) { if (counts[p.status] !== undefined) counts[p.status]++; });
+      var isSat = state.cursor.getDay() === 6;
+      document.getElementById("sc-summary").innerHTML =
+        '<div class="row" style="gap:16px">' +
+          '<span class="kpi-sub">פוסטים ביום: <b>' + dayPosts.length + "</b></span>" +
+          '<span class="kpi-sub">מתוזמנים: <b style="color:var(--warn)">' + counts.scheduled + "</b></span>" +
+          '<span class="kpi-sub">פורסמו: <b style="color:var(--ok)">' + counts.published + "</b></span>" +
+          '<span class="kpi-sub">נכשלו: <b style="color:var(--err)">' + counts.failed + "</b></span>" +
+          (isSat ? '<span class="badge neutral">שבת — לא מפרסמים</span>' : "") +
+        "</div>";
+      var now = new Date(), isToday = ymd(now) === dstr, nowHr = jerusalemHour(now.toISOString());
+      var statusMap = { scheduled: "warn", published: "ok", failed: "err" };
+      var rows = "";
+      for (var hr = 0; hr < 24; hr++) {
+        var list = byHour[hr] || [];
+        var items = list.map(function (p) {
+          var plat = (p.platforms || [])[0] || "";
+          return '<button type="button" class="sc-dpost card" data-post-id="' + esc(p.id) + '">' +
+            (p.thumb ? '<img referrerpolicy="no-referrer" src="' + esc(p.thumb) + '" alt="">' : '<div class="sc-dthumb"></div>') +
+            '<div class="sc-dtext"><div><span class="badge ' + (statusMap[p.status] || "neutral") + '">' + esc(p.status || "—") + "</span> " +
+              "<b>" + esc(PLATFORM_ICON[plat] || plat) + "</b> · " + CC.fmtTimeHe(p.scheduledFor) + " " + engLine(p.id) + "</div>" +
+              '<div class="sc-dcontent">' + esc((p.content || "").slice(0, 110)) + "</div></div></button>";
+        }).join("");
+        rows += '<div class="sc-hour' + (isToday && hr === nowHr ? " sc-hour-now" : "") + (list.length ? "" : " sc-hour-empty") +
+          '" data-hour="' + hr + '">' +
+          '<div class="sc-hour-label">' + String(hr).padStart(2, "0") + ":00</div>" +
+          '<div class="sc-hour-body">' + items + "</div></div>";
+      }
+      document.getElementById("sc-body").innerHTML =
+        (dayPosts.length ? "" : '<div class="card" style="margin-bottom:10px">' +
+          (isSat ? "שבת — לא מפרסמים." : "יום פנוי — אין פוסטים מתוזמנים.") + "</div>") +
+        '<div class="sc-dayview">' + rows + "</div>";
+      document.querySelectorAll(".sc-dpost").forEach(function (el) {
+        el.addEventListener("click", function () {
+          var post = state.allPosts.filter(function (p) { return String(p.id) === String(el.dataset.postId); })[0];
+          if (post) openPostModal(post, load);
+        });
+      });
+      var target = document.querySelector(".sc-hour-now") ||
+        (dayPosts.length ? document.querySelector('.sc-hour[data-hour="' + jerusalemHour(dayPosts[0].scheduledFor) + '"]') : null);
+      if (target) setTimeout(function () { target.scrollIntoView({ behavior: "smooth", block: "center" }); }, 60);
     }
 
     function renderListView() {
@@ -246,8 +318,10 @@
       document.querySelectorAll(".sc-day").forEach(function (cell) {
         cell.addEventListener("click", function (e) {
           if (e.target.closest(".sc-chip")) return;
-          var dstr = cell.dataset.date;
-          if (!byDay[dstr] || !byDay[dstr].length) toast("יום פנוי", "");
+          var parts = cell.dataset.date.split("-");
+          state.cursor = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+          state.view = "day";
+          renderBody();
         });
       });
       document.querySelectorAll(".sc-chip").forEach(function (chip) {
@@ -273,6 +347,7 @@
         (p.thumb ? '<img referrerpolicy="no-referrer" src="' + esc(p.thumb) + '" style="width:100%;max-height:240px;object-fit:cover;border-radius:8px;margin:10px 0">' : "") +
         '<div style="margin:8px 0"><span class="badge ' + badgeCls + '">' + esc(p.status || "—") + "</span> " + platforms + "</div>" +
         '<div class="kpi-sub">מתוזמן ל: ' + CC.fmtDateHe(p.scheduledFor) + " " + CC.fmtTimeHe(p.scheduledFor) + "</div>" +
+        (state.eng[p.id] ? '<div style="margin-top:6px">' + engLine(p.id) + "</div>" : "") +
         '<div style="margin:10px 0;font-size:13px;white-space:pre-wrap">' + esc(p.content || "") + "</div>" +
         (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="btn small secondary">פתח פוסט ↗</a>' : "") +
         '<div class="row" style="margin-top:14px">' +

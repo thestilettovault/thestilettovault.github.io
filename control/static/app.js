@@ -796,6 +796,7 @@
       setBadge("overview", d.needs_you, "דברים שדורשים אותך");
       setBadge("schedule", d.failed_posts, "פוסטים שנכשלו");
       setBadge("automations", d.running_jobs, "תהליכים רצים");
+      if (window.CC_checkEngagement) window.CC_checkEngagement(d.engagement);
       lastOk = Date.now(); stamp();
     }).catch(function () {});
   }
@@ -821,4 +822,55 @@
         setTimeout(function () { window.close(); }, 800);
       });
   });
+})();
+
+
+// ---------- live engagement: toast + sound on new likes / followers ----------
+(function () {
+  var KEY = "cc_engagement_seen";
+  var ctx = null;
+  function beep(freqs) {
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      var t0 = ctx.currentTime;
+      freqs.forEach(function (f, i) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "sine"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t0 + i * 0.12);
+        g.gain.exponentialRampToValueAtTime(0.25, t0 + i * 0.12 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.12 + 0.25);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t0 + i * 0.12); o.stop(t0 + i * 0.12 + 0.3);
+      });
+    } catch (e) {}
+  }
+  // browsers block audio until the first user gesture — unlock on first click
+  document.addEventListener("click", function () {
+    try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); ctx.resume(); } catch (e) {}
+  }, { once: true });
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+
+  window.CC_checkEngagement = function (eng) {
+    if (!eng || eng.likes === undefined) return;
+    var prev = load();
+    var cur = { likes: eng.likes, followers_total: eng.followers_total, comments: eng.comments };
+    if (prev) {
+      var dl = cur.likes - prev.likes, df = cur.followers_total - prev.followers_total, dc = cur.comments - prev.comments;
+      if (df > 0) { window.CC.toast("👤 +" + df + " עוקבים חדשים (סה״כ " + cur.followers_total + ")", "ok"); beep([660, 880, 1175]); }
+      if (dl > 0) { window.CC.toast("❤️ +" + dl + " לייקים חדשים", "ok"); beep([880, 1320]); }
+      if (dc > 0) { window.CC.toast("💬 +" + dc + " תגובות חדשות", "ok"); beep([520, 780]); }
+    }
+    save(cur);
+    var el = document.getElementById("live-engage");
+    if (!el) {
+      var hdr = document.querySelector("header") || document.body;
+      el = document.createElement("span"); el.id = "live-engage"; el.className = "live-stamp";
+      hdr.appendChild(el);
+    }
+    var f = eng.followers || {};
+    el.textContent = "👤 " + (cur.followers_total || 0) + " (TT " + (f.tiktok ?? "—") + " · IG " + (f.instagram ?? "—") + ") · ❤️ " + cur.likes;
+  };
+  window.CC_testSound = function () { beep([880, 1320]); };
 })();
