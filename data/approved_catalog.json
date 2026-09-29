@@ -1944,14 +1944,16 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/stiletto-heels-3256809356402716/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-09-29T12:16:29.793847"
   },
   {
     "title": "Stiletto Heels",
     "url": "https://www.aliexpress.com/item/3256805663137456.html",
     "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256805663137456.html",
     "domain": "aliexpress.com",
-    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se86d076bcf764d08ac8c326032c585a3r.jpg",
+    "image_url": "https://thestilettovault.github.io/img/heels/stiletto-heels-3256805663137456/ig_image_1.jpg",
     "commission": "6.9%",
     "deal": {
       "sale": 43.77,
@@ -1964,6 +1966,18 @@
     "local_asset": "GELEM/2026-09-29/stiletto-heels-3256805663137456",
     "image_ok": true,
     "downloaded": "2026-09-29",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/stiletto-heels-3256805663137456/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/stiletto-heels-3256805663137456/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/stiletto-heels-3256805663137456/ig_image_1.jpg"
+    },
+    "variations_ready": true
   }
 ]
