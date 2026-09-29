@@ -1,0 +1,111 @@
+{
+  "brands": {
+    "nakedwolfe.com": {
+      "domain": "nakedwolfe.com",
+      "shopify": true,
+      "avg_price": 300.0,
+      "heel_count": 37,
+      "program": "SocialSnowball",
+      "network": false,
+      "commission": 10.0,
+      "signup_url": "https://nakedwolfe.com/pages/affiliate-program",
+      "requirements": "Who can join? Anyone who has made a purchase from nakedwolfe.",
+      "signup_link": "https://app.socialsnowball.io",
+      "status": "to_register",
+      "value_per_sale": 30.0,
+      "updated": "2026-09-29"
+    },
+    "publicdesire.com": {
+      "domain": "publicdesire.com",
+      "shopify": true,
+      "avg_price": 32.99,
+      "heel_count": 67,
+      "program": "Awin",
+      "network": true,
+      "commission": 8.0,
+      "signup_url": "https://www.publicdesire.com/pages/affiliates",
+      "signup_link": "https://ui.awin.com/merchant-profile/6343",
+      "status": "to_register",
+      "value_per_sale": 2.64,
+      "updated": "2026-09-29"
+    },
+    "simmi.com": {
+      "domain": "simmi.com",
+      "shopify": true,
+      "avg_price": 35.0,
+      "heel_count": 136,
+      "program": "Awin",
+      "network": true,
+      "signup_url": "https://www.simmi.com/pages/affiliate-programme",
+      "signup_link": "https://ui.awin.com/publisher-signup/en/awin/step1/",
+      "status": "to_register",
+      "value_per_sale": 2.8,
+      "updated": "2026-09-29"
+    },
+    "caperobbin.com": {
+      "domain": "caperobbin.com",
+      "shopify": true,
+      "avg_price": 44.9,
+      "heel_count": 170,
+      "program": "Direct",
+      "network": false,
+      "signup_url": "https://caperobbin.com/pages/affiliate-page",
+      "status": "to_register",
+      "value_per_sale": 3.59,
+      "updated": "2026-09-29"
+    },
+    "tukshoes.co.uk": {
+      "domain": "tukshoes.co.uk",
+      "shopify": true,
+      "avg_price": 59.97,
+      "heel_count": 33,
+      "program": "TradeTracker",
+      "network": true,
+      "signup_url": "https://www.tukshoes.co.uk/pages/affiliates",
+      "signup_link": "https://affiliate.tradetracker.com/portal/affiliateSignup?loc=en_GB",
+      "status": "to_register",
+      "value_per_sale": 4.8,
+      "updated": "2026-09-29"
+    },
+    "killstar.com": {
+      "domain": "killstar.com",
+      "shopify": true,
+      "avg_price": 15.0,
+      "heel_count": 5,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29"
+    },
+    "koifootwear.com": {
+      "domain": "koifootwear.com",
+      "shopify": true,
+      "avg_price": 75.0,
+      "heel_count": 119,
+      "network": false,
+      "status": "no_program",
+      "value_per_sale": 0.0,
+      "updated": "2026-09-29"
+    },
+    "darkinlove.com": {
+      "domain": "darkinlove.com",
+      "status": "active",
+      "program": "UpPromote",
+      "commission": 10.0,
+      "our_id": "ll249558.3UXnWnByxo",
+      "affiliate_ref": "?sca_ref=ll249558.3UXnWnByxo",
+      "shopify": true,
+      "note": "already wired in product_scout"
+    },
+    "gthic.com": {
+      "domain": "gthic.com",
+      "status": "active",
+      "program": "Direct",
+      "commission": 15.0,
+      "our_id": "826",
+      "affiliate_ref": "?aff=826",
+      "shopify": true,
+      "note": "jewelry+boots; already wired"
+    }
+  }
+}

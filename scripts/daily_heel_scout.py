@@ -29,6 +29,7 @@ SENT_LOG = DATA / "heel_sent_log.json"
 TAG = "thegothicvaul-20"
 NO_REPEAT_DAYS = 10
 BATCH = 5
+BRAND_MIN_PRICE = 100.0   # premium brand lane (registry-activated brands)
 
 # ── Curated Amazon HIGH-HEELS pool — MULTI-CATEGORY ──
 # The store is "high heels", not "gothic": gothic is ONE category among many.
@@ -124,11 +125,32 @@ def gather():
     HEEL_SHOPS = ("caperobbin.com", "www.publicdesire.com", "www.simmi.com",
                   "nakedwolfe.com", "www.killstar.com",
                   "www.darkinlove.com", "tukshoes.co.uk")
+    # Affiliate registry (heel_hunter.py): brands Ofer activated via "aff <domain> <link>"
+    # override the static our_id/ref, and new active brands join the scan. New
+    # registry brands are the premium lane → only heels >= BRAND_MIN_PRICE.
+    import heel_hunter
+    reg = heel_hunter.load_reg()["brands"]
+    known = {heel_hunter.norm(s["domain"]) for s in SHOPIFY_SOURCES}
+    sources = []
     for src in SHOPIFY_SOURCES:
         if src["domain"] not in HEEL_SHOPS:
             continue
+        e = reg.get(heel_hunter.norm(src["domain"]), {})
+        if e.get("status") == "active" and e.get("our_id"):
+            src = {**src, "affiliate": {**src["affiliate"], "our_id": e["our_id"]},
+                   "affiliate_ref": e.get("affiliate_ref") or src.get("affiliate_ref", "")}
+        sources.append(src)
+    premium = [s for s in heel_hunter.active_sources() if heel_hunter.norm(s["domain"]) not in known]
+    for src in sources + premium:
+        is_premium = src in premium
         try:
             for p in scout_shopify(src):   # scout_shopify already applies is_high_heel
+                if is_premium:
+                    try:
+                        if float(p.get("price") or 0) < BRAND_MIN_PRICE:
+                            continue
+                    except ValueError:
+                        continue
                 cands.append({
                     "url": p["url"], "title": p["title"], "image_url": p.get("image", ""),
                     "commission": p["affiliate"].get("commission", ""), "domain": p["domain"],
