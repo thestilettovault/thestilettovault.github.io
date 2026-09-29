@@ -15,6 +15,13 @@ def _no_real_scripts_path(monkeypatch):
     yield
 
 
+@pytest.fixture(autouse=True)
+def _reset_posts_cache(monkeypatch):
+    # posts_list() now caches for 60s — each test starts with a clean cache
+    monkeypatch.setattr(services, "_POSTS_CACHE", {"ts": 0.0, "data": None})
+    yield
+
+
 def test_overview_reads_dashboard_and_needs_you(tmp_path, monkeypatch):
     dash = tmp_path / "dashboard"
     dash.mkdir()
@@ -219,3 +226,145 @@ def test_approve_error_is_json_able(monkeypatch):
     monkeypatch.setitem(sys.modules, "taste_engine", fake_taste)
     out = services.approve("http://x", "Title")
     assert "error" in out
+
+
+def test_approve_with_pending_id_removes_pending(monkeypatch):
+    calls = []
+    fake_taste = types.SimpleNamespace(
+        record_approval=lambda *a, **k: calls.append(("approve", a, k)),
+        remove_pending=lambda pid: calls.append(("remove", pid)),
+    )
+    monkeypatch.setitem(sys.modules, "taste_engine", fake_taste)
+    out = services.approve("http://x", "Title", pending_id="abc123")
+    assert out == {"ok": True}
+    assert ("remove", "abc123") in calls
+
+
+def test_reject_with_pending_id_removes_pending(monkeypatch):
+    calls = []
+    fake_taste = types.SimpleNamespace(
+        record_rejection=lambda *a, **k: calls.append(("reject", a, k)),
+        remove_pending=lambda pid: calls.append(("remove", pid)),
+    )
+    monkeypatch.setitem(sys.modules, "taste_engine", fake_taste)
+    out = services.reject("http://x", "Title", pending_id="xyz")
+    assert out == {"ok": True}
+    assert ("remove", "xyz") in calls
+
+
+def test_undo_reject_removes_matching_entry(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    (data_dir / "rejected_profile.json").write_text(json.dumps({
+        "rejected": [
+            {"title": "Bag", "link": "https://example.com/a?x=1", "date": "2026-01-01"},
+            {"title": "Other", "link": "https://example.com/b", "date": "2026-01-02"},
+        ]
+    }), encoding="utf-8")
+    monkeypatch.setattr(services, "DATA", data_dir)
+
+    out = services.undo_reject("https://EXAMPLE.com/a")
+    assert out == {"ok": True, "removed": True}
+    remaining = json.loads((data_dir / "rejected_profile.json").read_text(encoding="utf-8"))
+    assert len(remaining["rejected"]) == 1
+    assert remaining["rejected"][0]["link"] == "https://example.com/b"
+
+
+def test_undo_reject_no_match_is_noop(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    (data_dir / "rejected_profile.json").write_text(json.dumps({"rejected": []}), encoding="utf-8")
+    monkeypatch.setattr(services, "DATA", data_dir)
+    out = services.undo_reject("https://nope.com/x")
+    assert out == {"ok": True, "removed": False}
+
+
+def test_products_merges_all_sources_by_stage(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    dash_dir = tmp_path / "dashboard"
+    data_dir.mkdir()
+    dash_dir.mkdir()
+
+    (data_dir / "pending_reviews.json").write_text(json.dumps({
+        "pid1": {"url": "https://a.com/p1", "title": "Pending One",
+                 "image_url": "", "commission": "5%", "domain": "a.com", "ts": "2026-01-01"},
+    }), encoding="utf-8")
+    (data_dir / "rejected_profile.json").write_text(json.dumps({
+        "rejected": [{"title": "Rejected One", "link": "https://b.com/p2", "date": "2026-01-01"}],
+    }), encoding="utf-8")
+    (data_dir / "approved_catalog.json").write_text(json.dumps([
+        {"title": "Approved One", "url": "https://c.com/p3", "aff_link": "https://c.com/p3",
+         "domain": "c.com", "image_url": "", "commission": "4%", "date": "2026-01-01"},
+    ]), encoding="utf-8")
+    (data_dir / "aliexpress_pool.json").write_text(json.dumps({
+        "products": [{"title": "Pool One", "url": "https://d.com/p4", "aff_link": "https://d.com/p4",
+                      "image_url": "", "price": 20, "deal": {}, "commission": "6%", "domain": "d.com"}],
+    }), encoding="utf-8")
+    (data_dir / "orchestrator_state.json").write_text("{}", encoding="utf-8")
+    (dash_dir / "data.json").write_text(json.dumps({"shoes": []}), encoding="utf-8")
+
+    monkeypatch.setattr(services, "DATA", data_dir)
+    monkeypatch.setattr(services, "DASH", dash_dir)
+
+    out = services.products()
+    assert isinstance(out, list)
+    stages = {row["title"]: row["stage"] for row in out}
+    assert stages["Pending One"] == "pending"
+    assert stages["Rejected One"] == "rejected"
+    assert stages["Approved One"] == "approved"
+    assert stages["Pool One"] == "pool"
+
+
+def test_products_dedupes_by_normalized_url(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    dash_dir = tmp_path / "dashboard"
+    data_dir.mkdir()
+    dash_dir.mkdir()
+
+    (data_dir / "pending_reviews.json").write_text("{}", encoding="utf-8")
+    (data_dir / "rejected_profile.json").write_text(json.dumps({"rejected": []}), encoding="utf-8")
+    (data_dir / "approved_catalog.json").write_text(json.dumps([
+        {"title": "Same Item", "url": "https://www.example.com/item?x=1", "aff_link": "",
+         "domain": "example.com", "image_url": "", "commission": "", "date": ""},
+    ]), encoding="utf-8")
+    (data_dir / "aliexpress_pool.json").write_text(json.dumps({
+        "products": [{"title": "Same Item", "url": "https://example.com/item/", "aff_link": "",
+                      "image_url": "", "price": 10, "deal": {}, "commission": "", "domain": ""}],
+    }), encoding="utf-8")
+    (data_dir / "orchestrator_state.json").write_text("{}", encoding="utf-8")
+    (dash_dir / "data.json").write_text(json.dumps({"shoes": []}), encoding="utf-8")
+
+    monkeypatch.setattr(services, "DATA", data_dir)
+    monkeypatch.setattr(services, "DASH", dash_dir)
+
+    out = services.products()
+    assert len(out) == 1
+    assert out[0]["stage"] == "approved"  # approved wins over pool for the same URL
+
+
+def test_posts_list_caches_within_ttl(monkeypatch):
+    calls = {"n": 0}
+
+    class FakeResp:
+        status_code = 200
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            calls["n"] += 1
+            return {"posts": []}
+
+    def fake_get(*a, **k):
+        return FakeResp()
+
+    fake_requests = types.SimpleNamespace(get=fake_get)
+    monkeypatch.setitem(sys.modules, "requests", fake_requests)
+    monkeypatch.setattr(services, "_zernio", lambda: ("https://api.zernio.com/v1", "K"))
+
+    services.posts_list()
+    services.posts_list()
+    assert calls["n"] == 1  # second call served from cache
+
+    services.posts_list(fresh=True)
+    assert calls["n"] == 2  # fresh=True bypasses the cache

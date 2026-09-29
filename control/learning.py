@@ -202,6 +202,101 @@ def summary(rows, min_shoes=3):
     return sentences
 
 
+def shoes_with_features(shoes=None, states=None, gelem_root=None, catalog=None):
+    """Join each shoe with its computed features + the product image/url from
+    the approved catalog (matched by aff_link, since that's what both sides share).
+    """
+    if shoes is None:
+        shoes, states = load_default()
+    if catalog is None:
+        catalog_path = os.path.join(ROOT, "data", "approved_catalog.json")
+        catalog = []
+        if os.path.exists(catalog_path):
+            with open(catalog_path, "r", encoding="utf-8") as f:
+                catalog = json.load(f)
+
+    by_aff = {}
+    for it in catalog or []:
+        key = it.get("aff_link") or it.get("url")
+        if key:
+            by_aff[key] = it
+
+    out = []
+    for shoe in shoes or []:
+        feats = features(shoe, states, gelem_root)
+        cat = by_aff.get(shoe.get("aff_link"), {})
+        clicks = shoe.get("clicks") or 0
+        try:
+            clicks = int(clicks)
+        except (TypeError, ValueError):
+            clicks = 0
+        sales = shoe.get("sales") or 0
+        try:
+            sales = int(sales)
+        except (TypeError, ValueError):
+            sales = 0
+        out.append({
+            "slug": shoe.get("slug"),
+            "title": shoe.get("name") or shoe.get("title"),
+            "image_url": cat.get("image_url", ""),
+            "url": cat.get("url", ""),
+            "aff_link": shoe.get("aff_link", ""),
+            "price": shoe.get("price"),
+            "clicks": clicks,
+            "sales": sales,
+            "status": shoe.get("status", ""),
+            "date": shoe.get("date", ""),
+            "features": feats,
+        })
+    return out
+
+
+def insights(shoes, states=None, gelem_root=None, min_shoes=3, min_multiplier=1.15):
+    """Plain-Hebrew, actionable insight cards: each value that beats the
+    overall average clicks-per-shoe by min_multiplier, phrased as advice,
+    with the slice (attribute/value) so the UI can apply it as a filter.
+    """
+    if not shoes:
+        return []
+    total_clicks = 0
+    count = 0
+    for s in shoes:
+        try:
+            c = int(s.get("clicks") or 0)
+        except (TypeError, ValueError):
+            c = 0
+        total_clicks += c
+        count += 1
+    overall_avg = (total_clicks / count) if count else 0
+    if overall_avg <= 0:
+        return []
+
+    rows = table(shoes, states, gelem_root)
+    cards = []
+    for r in rows:
+        if r["shoes"] < min_shoes:
+            continue
+        cps = r["clicks_per_shoe"]
+        mult = cps / overall_avg if overall_avg else 0
+        if mult < min_multiplier:
+            continue
+        label = ATTRIBUTE_LABELS.get(r["attribute"], r["attribute"])
+        value_label = vlabel(r["value"])
+        cards.append({
+            "attribute": r["attribute"],
+            "value": r["value"],
+            "multiplier": round(mult, 1),
+            "shoes": r["shoes"],
+            "text": (
+                f"💡 {label}: {value_label} מקבל פי {round(mult, 1)} קליקים "
+                f"מהממוצע — שווה לבחור יותר כאלה."
+            ),
+        })
+
+    cards.sort(key=lambda c: -c["multiplier"])
+    return cards[:5]
+
+
 def load_default():
     """Load shoes + orchestrator state from the real repo files."""
     data_path = os.path.join(ROOT, "dashboard", "data.json")

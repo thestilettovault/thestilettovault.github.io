@@ -326,6 +326,34 @@ pre.output {
 .toast.err { border-color: var(--err); color: #ffdada; }
 .toast.ok { border-color: var(--ok); }
 
+/* Calendar (schedule screen) */
+.sc-cal { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.sc-week-header { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--bg-elev-2); }
+.sc-day-label { padding: 8px; text-align: center; font-size: 12px; color: var(--text-dim); font-weight: 700; }
+.sc-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.sc-day {
+  min-height: 96px;
+  border-top: 1px solid var(--border);
+  border-inline-start: 1px solid var(--border);
+  padding: 6px;
+  font-size: 11px;
+  background: var(--bg-elev);
+  cursor: pointer;
+}
+.sc-grid .sc-day:nth-child(7n+1) { border-inline-start: none; }
+.sc-day-out { opacity: .35; }
+.sc-day-today { background: var(--accent-dim); }
+.sc-day-sat { background: #1b1b2b; }
+.sc-day-num { font-weight: 700; margin-bottom: 4px; }
+.sc-day-chips { display: flex; flex-direction: column; gap: 2px; }
+.sc-chip { font-size: 10px !important; cursor: pointer; }
+
+.sc-modal-backdrop {
+  position: fixed; inset: 0; background: #000a; z-index: 300;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.sc-modal { width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
+
 .spinner {
   display: inline-block;
   width: 14px;

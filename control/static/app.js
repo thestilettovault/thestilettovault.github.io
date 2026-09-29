@@ -124,14 +124,25 @@
     return rows;
   }
 
+  function statusBadgeHtml(status) {
+    var map = {
+      approved: ["ok", "אושר"], published: ["ok", "פורסם"],
+      pending: ["warn", "ממתין"], rejected: ["err", "נדחה"],
+      scheduled: ["warn", "מתוזמן"], failed: ["err", "נכשל"],
+      pool: ["neutral", "מאגר"], producing: ["warn", "בהפקה"], produced: ["ok", "הופק"]
+    };
+    var m = map[status] || ["neutral", status || "—"];
+    return '<span class="badge ' + m[0] + '">' + esc(m[1]) + "</span>";
+  }
+
   // ---------- routing ----------
+  // Screens overview/affiliates/tuning are defined below in this file.
+  // Screens products/schedule/research are registered by control/static/screens/*.js
+  // (loaded after this file, before boot()) via CC.registerRoute().
 
   var ROUTES = {
     overview: renderOverview,
-    products: renderProducts,
-    schedule: renderSchedule,
     affiliates: renderAffiliates,
-    research: renderResearch,
     tuning: renderTuning
   };
 
@@ -164,6 +175,24 @@
   }
 
   window.addEventListener("hashchange", route);
+
+  // Screens in control/static/screens/*.js register themselves here (loaded
+  // after this file, before CC.boot() runs) instead of editing ROUTES directly.
+  function registerRoute(name, fn) {
+    ROUTES[name] = fn;
+  }
+
+  // Shared helpers + state exposed for the screen modules.
+  window.CC = {
+    h: h, esc: esc, toast: toast, api: api, safeFetch: safeFetch,
+    relTime: relTime, fmtDateHe: fmtDateHe, fmtTimeHe: fmtTimeHe, money: money,
+    card: card, unavailableCard: unavailableCard, emptyState: emptyState,
+    skeletonBlock: skeletonBlock, statusBadgeHtml: statusBadgeHtml,
+    registerRoute: registerRoute,
+    content: function () { return content; },
+    route: function () { route(); },
+    boot: function () { loadHeader(); route(); }
+  };
 
   document.getElementById("hamburger").addEventListener("click", function () {
     document.getElementById("sidebar").classList.toggle("open");
@@ -277,255 +306,6 @@
     });
   }
 
-  // ================= SCREEN 2: PRODUCTS =================
-
-  var productsState = { filter: "all", search: "" };
-
-  function renderProducts() {
-    content.innerHTML =
-      '<h1 class="page-title">מוצרים</h1>' +
-      '<div class="card section">' +
-        '<div class="row">' +
-          '<input type="url" id="add-url" placeholder="הוסף מוצר מ-URL...">' +
-          '<button class="btn" id="add-url-btn" type="button" style="flex:0 0 auto">הוסף</button>' +
-        "</div>" +
-      "</div>" +
-      '<div class="row" style="margin-bottom:10px">' +
-        '<input type="search" id="p-search" placeholder="חיפוש מוצר..." style="flex:2">' +
-      "</div>" +
-      '<div class="chips" id="p-chips"></div>' +
-      '<div id="p-table">' + skeletonBlock(5) + "</div>";
-
-    var chipsEl = document.getElementById("p-chips");
-    var filters = [
-      ["all", "הכל"], ["pending", "ממתין"], ["approved", "אושר"],
-      ["rejected", "נדחה"], ["published", "פורסם"]
-    ];
-    filters.forEach(function (f) {
-      var chip = h('<button type="button" class="chip' + (f[0] === "all" ? " active" : "") + '">' + f[1] + "</button>");
-      chip.addEventListener("click", function () {
-        productsState.filter = f[0];
-        chipsEl.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
-        chip.classList.add("active");
-        renderProductsTable(allProducts);
-      });
-      chipsEl.appendChild(chip);
-    });
-
-    document.getElementById("p-search").addEventListener("input", function (e) {
-      productsState.search = e.target.value.toLowerCase();
-      renderProductsTable(allProducts);
-    });
-
-    document.getElementById("add-url-btn").addEventListener("click", function () {
-      var input = document.getElementById("add-url");
-      var url = input.value.trim();
-      if (!url) return;
-      var btn = document.getElementById("add-url-btn");
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>מוסיף...';
-      api("/products/add", { method: "POST", body: { url: url } })
-        .then(function () {
-          toast("המוצר נוסף", "ok");
-          input.value = "";
-          loadProducts();
-        })
-        .catch(function (err) { toast(err.message, "err"); })
-        .finally(function () {
-          btn.disabled = false;
-          btn.textContent = "הוסף";
-        });
-    });
-
-    var allProducts = [];
-    loadProducts();
-
-    function loadProducts() {
-      safeFetch(api("/products")).then(function (res) {
-        if (!res.ok) {
-          document.getElementById("p-table").innerHTML = unavailableCard("מוצרים");
-          toast(res.error, "err");
-          return;
-        }
-        allProducts = Array.isArray(res.data) ? res.data : (res.data.products || []);
-        renderProductsTable(allProducts);
-      });
-    }
-
-    function renderProductsTable(items) {
-      var filtered = items.filter(function (p) {
-        if (productsState.filter !== "all" && (p.status || "") !== productsState.filter) return false;
-        if (productsState.search) {
-          var hay = ((p.title || "") + " " + (p.domain || "")).toLowerCase();
-          if (hay.indexOf(productsState.search) === -1) return false;
-        }
-        return true;
-      });
-      var target = document.getElementById("p-table");
-      if (!filtered.length) {
-        target.innerHTML = emptyState("אין מוצרים תואמים");
-        return;
-      }
-      var rows = filtered.map(function (p) {
-        var statusBadge = statusBadgeHtml(p.status);
-        return '<tr>' +
-          '<td>' + (p.image_url
-            ? '<img class="thumb" loading="lazy" src="' + esc(p.image_url) + '" alt="">'
-            : '<div class="thumb"></div>') + "</td>" +
-          '<td>' + esc(p.title || "—") + "</td>" +
-          '<td>' + money(p.price) + "</td>" +
-          '<td>' + esc(p.domain || "—") + "</td>" +
-          '<td>' + statusBadge + "</td>" +
-          '<td>' + (p.clicks ?? 0) + "</td>" +
-          '<td>' + (p.sales ?? 0) + "</td>" +
-          '<td class="p-actions" data-idx="' + esc(p.url || "") + '">' +
-            '<button class="btn small p-approve" type="button">אשר</button> ' +
-            '<button class="btn small danger p-reject" type="button">דחה</button>' +
-          "</td></tr>";
-      }).join("");
-      target.innerHTML = '<div class="table-wrap"><table><thead><tr>' +
-        "<th></th><th>שם</th><th>מחיר</th><th>דומיין</th><th>סטטוס</th><th>קליקים</th><th>מכירות</th><th>פעולות</th>" +
-        "</tr></thead><tbody>" + rows + "</tbody></table></div>";
-
-      target.querySelectorAll(".p-approve").forEach(function (btn, i) {
-        btn.addEventListener("click", function () { actOnProduct(filtered[i], "approve", btn); });
-      });
-      target.querySelectorAll(".p-reject").forEach(function (btn, i) {
-        btn.addEventListener("click", function () { actOnProduct(filtered[i], "reject", btn); });
-      });
-    }
-
-    function actOnProduct(p, action, btn) {
-      btn.disabled = true;
-      var body = action === "approve"
-        ? { url: p.url, title: p.title, image_url: p.image_url, domain: p.domain, commission: p.commission }
-        : { url: p.url, title: p.title };
-      api("/products/" + action, { method: "POST", body: body })
-        .then(function () {
-          toast(action === "approve" ? "המוצר אושר" : "המוצר נדחה", "ok");
-          loadProducts();
-        })
-        .catch(function (err) { toast(err.message, "err"); btn.disabled = false; });
-    }
-  }
-
-  function statusBadgeHtml(status) {
-    var map = {
-      approved: ["ok", "אושר"], published: ["ok", "פורסם"],
-      pending: ["warn", "ממתין"], rejected: ["err", "נדחה"],
-      scheduled: ["warn", "מתוזמן"], failed: ["err", "נכשל"]
-    };
-    var m = map[status] || ["neutral", status || "—"];
-    return '<span class="badge ' + m[0] + '">' + esc(m[1]) + "</span>";
-  }
-
-  // ================= SCREEN 3: SCHEDULE =================
-
-  function renderSchedule() {
-    content.innerHTML =
-      '<h1 class="page-title">לוח פרסום</h1>' +
-      '<div class="section"><button class="btn" id="retry-all" type="button">נסה שוב לכל הכושלים</button></div>' +
-      '<div id="sched-list">' + skeletonBlock(6) + "</div>";
-
-    document.getElementById("retry-all").addEventListener("click", function () {
-      var btn = this;
-      btn.disabled = true;
-      api("/posts/retry", { method: "POST", body: {} })
-        .then(function () { toast("ניסיון חוזר הופעל", "ok"); load(); })
-        .catch(function (err) { toast(err.message, "err"); })
-        .finally(function () { btn.disabled = false; });
-    });
-
-    load();
-
-    function load() {
-      safeFetch(api("/posts")).then(function (res) {
-        var target = document.getElementById("sched-list");
-        if (!res.ok) {
-          target.innerHTML = unavailableCard("פוסטים");
-          toast(res.error, "err");
-          return;
-        }
-        var posts = Array.isArray(res.data) ? res.data : (res.data.posts || []);
-        if (!posts.length) {
-          target.innerHTML = emptyState("אין פוסטים מתוזמנים");
-          return;
-        }
-        var groups = {};
-        // upcoming first (soonest on top); published history hidden unless toggled
-        var showHist = window.__showHistory === true;
-        posts = posts.filter(function (p) { return showHist || p.status !== "published"; })
-          .sort(function (a, b) { return String(a.scheduledFor).localeCompare(String(b.scheduledFor)); });
-        if (showHist) posts.reverse();
-        posts.forEach(function (p) {
-          var day = fmtDateHe(p.scheduledFor);
-          (groups[day] = groups[day] || []).push(p);
-        });
-        var html = "";
-        Object.keys(groups).forEach(function (day) {
-          html += '<div class="section"><h2 class="section-title">' + esc(day) + "</h2>" +
-            '<div class="grid" style="grid-template-columns:1fr">' +
-            groups[day].map(postCardHtml).join("") + "</div></div>";
-        });
-        if (!document.body.contains(target)) return;   // user navigated away mid-load
-        html = '<p><button class="btn secondary small" id="toggle-history">' +
-          (showHist ? "הסתר פוסטים שפורסמו" : "הצג גם פוסטים שפורסמו") + "</button></p>" + html;
-        target.innerHTML = html;
-        var th = document.getElementById("toggle-history");
-        if (th) th.addEventListener("click", function () { window.__showHistory = !showHist; route(); });
-
-        target.querySelectorAll("[data-move-id]").forEach(function (btn) {
-          btn.addEventListener("click", function () { openMove(btn.dataset.moveId, btn); });
-        });
-        target.querySelectorAll("[data-cancel-id]").forEach(function (btn) {
-          btn.addEventListener("click", function () { cancelPost(btn.dataset.cancelId, btn); });
-        });
-      });
-    }
-
-    function postCardHtml(p) {
-      var statusMap = { scheduled: "warn", published: "ok", failed: "err" };
-      var badgeCls = statusMap[p.status] || "neutral";
-      var platforms = (p.platforms || []).map(function (pl) {
-        return '<span class="badge neutral">' + esc(pl) + "</span>";
-      }).join(" ");
-      return '<div class="card">' +
-        '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">' +
-          '<div><span class="badge ' + badgeCls + '">' + esc(p.status || "—") + "</span> " + platforms +
-          ' <span class="kpi-sub">' + fmtTimeHe(p.scheduledFor) + "</span></div>" +
-          (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="kpi-sub">צפה בפוסט ↗</a>' : "") +
-        "</div>" +
-        '<div style="margin:8px 0;font-size:13px">' + esc((p.content || "").slice(0, 180)) + "</div>" +
-        '<div class="row" style="align-items:center">' +
-          '<button class="btn small secondary" data-move-id="' + esc(p.id) + '" type="button">הזז</button>' +
-          '<button class="btn small danger" data-cancel-id="' + esc(p.id) + '" type="button">בטל</button>' +
-        "</div></div>";
-    }
-
-    function openMove(id, btn) {
-      var existing = btn.parentElement.querySelector(".move-input");
-      if (existing) { existing.remove(); return; }
-      var wrap = h('<span class="move-input" style="display:inline-flex;gap:6px;align-items:center;margin-inline-start:8px">' +
-        '<input type="datetime-local" style="width:auto"><button class="btn small" type="button">אישור</button></span>');
-      btn.parentElement.appendChild(wrap);
-      wrap.querySelector("button").addEventListener("click", function () {
-        var val = wrap.querySelector("input").value;
-        if (!val) return;
-        var iso = new Date(val).toISOString();
-        api("/posts/move", { method: "POST", body: { id: id, scheduledFor: iso } })
-          .then(function () { toast("הפוסט הוזז", "ok"); load(); })
-          .catch(function (err) { toast(err.message, "err"); });
-      });
-    }
-
-    function cancelPost(id, btn) {
-      if (!confirm("לבטל את הפוסט?")) return;
-      btn.disabled = true;
-      api("/posts/cancel", { method: "POST", body: { id: id } })
-        .then(function () { toast("הפוסט בוטל", "ok"); load(); })
-        .catch(function (err) { toast(err.message, "err"); btn.disabled = false; });
-    }
-  }
 
   // ================= SCREEN 4: AFFILIATES & HUB =================
 
@@ -706,71 +486,6 @@
     }
   }
 
-  // ================= SCREEN 5: RESEARCH =================
-
-  function renderResearch() {
-    content.innerHTML =
-      '<h1 class="page-title">מחקר ולמידה</h1>' +
-      '<div class="section" id="res-summary">' + skeletonBlock(3) + "</div>" +
-      '<div class="section"><h2 class="section-title">מה עבד (לפי מאפיין)</h2><div id="res-learning">' + skeletonBlock(4) + "</div></div>" +
-      '<div class="section"><h2 class="section-title">טרנדים</h2><div id="res-trends">' + skeletonBlock(4) + "</div></div>";
-
-    safeFetch(api("/learning")).then(function (res) {
-      var summaryEl = document.getElementById("res-summary");
-      var learnEl = document.getElementById("res-learning");
-      if (!res.ok) {
-        summaryEl.innerHTML = unavailableCard("סיכום שבועי");
-        learnEl.innerHTML = unavailableCard("ביצועים לפי מאפיין");
-        return;
-      }
-      var d = res.data || {};
-      var summary = d.summary || [];
-      summaryEl.innerHTML = summary.length
-        ? card("סיכום שבועי", "<ul style='margin:0;padding-inline-start:20px;font-size:13px;line-height:1.8'>" +
-            summary.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>")
-        : emptyState("אין עדיין נתוני סיכום");
-
-      var rows = d.rows || [];
-      if (!rows.length) {
-        learnEl.innerHTML = emptyState("אין עדיין נתוני למידה");
-      } else {
-        var byAttr = {};
-        rows.forEach(function (r) { (byAttr[r.attribute] = byAttr[r.attribute] || []).push(r); });
-        var maxClicks = Math.max.apply(null, rows.map(function (r) { return r.clicks_per_shoe || 0; }).concat([1]));
-        var html = "";
-        var ATTR_HE = { price_band: "טווח מחיר", program: "תוכנית שותפים", discount_band: "אחוז הנחה", has_video: "וידאו", weekday: "יום בשבוע" };
-        var VAL_HE = { "true": "עם וידאו", "false": "בלי וידאו", "none": "בלי הנחה", "unknown": "לא ידוע" };
-        Object.keys(byAttr).forEach(function (attr) {
-          html += '<div class="card" style="margin-bottom:12px"><h3>' + esc(ATTR_HE[attr] || attr) + "</h3>";
-          byAttr[attr].forEach(function (r) {
-            var pct = Math.round(((r.clicks_per_shoe || 0) / maxClicks) * 100);
-            html += '<div style="margin-bottom:8px;font-size:13px">' +
-              '<div style="display:flex;justify-content:space-between"><span>' + esc(VAL_HE[String(r.value).toLowerCase()] || r.value) + "</span>" +
-              '<span class="kpi-sub">' + (r.shoes ?? 0) + " פריטים · " + (r.clicks ?? 0) + " קליקים · " + (r.sales ?? 0) + " מכירות</span></div>" +
-              '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div></div>';
-          });
-          html += "</div>";
-        });
-        learnEl.innerHTML = html;
-      }
-    });
-
-    safeFetch(api("/trends")).then(function (res) {
-      var el = document.getElementById("res-trends");
-      if (!res.ok) { el.innerHTML = unavailableCard("טרנדים"); return; }
-      var items = Array.isArray(res.data) ? res.data : (res.data.trends || []);
-      if (!items.length) { el.innerHTML = emptyState("אין נתוני טרנד"); return; }
-      var rows = items.map(function (t) {
-        return "<tr><td>" + esc(t.date || "—") + "</td><td>" + esc(t.name || "—") + "</td>" +
-          "<td>" + (t.views ?? "—") + "</td><td>" + esc(t.domain || "—") + "</td>" +
-          "<td>" + statusBadgeHtml(t.affiliate_status) + "</td>" +
-          "<td>" + (t.url ? '<a href="' + esc(t.url) + '" target="_blank" rel="noopener">קישור ↗</a>' : "—") + "</td></tr>";
-      }).join("");
-      el.innerHTML = '<div class="table-wrap"><table><thead><tr>' +
-        "<th>תאריך</th><th>שם</th><th>צפיות</th><th>דומיין</th><th>סטטוס שותפות</th><th>קישור</th>" +
-        "</tr></thead><tbody>" + rows + "</tbody></table></div>";
-    });
-  }
 
   // ================= SCREEN 6: TUNING =================
 
@@ -932,8 +647,4 @@
     return walk(key, original);
   }
 
-  // ---------- boot ----------
-
-  loadHeader();
-  route();
 })();

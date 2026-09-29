@@ -14,6 +14,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
@@ -32,6 +33,28 @@ def _load_json(path, default):
             return json.load(f)
     except Exception:
         return default
+
+
+def _save_json(path, data):
+    Path(path).write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _normalize_url(url):
+    """Dedupe key: strip query/fragment, lowercase host, strip leading www."""
+    if not url:
+        return ""
+    try:
+        parts = urlsplit(str(url).strip())
+        host = parts.netloc.lower()
+        if host.startswith("www."):
+            host = host[4:]
+        path = (parts.path or "").rstrip("/")
+        scheme = (parts.scheme or "https").lower()
+        if not host:
+            return str(url).strip().lower()
+        return urlunsplit((scheme, host, path, "", ""))
+    except Exception:
+        return str(url).strip().lower()
 
 
 # ── overview ─────────────────────────────────────────────────────────
@@ -200,67 +223,169 @@ def health():
 
 # ── products ─────────────────────────────────────────────────────────
 
-def products():
+def _slugify_fallback(it):
+    import re as _re
+    m = _re.search(r"/products/([^/?#]+)", it.get("url", "") or "")
+    base = m.group(1) if m else it.get("title", "item")
+    return (_re.sub(r"[^a-z0-9]+", "-", (base or "item").lower()).strip("-")[:60]) or "item"
+
+
+def _slugify(it):
     try:
-        catalog = _load_json(DATA / "approved_catalog.json", [])
-        dash = _load_json(DASH / "data.json", {})
-        shoes = {s.get("slug"): s for s in (dash.get("shoes") or [])}
-        state = _load_json(DATA / "orchestrator_state.json", {})
+        import space_runner  # slugify, same rule as collect_metrics
+        return space_runner.slugify(it)
+    except Exception:
+        return _slugify_fallback(it)
 
-        try:
-            import space_runner  # slugify, same rule as collect_metrics
-            def slugify(it):
-                return space_runner.slugify(it)
-        except Exception:
-            import re as _re
-            def slugify(it):
-                m = _re.search(r"/products/([^/?#]+)", it.get("url", "") or "")
-                base = m.group(1) if m else it.get("title", "item")
-                return (_re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-")[:60]) or "item"
 
-        out = []
-        for it in catalog:
-            slug = slugify(it)
-            shoe = shoes.get(slug, {})
-            st = state.get(slug, {})
-            out.append({
-                "title": it.get("title"),
-                "url": it.get("url"),
-                "aff_link": it.get("aff_link"),
-                "domain": it.get("domain"),
-                "image_url": it.get("image_url"),
-                "commission": it.get("commission"),
-                "date": it.get("date"),
-                "posted": it.get("posted", False),
-                "posted_date": it.get("posted_date", ""),
-                "local_asset": it.get("local_asset"),
-                "slug": slug,
-                "clicks": shoe.get("clicks_per_shoe") or shoe.get("clicks", 0),
-                "sales": shoe.get("sales", 0),
-                "status": shoe.get("status", ""),
-                "orchestrator_status": st.get("status", ""),
-                "chosen": st.get("chosen", ""),
+def products():
+    """One list of every product BOLD has ever seen, deduped by URL, with a
+    normalized `stage`: pool → pending → approved → producing → produced/
+    scheduled/published, or rejected. Stages never overlap; the last writer
+    for a given key wins in the order below (approved-catalog state wins
+    over rejected — a reversal is handled by /undo_reject removing the
+    rejected entry, not by ordering here).
+    """
+    try:
+        pending = _load_json(DATA / "pending_reviews.json", {}) or {}
+        rejected = (_load_json(DATA / "rejected_profile.json", {}) or {}).get("rejected", []) or []
+        approved = _load_json(DATA / "approved_catalog.json", []) or []
+        pool = (_load_json(DATA / "aliexpress_pool.json", {}) or {}).get("products", []) or []
+        dash = _load_json(DASH / "data.json", {}) or {}
+        shoes_by_slug = {s.get("slug"): s for s in (dash.get("shoes") or [])}
+        state = _load_json(DATA / "orchestrator_state.json", {}) or {}
+
+        by_key = {}
+
+        def row_for(key):
+            row = by_key.get(key)
+            if row is None:
+                row = {
+                    "key": key, "title": "", "url": "", "aff_link": "",
+                    "image_url": "", "price": None, "deal": None,
+                    "domain": "", "commission": "", "stage": "pool",
+                    "clicks": 0, "sales": 0, "slug": "", "date": "",
+                    "pending_id": "",
+                }
+                by_key[key] = row
+            return row
+
+        def upsert(key, patch):
+            row = row_for(key)
+            for k, v in patch.items():
+                if v not in (None, "", []):
+                    row[k] = v
+            return row
+
+        for r in rejected:
+            url = r.get("link") or r.get("title") or ""
+            key = _normalize_url(url)
+            if not key:
+                continue
+            upsert(key, {"title": r.get("title", ""), "url": url,
+                          "date": r.get("date", ""), "stage": "rejected"})
+
+        for it in pool:
+            url = it.get("url", "")
+            key = _normalize_url(url)
+            if not key or by_key.get(key, {}).get("stage") == "rejected":
+                continue
+            upsert(key, {
+                "title": it.get("title"), "url": url, "aff_link": it.get("aff_link"),
+                "image_url": it.get("image_url"), "price": it.get("price"),
+                "deal": it.get("deal"), "commission": it.get("commission"),
+                "domain": it.get("domain"), "stage": "pool",
             })
-        return out
+
+        for pid, it in pending.items():
+            url = it.get("url", "")
+            key = _normalize_url(url)
+            if not key or by_key.get(key, {}).get("stage") == "rejected":
+                continue
+            upsert(key, {
+                "title": it.get("title"), "url": url, "image_url": it.get("image_url"),
+                "commission": it.get("commission"), "domain": it.get("domain"),
+                "date": it.get("ts", ""), "pending_id": pid, "stage": "pending",
+            })
+
+        for it in approved:
+            url = it.get("url", "") or it.get("aff_link", "")
+            key = _normalize_url(url)
+            if not key:
+                continue
+            slug = _slugify(it)
+            shoe = shoes_by_slug.get(slug, {})
+            st = state.get(slug, {})
+            stage = "approved"
+            shoe_status = shoe.get("status", "")
+            orch_status = st.get("status", "")
+            if orch_status in ("awaiting_choice", "chosen"):
+                stage = "producing"
+            elif shoe.get("on_site") or shoe_status == "published" or it.get("posted"):
+                stage = "published"
+            elif shoe_status == "scheduled":
+                stage = "scheduled"
+            elif shoe_status == "produced" or orch_status == "finalized":
+                stage = "produced"
+            row = upsert(key, {
+                "title": it.get("title"), "url": it.get("url"), "aff_link": it.get("aff_link"),
+                "image_url": it.get("image_url"), "commission": it.get("commission"),
+                "domain": it.get("domain"), "date": it.get("date"), "stage": stage,
+                "slug": slug,
+            })
+            row["clicks"] = shoe.get("clicks_per_shoe") or shoe.get("clicks") or row.get("clicks") or 0
+            row["sales"] = shoe.get("sales") or row.get("sales") or 0
+
+        return list(by_key.values())
     except Exception as e:
         return {"error": str(e)}
 
 
-def approve(url, title, image_url="", domain="", commission=""):
+def approve(url, title, image_url="", domain="", commission="", pending_id=""):
     try:
         import taste_engine
         taste_engine.record_approval(url, title, image_url=image_url,
                                       commission=commission, domain=domain)
+        if pending_id:
+            try:
+                taste_engine.remove_pending(pending_id)
+            except Exception:
+                pass
         return {"ok": True}
     except Exception as e:
         return {"error": str(e)}
 
 
-def reject(url, title):
+def reject(url, title, pending_id=""):
     try:
         import taste_engine
         taste_engine.record_rejection(url, title)
+        if pending_id:
+            try:
+                taste_engine.remove_pending(pending_id)
+            except Exception:
+                pass
         return {"ok": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def undo_reject(url):
+    """Remove a URL from rejected_profile.json so it falls back to whatever
+    other stage it still qualifies for (pool/pending/approved) on next read."""
+    try:
+        path = DATA / "rejected_profile.json"
+        data = _load_json(path, {"rejected": []}) or {"rejected": []}
+        key = _normalize_url(url)
+        items = data.get("rejected") or []
+        before = len(items)
+        items = [r for r in items
+                 if _normalize_url(r.get("link") or r.get("title") or "") != key]
+        data["rejected"] = items
+        if len(items) == before:
+            return {"ok": True, "removed": False}
+        _save_json(path, data)
+        return {"ok": True, "removed": True}
     except Exception as e:
         return {"error": str(e)}
 
@@ -299,7 +424,14 @@ def _zernio_headers():
     return {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 
 
-def posts_list():
+_POSTS_CACHE = {"ts": 0.0, "data": None}
+_POSTS_TTL = 60
+
+
+def posts_list(fresh=False):
+    now = time.time()
+    if not fresh and _POSTS_CACHE["data"] is not None and (now - _POSTS_CACHE["ts"]) < _POSTS_TTL:
+        return _POSTS_CACHE["data"]
     try:
         import requests
         url, _ = _zernio()
@@ -317,6 +449,7 @@ def posts_list():
                     break
             media = p.get("mediaItems") or []
             media_type = media[0].get("type") if media else ""
+            thumb = media[0].get("url") if media else ""
             out.append({
                 "id": p.get("_id"),
                 "content": (p.get("content") or "")[:120],
@@ -325,14 +458,24 @@ def posts_list():
                 "platforms": [pl.get("platform") for pl in platforms],
                 "url": live_url,
                 "media_type": media_type,
+                "thumb": thumb,
             })
+        _POSTS_CACHE["data"] = out
+        _POSTS_CACHE["ts"] = now
         return out
     except Exception as e:
         return {"error": str(e)}
 
 
-def posts():
-    return posts_list()
+def posts(fresh=False):
+    return posts_list(fresh=fresh)
+
+
+def posts_cache_age():
+    """Seconds since the posts cache was last filled, or None if never filled."""
+    if _POSTS_CACHE["data"] is None:
+        return None
+    return time.time() - _POSTS_CACHE["ts"]
 
 
 def move_post(post_id, scheduled_for):
@@ -417,7 +560,18 @@ def learning():
         gelem_root = str(ROOT / "GELEM")
         rows = _learning.table(shoes, states, gelem_root)
         summ = _learning.summary(rows)
-        return {"rows": rows, "summary": summ}
+        ins = _learning.insights(shoes, states, gelem_root)
+        return {"rows": rows, "summary": summ, "insights": ins, "shoes_count": len(shoes)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def learning_shoes():
+    try:
+        from . import learning as _learning
+        shoes, states = _learning.load_default()
+        gelem_root = str(ROOT / "GELEM")
+        return _learning.shoes_with_features(shoes, states, gelem_root)
     except Exception as e:
         return {"error": str(e)}
 

@@ -126,6 +126,7 @@ def api_products_approve():
         image_url=body.get("image_url", ""),
         domain=body.get("domain", ""),
         commission=body.get("commission", ""),
+        pending_id=body.get("pending_id", ""),
     )
     if isinstance(result, dict) and result.get("error"):
         return _err(result["error"], 500)
@@ -142,7 +143,22 @@ def api_products_reject():
     title = body.get("title")
     if not url or not title:
         return _err("url and title are required")
-    result = _services.reject(url, title)
+    result = _services.reject(url, title, pending_id=body.get("pending_id", ""))
+    if isinstance(result, dict) and result.get("error"):
+        return _err(result["error"], 500)
+    return jsonify(result)
+
+
+@app.route("/api/products/undo_reject", methods=["POST"])
+def api_products_undo_reject():
+    guard = _require_token()
+    if guard:
+        return guard
+    body = request.get_json(silent=True) or {}
+    url = body.get("url")
+    if not url:
+        return _err("url is required")
+    result = _services.undo_reject(url)
     if isinstance(result, dict) and result.get("error"):
         return _err(result["error"], 500)
     return jsonify(result)
@@ -167,10 +183,16 @@ def api_products_add():
 
 @app.route("/api/posts")
 def api_posts():
-    result = _services.posts()
+    fresh = request.args.get("fresh") == "1"
+    result = _services.posts(fresh=fresh)
     if isinstance(result, dict) and result.get("error"):
         return _err(result["error"], 502)
     return jsonify(result)
+
+
+@app.route("/api/posts/meta")
+def api_posts_meta():
+    return jsonify({"cached_seconds_ago": _services.posts_cache_age()})
 
 
 @app.route("/api/posts/move", methods=["POST"])
@@ -300,6 +322,14 @@ def api_trends():
 @app.route("/api/learning")
 def api_learning():
     result = _services.learning()
+    if isinstance(result, dict) and result.get("error"):
+        return _err(result["error"], 500)
+    return jsonify(result)
+
+
+@app.route("/api/learning/shoes")
+def api_learning_shoes():
+    result = _services.learning_shoes()
     if isinstance(result, dict) and result.get("error"):
         return _err(result["error"], 500)
     return jsonify(result)

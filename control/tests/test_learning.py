@@ -115,3 +115,50 @@ def test_load_default_reads_real_files():
     shoes, states = learning.load_default()
     assert isinstance(shoes, list)
     assert isinstance(states, dict)
+
+
+def test_shoes_with_features_joins_catalog_image_and_url():
+    shoes = [make_shoe(slug="shoe-1", aff_link="https://x.com/aff1", name="Cool Shoe")]
+    catalog = [{"aff_link": "https://x.com/aff1", "image_url": "https://img/1.jpg",
+                "url": "https://x.com/product1"}]
+    out = learning.shoes_with_features(shoes, {}, None, catalog=catalog)
+    assert len(out) == 1
+    row = out[0]
+    assert row["image_url"] == "https://img/1.jpg"
+    assert row["url"] == "https://x.com/product1"
+    assert row["features"]["price_band"] == "$20-50"
+
+
+def test_shoes_with_features_missing_catalog_entry_is_blank():
+    shoes = [make_shoe(slug="shoe-2", aff_link="https://nomatch.com/x")]
+    out = learning.shoes_with_features(shoes, {}, None, catalog=[])
+    assert out[0]["image_url"] == ""
+    assert out[0]["url"] == ""
+
+
+def test_insights_flags_above_average_slice():
+    # price band <$20 gets far more clicks per shoe than the rest -> should surface
+    shoes = (
+        [make_shoe(slug=f"cheap{i}", price="$15", clicks=10) for i in range(4)]
+        + [make_shoe(slug=f"mid{i}", price="$60", clicks=1) for i in range(4)]
+    )
+    cards = learning.insights(shoes, {}, None, min_shoes=3)
+    assert cards, "expected at least one insight card"
+    top = cards[0]
+    assert top["attribute"] == "price_band"
+    assert top["value"] == "<$20"
+    assert top["multiplier"] > 1.15
+    assert "פי" in top["text"]
+
+
+def test_insights_empty_when_no_clicks():
+    shoes = [make_shoe(slug="a", clicks=0), make_shoe(slug="b", clicks=None)]
+    assert learning.insights(shoes) == []
+
+
+def test_insights_respects_min_shoes():
+    # only one shoe in a rare band -> must not appear even if its rate is high
+    shoes = [make_shoe(slug=f"common{i}", price="$60", clicks=1) for i in range(5)]
+    shoes += [make_shoe(slug="rare", price="$150", clicks=50)]
+    cards = learning.insights(shoes, {}, None, min_shoes=3)
+    assert all(c["value"] != "$100+" for c in cards)

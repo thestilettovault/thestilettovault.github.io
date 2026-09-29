@@ -18,10 +18,12 @@ def _stub_services(monkeypatch):
     monkeypatch.setattr(control_app._services, "overview", lambda: {"ok": True})
     monkeypatch.setattr(control_app._services, "health", lambda: {"ok": True})
     monkeypatch.setattr(control_app._services, "products", lambda: [])
-    monkeypatch.setattr(control_app._services, "posts", lambda: [])
+    monkeypatch.setattr(control_app._services, "posts", lambda fresh=False: [])
+    monkeypatch.setattr(control_app._services, "posts_cache_age", lambda: None)
     monkeypatch.setattr(control_app._services, "registry", lambda: [])
     monkeypatch.setattr(control_app._services, "trends", lambda: [])
-    monkeypatch.setattr(control_app._services, "learning", lambda: {"rows": [], "summary": []})
+    monkeypatch.setattr(control_app._services, "learning", lambda: {"rows": [], "summary": [], "insights": []})
+    monkeypatch.setattr(control_app._services, "learning_shoes", lambda: [])
     yield
 
 
@@ -50,6 +52,31 @@ def test_post_with_correct_token_is_200(client, monkeypatch):
                      headers={"X-Token": control_app.CONTROL_TOKEN})
     assert r.status_code == 200
     assert r.get_json() == {"ok": True}
+
+
+def test_undo_reject_requires_token(client):
+    r = client.post("/api/products/undo_reject", json={"url": "u"})
+    assert r.status_code == 403
+
+
+def test_undo_reject_with_token(client, monkeypatch):
+    monkeypatch.setattr(control_app._services, "undo_reject", lambda url: {"ok": True, "removed": True})
+    r = client.post("/api/products/undo_reject", json={"url": "u"},
+                     headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 200
+    assert r.get_json() == {"ok": True, "removed": True}
+
+
+def test_learning_shoes_route(client):
+    r = client.get("/api/learning/shoes")
+    assert r.status_code == 200
+    assert r.get_json() == []
+
+
+def test_posts_meta_route(client):
+    r = client.get("/api/posts/meta")
+    assert r.status_code == 200
+    assert r.get_json() == {"cached_seconds_ago": None}
 
 
 def test_run_unknown_job_rejected(client):
