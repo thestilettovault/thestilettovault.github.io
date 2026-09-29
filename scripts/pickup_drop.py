@@ -317,8 +317,11 @@ def wait_for_live(item, slug, timeout=300, every=15):
 
 def git_push(slug):
     out_dir = IMG_DIR / slug
+    # the site card uses the flat cover img/heels/<slug>.<ext> (NOT inside the folder) —
+    # it was never added, so every drop went live with an empty card (fixed 2026-09-29)
+    covers = [str(p) for p in IMG_DIR.glob(f"{slug}.*") if p.is_file()]
     cmds = [
-        ["git", "-C", str(ROOT), "add", "-f", str(out_dir), "data/approved_catalog.json", "index.html"],
+        ["git", "-C", str(ROOT), "add", "-f", str(out_dir), *covers, "data/approved_catalog.json", "index.html"],
         ["git", "-C", str(ROOT), "commit", "-m", f"drop: {slug} assets live"],
         ["git", "-C", str(ROOT), "push", "origin", "main"],
     ]
