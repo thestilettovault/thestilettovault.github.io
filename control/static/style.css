@@ -408,3 +408,20 @@ pre.output {
 .sc-dcontent { color:var(--text-dim); font-size:12px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 .sc-eng { font-size:11px; color: var(--text-dim); margin-inline-start:6px; white-space:nowrap; }
+
+.live-engage { display:inline-flex; gap:12px; margin-inline-start:12px; font-size:12px; color: var(--text-dim); }
+.le-item { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+.le-item svg { width:15px; height:15px; }
+#eng-toasts { position:fixed; bottom:16px; left:16px; display:flex; flex-direction:column; gap:8px; z-index:9999; }
+.eng-toast { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px; background:#17161b;
+  color: var(--text); font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.5); border:1px solid #2a2930;
+  animation: engIn .35s ease; transition: opacity .4s, transform .4s; }
+.eng-toast.out { opacity:0; transform: translateY(8px); }
+.eng-tiktok { border-color:#25F4EE55; } .eng-instagram { border-color:#d6249f66; } .eng-pinterest { border-color:#E6002366; }
+.eng-ico svg { width:22px; height:22px; display:block; }
+@keyframes engIn { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform:none; } }
+@media (max-width: 820px) { .live-engage { display:none; } }
+
+.plat-ico { display:inline-flex; vertical-align:middle; }
+.plat-ico svg { width:16px; height:16px; }
+.sc-dpost .plat-ico svg { width:18px; height:18px; }

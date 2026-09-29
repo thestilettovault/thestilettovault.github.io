@@ -64,10 +64,17 @@ def _fetch():
         row["updated"] = a.get("lastUpdated")
         for key in {p.get("latePostId"), p.get("_id")} - {None}:
             per_post[key] = row
+    try:
+        pin = _pinterest()
+    except Exception as ex:
+        pin = {"connected": False, "error": str(ex)[:120]}
     followers = {a.get("platform"): {"count": a.get("followersCount"),
                                     "updated": a.get("followersLastUpdated"),
                                     "username": a.get("username")} for a in accounts}
+    if pin.get("connected"):
+        followers["pinterest"] = {"count": pin.get("followers"), "updated": None, "username": pin.get("username")}
     return {
+        "pinterest": pin,
         "totals": totals,
         "by_platform": by_platform,
         "followers": followers,
@@ -76,6 +83,37 @@ def _fetch():
         "per_post": per_post,
         "fetched_at": time.time(),
     }
+
+
+def _pinterest():
+    """Pinterest v5 (read-only; the app is on Trial access → reading works, publishing doesn't)."""
+    import datetime
+    import os
+    import requests
+    from dotenv import load_dotenv
+    load_dotenv(SCRIPTS / ".env")
+    tok = os.getenv("PINTEREST_ACCESS_TOKEN")
+    if not tok:
+        return {"connected": False, "error": "PINTEREST_ACCESS_TOKEN missing"}
+    h = {"Authorization": "Bearer " + tok}
+    u = requests.get("https://api.pinterest.com/v5/user_account", headers=h, timeout=20)
+    if not u.ok:
+        return {"connected": False, "error": f"user_account {u.status_code}"}
+    u = u.json()
+    end = datetime.date.today()
+    start = end - datetime.timedelta(days=29)
+    m = {}
+    a = requests.get("https://api.pinterest.com/v5/user_account/analytics", headers=h, timeout=20,
+                     params={"start_date": start.isoformat(), "end_date": end.isoformat(),
+                             "metric_types": "IMPRESSION,SAVE,PIN_CLICK,OUTBOUND_CLICK"})
+    if a.ok:
+        m = ((a.json().get("all") or {}).get("summary_metrics")) or {}
+    return {"connected": True, "username": u.get("username"),
+            "followers": u.get("follower_count"), "pins": u.get("pin_count"),
+            "monthly_views": u.get("monthly_views"), "boards": u.get("board_count"),
+            "impressions_30d": m.get("IMPRESSION", 0), "saves_30d": m.get("SAVE", 0),
+            "pin_clicks_30d": m.get("PIN_CLICK", 0), "outbound_clicks_30d": m.get("OUTBOUND_CLICK", 0),
+            "publishing": "blocked (Trial access)"}
 
 
 def get(fresh=False):
@@ -98,11 +136,24 @@ def get(fresh=False):
     return d
 
 
-def summary():
-    """Small counters for the 15s header poll (no per-post payload)."""
-    d = get()
+def summary(fresh=False):
+    """Small per-channel counters for the header poll (no per-post payload)."""
+    d = get(fresh=fresh)
     if d.get("error"):
         return {}
+    bp = d.get("by_platform", {})
+    pin = d.get("pinterest") or {}
+    ch = {}
+    for plat in ("tiktok", "instagram"):
+        b = bp.get(plat, {})
+        ch[plat] = {"followers": (d["followers"].get(plat) or {}).get("count"),
+                    "likes": b.get("likes", 0), "comments": b.get("comments", 0),
+                    "views": b.get("views", 0), "shares": b.get("shares", 0)}
+    ch["pinterest"] = {"followers": pin.get("followers"), "saves": pin.get("saves_30d", 0),
+                       "outbound": pin.get("outbound_clicks_30d", 0), "impressions": pin.get("impressions_30d", 0),
+                       "connected": bool(pin.get("connected"))}
     return {"likes": d["totals"]["likes"], "views": d["totals"]["views"],
-            "comments": d["totals"]["comments"], "followers_total": d["followers_total"],
-            "followers": {k: v.get("count") for k, v in d["followers"].items()}}
+            "comments": d["totals"]["comments"],
+            "followers_total": sum((c.get("followers") or 0) for c in ch.values()),
+            "followers": {k: c.get("followers") for k, c in ch.items()},
+            "channels": ch, "fetched_at": d.get("fetched_at")}

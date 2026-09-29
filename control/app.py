@@ -458,7 +458,7 @@ def api_events_summary():
         running_jobs = len(jl.get("active", []))
         last_metrics_time = ov.get("generated_at") if isinstance(ov, dict) else None
         try:
-            eng = {} if app.config.get("TESTING") else _engagement.summary()   # tests never hit Zernio
+            eng = {} if app.config.get("TESTING") else _engagement.summary(fresh=request.args.get("fresh") == "1")   # tests never hit Zernio
         except Exception:
             eng = {}
         return jsonify({

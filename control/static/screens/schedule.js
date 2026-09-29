@@ -6,7 +6,11 @@
   var emptyState = CC.emptyState, skeletonBlock = CC.skeletonBlock, unavailableCard = CC.unavailableCard;
 
   var HE_DAYS = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"]; // Sunday-first, matches Date.getDay()
-  var PLATFORM_ICON = { tiktok: "🎵 TT", instagram: "📷 IG" };
+  var PLATFORM_ICON = { tiktok: "TikTok", instagram: "Instagram", pinterest: "Pinterest" };
+  function platIcon(plat) {   // brand SVG from app.js (trusted constant), text fallback
+    var svg = (window.CC_ICON || {})[plat];
+    return svg ? '<span class="plat-ico" title="' + esc(PLATFORM_ICON[plat] || plat) + '">' + svg + "</span>" : esc(plat);
+  }
 
   var state = { cursor: new Date(), view: "day", allPosts: [], cacheAge: null, eng: {} };
 
@@ -153,7 +157,7 @@
           return '<button type="button" class="sc-dpost card" data-post-id="' + esc(p.id) + '">' +
             (p.thumb ? '<img referrerpolicy="no-referrer" src="' + esc(p.thumb) + '" alt="">' : '<div class="sc-dthumb"></div>') +
             '<div class="sc-dtext"><div><span class="badge ' + (statusMap[p.status] || "neutral") + '">' + esc(p.status || "—") + "</span> " +
-              "<b>" + esc(PLATFORM_ICON[plat] || plat) + "</b> · " + CC.fmtTimeHe(p.scheduledFor) + " " + engLine(p.id) + "</div>" +
+              platIcon(plat) + " " + CC.fmtTimeHe(p.scheduledFor) + " " + engLine(p.id) + "</div>" +
               '<div class="sc-dcontent">' + esc((p.content || "").slice(0, 110)) + "</div></div></button>";
         }).join("");
         rows += '<div class="sc-hour' + (isToday && hr === nowHr ? " sc-hour-now" : "") + (list.length ? "" : " sc-hour-empty") +
@@ -292,7 +296,7 @@
           return '<button type="button" class="badge ' + cls + ' sc-chip" data-post-id="' + esc(p.id) +
             '" style="display:flex;align-items:center;gap:4px;width:100%;margin-bottom:3px;text-align:right;border:none">' +
             (p.thumb ? '<img referrerpolicy="no-referrer" src="' + esc(p.thumb) + '" style="width:16px;height:16px;object-fit:cover;border-radius:3px" alt="">' : "") +
-            "<span>" + esc(icon) + " " + CC.fmtTimeHe(p.scheduledFor) + "</span></button>";
+            platIcon(plat) + "<span>" + CC.fmtTimeHe(p.scheduledFor) + "</span></button>";
         }).join("");
         var extra = dayPosts.length > 4 ? '<div class="kpi-sub">+' + (dayPosts.length - 4) + " נוספים</div>" : "";
         cells += '<div class="sc-day' + (inMonth ? "" : " sc-day-out") + (isToday ? " sc-day-today" : "") +

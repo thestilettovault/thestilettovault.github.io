@@ -825,9 +825,16 @@
 })();
 
 
-// ---------- live engagement: toast + sound on new likes / followers ----------
+// ---------- live engagement per channel: icon toast + sound ----------
 (function () {
-  var KEY = "cc_engagement_seen";
+  var KEY = "cc_engagement_seen_v2";
+  var ICON = {
+    tiktok: '<svg viewBox="0 0 24 24" width="18" height="18" aria-label="TikTok"><path fill="#25F4EE" d="M9.4 9.6v-.9a6.6 6.6 0 0 0-.9-.1 6.8 6.8 0 0 0-3.8 12.4 6.8 6.8 0 0 1 4.7-11.4z"/><path fill="#25F4EE" d="M9.6 19.8a3.1 3.1 0 0 0 3.1-3V2.2h2.7a5.2 5.2 0 0 1-.1-1H11.6v14.6a3.1 3.1 0 1 1-2.1-2.9V9.6a6.8 6.8 0 0 0-4.7 11.4 6.8 6.8 0 0 0 4.8-1.2z"/><path fill="#FE2C55" d="M20.3 7.2V6.3a5.2 5.2 0 0 1-2.8-.8 5.2 5.2 0 0 0 2.8 1.7zM17.5 5.5a5.2 5.2 0 0 1-1.3-3.4h-1a5.2 5.2 0 0 0 2.3 3.4z"/><path fill="#fff" d="M8.5 13a3.1 3.1 0 0 0-1.4 5.8 3.1 3.1 0 0 1 3.6-5.1V9.9a6.6 6.6 0 0 0-.9-.1h-.4v3.3a3.1 3.1 0 0 0-.9 0zM20.3 7.2a5.2 5.2 0 0 1-2.8-1.7 5.2 5.2 0 0 1-2.3-3.4h-2.5v14.6a3.1 3.1 0 0 1-5.6 2.1 3.1 3.1 0 0 1 1.4-5.8 3.1 3.1 0 0 1 .9.1V9.8a6.8 6.8 0 0 0-4.8 11.5 6.8 6.8 0 0 0 11.6-4.8V9.1a8.8 8.8 0 0 0 5.1 1.6V7.2z"/></svg>',
+    instagram: '<svg viewBox="0 0 24 24" width="18" height="18" aria-label="Instagram"><defs><radialGradient id="igg" cx="30%" cy="107%" r="150%"><stop offset="0" stop-color="#fdf497"/><stop offset=".05" stop-color="#fdf497"/><stop offset=".45" stop-color="#fd5949"/><stop offset=".6" stop-color="#d6249f"/><stop offset=".9" stop-color="#285AEB"/></radialGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igg)"/><rect x="6.2" y="6.2" width="11.6" height="11.6" rx="5.8" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.2" fill="#fff"/></svg>',
+    pinterest: '<svg viewBox="0 0 24 24" width="18" height="18" aria-label="Pinterest"><circle cx="12" cy="12" r="11" fill="#E60023"/><path fill="#fff" d="M12.3 5.2c-3.9 0-5.9 2.8-5.9 5.1 0 1.4.5 2.7 1.7 3.1.2.1.4 0 .4-.2l.2-.7c.1-.2 0-.3-.1-.5-.3-.4-.5-.9-.5-1.6 0-2.1 1.6-3.9 4.1-3.9 2.2 0 3.5 1.4 3.5 3.2 0 2.4-1.1 4.5-2.7 4.5-.9 0-1.5-.7-1.3-1.6.2-1.1.7-2.2.7-3 0-.7-.4-1.3-1.2-1.3-.9 0-1.7 1-1.7 2.3 0 .8.3 1.4.3 1.4l-1.1 4.6c-.3 1.4 0 3.1 0 3.3 0 .1.1.1.2 0 .1-.1 1.2-1.5 1.6-2.9l.6-2.4c.3.6 1.2 1.1 2.2 1.1 2.9 0 4.8-2.6 4.8-6.1 0-2.7-2.3-5.2-5.7-5.2z"/></svg>'
+  };
+  var NAME = { tiktok: "TikTok", instagram: "Instagram", pinterest: "Pinterest" };
+  window.CC_ICON = ICON;
   var ctx = null;
   function beep(freqs) {
     try {
@@ -844,33 +851,66 @@
       });
     } catch (e) {}
   }
-  // browsers block audio until the first user gesture — unlock on first click
   document.addEventListener("click", function () {
     try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); ctx.resume(); } catch (e) {}
   }, { once: true });
 
+  function iconToast(plat, text) {
+    var stack = document.getElementById("eng-toasts");
+    if (!stack) { stack = document.createElement("div"); stack.id = "eng-toasts"; document.body.appendChild(stack); }
+    var el = document.createElement("div");
+    el.className = "eng-toast eng-" + plat;
+    el.innerHTML = '<span class="eng-ico">' + (ICON[plat] || "") + "</span><span><b>" + NAME[plat] + "</b> · " + text + "</span>";
+    stack.appendChild(el);
+    setTimeout(function () { el.classList.add("out"); setTimeout(function () { el.remove(); }, 400); }, 9000);
+  }
+
   function load() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
   function save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+  function n(v) { return Number(v || 0); }
 
   window.CC_checkEngagement = function (eng) {
-    if (!eng || eng.likes === undefined) return;
-    var prev = load();
-    var cur = { likes: eng.likes, followers_total: eng.followers_total, comments: eng.comments };
+    if (!eng || !eng.channels) return;
+    var prev = load(), cur = eng.channels, any = false;
     if (prev) {
-      var dl = cur.likes - prev.likes, df = cur.followers_total - prev.followers_total, dc = cur.comments - prev.comments;
-      if (df > 0) { window.CC.toast("👤 +" + df + " עוקבים חדשים (סה״כ " + cur.followers_total + ")", "ok"); beep([660, 880, 1175]); }
-      if (dl > 0) { window.CC.toast("❤️ +" + dl + " לייקים חדשים", "ok"); beep([880, 1320]); }
-      if (dc > 0) { window.CC.toast("💬 +" + dc + " תגובות חדשות", "ok"); beep([520, 780]); }
+      Object.keys(cur).forEach(function (plat) {
+        var c = cur[plat] || {}, p = prev[plat] || {};
+        var df = n(c.followers) - n(p.followers);
+        if (df > 0) { iconToast(plat, "👤 +" + df + " עוקבים חדשים (סה״כ " + c.followers + ")"); beep([660, 880, 1175]); any = true; }
+        if (plat === "pinterest") {
+          var ds = n(c.saves) - n(p.saves), doc = n(c.outbound) - n(p.outbound);
+          if (ds > 0) { iconToast(plat, "📌 +" + ds + " שמירות"); beep([880, 1320]); any = true; }
+          if (doc > 0) { iconToast(plat, "🔗 +" + doc + " קליקים לאתר"); beep([988, 1480]); any = true; }
+        } else {
+          var dl = n(c.likes) - n(p.likes), dc = n(c.comments) - n(p.comments), dsh = n(c.shares) - n(p.shares);
+          if (dl > 0) { iconToast(plat, "❤️ +" + dl + " לייקים"); beep([880, 1320]); any = true; }
+          if (dc > 0) { iconToast(plat, "💬 +" + dc + " תגובות"); beep([520, 780]); any = true; }
+          if (dsh > 0) { iconToast(plat, "↗ +" + dsh + " שיתופים"); beep([740, 990]); any = true; }
+        }
+      });
     }
     save(cur);
     var el = document.getElementById("live-engage");
     if (!el) {
       var hdr = document.querySelector("header") || document.body;
-      el = document.createElement("span"); el.id = "live-engage"; el.className = "live-stamp";
+      el = document.createElement("span"); el.id = "live-engage"; el.className = "live-engage";
       hdr.appendChild(el);
     }
-    var f = eng.followers || {};
-    el.textContent = "👤 " + (cur.followers_total || 0) + " (TT " + (f.tiktok ?? "—") + " · IG " + (f.instagram ?? "—") + ") · ❤️ " + cur.likes;
+    el.innerHTML = ["tiktok", "instagram", "pinterest"].map(function (plat) {
+      var c = cur[plat] || {};
+      var extra = plat === "pinterest" ? " · 🔗 " + n(c.outbound) : " · ❤️ " + n(c.likes);
+      return '<span class="le-item" title="' + NAME[plat] + '">' + ICON[plat] + " " + (c.followers ?? "—") + extra + "</span>";
+    }).join("");
+    return any;
   };
   window.CC_testSound = function () { beep([880, 1320]); };
+
+  // on open: pull FRESH numbers immediately so anything that happened while the dashboard
+  // was closed shows up right away (diff vs. the last totals saved in this browser); then hourly.
+  function pullFresh() {
+    fetch("/api/events/summary?fresh=1").then(function (r) { return r.json(); })
+      .then(function (d) { window.CC_checkEngagement(d.engagement); }).catch(function () {});
+  }
+  pullFresh();
+  setInterval(pullFresh, 60 * 60 * 1000);
 })();
