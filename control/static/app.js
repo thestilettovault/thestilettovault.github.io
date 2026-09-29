@@ -191,12 +191,108 @@
     registerRoute: registerRoute,
     content: function () { return content; },
     route: function () { route(); },
-    boot: function () { loadHeader(); route(); }
+    boot: function () { loadHeader(); route(); scheduleAutoRefresh(); pollJobsIndicator(); },
+    startJobsPolling: function () { startJobsPolling(); }
   };
 
   document.getElementById("hamburger").addEventListener("click", function () {
     document.getElementById("sidebar").classList.toggle("open");
   });
+
+  // ---------- auto-refresh + jobs indicator (Section D) ----------
+
+  var _knownJobIds = {};   // jobId -> true, jobs we've already toasted for when finished
+  var _autoTimers = {};
+
+  function clearAutoTimers() {
+    Object.keys(_autoTimers).forEach(function (k) { clearInterval(_autoTimers[k]); });
+    _autoTimers = {};
+  }
+
+  function scheduleAutoRefresh() {
+    clearAutoTimers();
+    if (document.visibilityState === "hidden") return;
+    var r = currentRoute();
+    if (r === "overview") {
+      _autoTimers.overview = setInterval(function () {
+        if (document.visibilityState !== "hidden" && currentRoute() === "overview") renderOverview();
+      }, 30000);
+    } else if (r === "schedule" && ROUTES.schedule) {
+      _autoTimers.schedule = setInterval(function () {
+        if (document.visibilityState !== "hidden" && currentRoute() === "schedule") ROUTES.schedule();
+      }, 60000);
+    }
+  }
+
+  window.addEventListener("hashchange", scheduleAutoRefresh);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") { clearAutoTimers(); if (_jobsPollTimer) { clearInterval(_jobsPollTimer); _jobsPollTimer = null; } }
+    else { scheduleAutoRefresh(); pollJobsIndicator(); startJobsPolling(); }
+  });
+
+  var _jobsPollTimer = null;
+
+  function renderJobsDrawer(jobs) {
+    var drawer = document.getElementById("jobs-drawer");
+    var all = (jobs.active || []).concat(jobs.recent || []);
+    if (!all.length) { drawer.innerHTML = emptyState("אין עבודות"); return; }
+    drawer.innerHTML = all.slice(0, 15).map(function (j) {
+      var statusMap = { queued: "ממתין", running: "רץ", done: "הושלם", failed: "נכשל", cancelled: "בוטל" };
+      return '<div class="job-row"><strong>' + esc(j.name) + "</strong> — " +
+        esc(statusMap[j.status] || j.status) +
+        (j.status === "running" ? ' <span class="spinner"></span>' : "") +
+        '</div>';
+    }).join("");
+  }
+
+  function pollJobsIndicator() {
+    safeFetch(api("/jobs")).then(function (res) {
+      if (!res.ok) return;
+      var jobs = res.data || { active: [], recent: [] };
+      var active = jobs.active || [];
+      var countEl = document.getElementById("jobs-count");
+      var spinEl = document.getElementById("jobs-spinner");
+      if (active.length) {
+        countEl.textContent = String(active.length);
+        spinEl.style.display = "inline-block";
+      } else {
+        countEl.textContent = "⚡";
+        spinEl.style.display = "none";
+      }
+      renderJobsDrawer(jobs);
+
+      (jobs.recent || []).forEach(function (j) {
+        if (j.status === "queued" || j.status === "running") return;
+        if (_knownJobIds[j.id]) return;
+        _knownJobIds[j.id] = true;
+        if (j.status === "done") toast(j.name + " הושלם בהצלחה", "ok");
+        else if (j.status === "failed") toast(j.name + " נכשל", "err");
+      });
+      active.forEach(function (j) { _knownJobIds[j.id] = _knownJobIds[j.id] || false; });
+
+      if (active.length && !_jobsPollTimer) startJobsPolling();
+      if (!active.length && _jobsPollTimer) { clearInterval(_jobsPollTimer); _jobsPollTimer = null; }
+    });
+  }
+
+  function startJobsPolling() {
+    if (_jobsPollTimer) return;
+    _jobsPollTimer = setInterval(function () {
+      if (document.visibilityState === "hidden") return;
+      pollJobsIndicator();
+    }, 1500);
+  }
+
+  document.getElementById("jobs-indicator").addEventListener("click", function () {
+    var drawer = document.getElementById("jobs-drawer");
+    drawer.style.display = drawer.style.display === "none" ? "block" : "none";
+    if (drawer.style.display === "block") pollJobsIndicator();
+  });
+
+  // slower background poll always running (catches jobs started elsewhere)
+  setInterval(function () {
+    if (document.visibilityState !== "hidden") pollJobsIndicator();
+  }, 5000);
 
   // ---------- header (niche identity + bot status) ----------
 
@@ -262,12 +358,25 @@
       } else {
         var list = document.createElement("ul");
         list.className = "needs-list";
+        var kindToWorkflow = {
+          awaiting_choice: { wf: "resend_choices", label: "שלח שוב לטלגרם" },
+          post_failed: { wf: "retry_failed", label: "נסה שוב" },
+          affiliate_carded: null
+        };
         needs.forEach(function (item) {
+          var wfAction = kindToWorkflow[item.kind];
+          var btnLabel = wfAction ? wfAction.label : "פתח";
           var li = h('<li class="needs-item">' +
             '<span class="txt">' + esc(item.text || item.kind || "") + "</span>" +
-            '<button class="btn small" type="button">פתח</button></li>');
+            '<button class="btn small" type="button">' + esc(btnLabel) + "</button></li>");
           li.querySelector("button").addEventListener("click", function () {
-            location.hash = "#" + (item.action || "overview");
+            if (wfAction) {
+              api("/workflows/" + wfAction.wf, { method: "POST", body: { dry_run: false } })
+                .then(function () { toast("הופעל: " + wfAction.label, "ok"); CC.startJobsPolling(); })
+                .catch(function (err) { toast(err.message, "err"); });
+            } else {
+              location.hash = "#" + (item.action || "overview");
+            }
           });
           list.appendChild(li);
         });
@@ -647,4 +756,38 @@
     return walk(key, original);
   }
 
+})();
+
+// ---------- nav attention badges + "updated X ago" (polls /api/events/summary every 15s) ----------
+(function () {
+  var lastOk = null;
+  function setBadge(route, n, title) {
+    var a = document.querySelector('a[data-route="' + route + '"]');
+    if (!a) return;
+    var b = a.querySelector(".nav-badge");
+    if (!n) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement("span"); b.className = "nav-badge"; a.appendChild(b); }
+    b.textContent = n; b.title = title || "";
+  }
+  function stamp() {
+    var el = document.getElementById("live-stamp");
+    if (!el) {
+      var hdr = document.querySelector("header") || document.body;
+      el = document.createElement("span"); el.id = "live-stamp"; el.className = "live-stamp";
+      hdr.appendChild(el);
+    }
+    if (!lastOk) { el.textContent = ""; return; }
+    var s = Math.round((Date.now() - lastOk) / 1000);
+    el.textContent = "עודכן לפני " + (s < 60 ? s + " ש׳" : Math.round(s / 60) + " ד׳");
+  }
+  function poll() {
+    if (document.visibilityState === "hidden") return;
+    fetch("/api/events/summary").then(function (r) { return r.json(); }).then(function (d) {
+      setBadge("overview", d.needs_you, "דברים שדורשים אותך");
+      setBadge("schedule", d.failed_posts, "פוסטים שנכשלו");
+      setBadge("automations", d.running_jobs, "תהליכים רצים");
+      lastOk = Date.now(); stamp();
+    }).catch(function () {});
+  }
+  poll(); setInterval(poll, 15000); setInterval(stamp, 5000);
 })();

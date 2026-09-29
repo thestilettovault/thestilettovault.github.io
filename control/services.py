@@ -24,7 +24,16 @@ DASH = ROOT / "dashboard"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-PY = sys.executable or "py"
+def _real_python():
+    """Console python.exe next to the running interpreter (pythonw → python), never the
+    WindowsApps shim; `py -3` fallback. Subprocess steps need a console-capable exe."""
+    exe = Path(sys.executable or "")
+    if exe.name.lower() == "pythonw.exe":
+        exe = exe.with_name("python.exe")
+    return [str(exe)] if exe.name.lower() == "python.exe" and exe.exists() else ["py", "-3"]
+
+
+PYCMD = _real_python()
 
 
 def _load_json(path, default):
@@ -506,7 +515,7 @@ def cancel_post(post_id):
 def retry_failed():
     try:
         proc = subprocess.run(
-            [PY, "-3", "scripts/tiktok_retry.py", "--apply"],
+            [*PYCMD, "scripts/tiktok_retry.py", "--apply"],
             cwd=str(ROOT), capture_output=True, text=True, timeout=600,
         )
         tail = (proc.stdout or "")[-4000:] + (("\n" + proc.stderr[-2000:]) if proc.stderr else "")
@@ -590,15 +599,15 @@ def _run_cmd(cmd, cwd=None, timeout=600):
 
 def run(job):
     if job == "scout_dry":
-        return _run_cmd([PY, "-3", "-c",
+        return _run_cmd([*PYCMD, "-c",
                           "import daily_heel_scout as d; d.main(dry=True)"],
                          cwd=str(SCRIPTS))
     if job == "scout":
-        return _run_cmd([PY, "-3", "-c",
+        return _run_cmd([*PYCMD, "-c",
                           "import daily_heel_scout as d; d.main(dry=False)"],
                          cwd=str(SCRIPTS))
     if job == "metrics":
-        return _run_cmd([PY, "-3", "scripts/collect_metrics.py"])
+        return _run_cmd([*PYCMD, "scripts/collect_metrics.py"])
     if job == "tiktok_retry":
         return retry_failed()
     return {"error": f"unknown job: {job}"}

@@ -366,3 +366,21 @@ pre.output {
   margin-inline-end: 6px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.jobs-indicator {
+  position: relative; background: transparent; border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 6px 10px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; margin-inline-end: 10px;
+}
+.jobs-indicator:hover { border-color: var(--accent); }
+.jobs-drawer {
+  position: absolute; top: 52px; inset-inline-end: 12px; width: 300px; max-height: 60vh;
+  overflow-y: auto; background: var(--bg-elev); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px; z-index: 400; box-shadow: 0 8px 24px #000a;
+}
+.job-row { padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.job-row:last-child { border-bottom: none; }
+
+.nav-badge { display:inline-block; min-width:18px; padding:0 6px; margin-inline-start:6px; border-radius:9px;
+  background: var(--accent); color:#1a0710; font-size:11px; font-weight:700; line-height:18px; text-align:center; }
+.live-stamp { font-size:11px; color: var(--text-faint); margin-inline-start:12px; }

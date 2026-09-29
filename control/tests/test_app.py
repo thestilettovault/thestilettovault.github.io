@@ -140,3 +140,53 @@ def test_niche_get_and_put(client, monkeypatch):
 
     r = client.put("/api/niche", json={"b": 3})
     assert r.status_code == 403
+
+
+def test_workflows_list_get_no_token(client):
+    r = client.get("/api/workflows")
+    assert r.status_code == 200
+    assert isinstance(r.get_json(), list)
+
+
+def test_workflow_run_requires_token(client):
+    r = client.post("/api/workflows/refresh_all", json={"dry_run": True})
+    assert r.status_code == 403
+
+
+def test_workflow_dry_run_with_token(client):
+    r = client.post("/api/workflows/refresh_all", json={"dry_run": True},
+                     headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 200
+    data = r.get_json()
+    assert data["dry_run"] is True
+    assert isinstance(data["plan"], list)
+
+
+def test_workflow_unknown_name_errors(client):
+    r = client.post("/api/workflows/does_not_exist", json={"dry_run": True},
+                     headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 400
+
+
+def test_jobs_list_no_token_needed(client):
+    r = client.get("/api/jobs")
+    assert r.status_code == 200
+    data = r.get_json()
+    assert "active" in data and "recent" in data
+
+
+def test_job_detail_not_found(client):
+    r = client.get("/api/jobs/doesnotexist")
+    assert r.status_code == 404
+
+
+def test_job_cancel_requires_token(client):
+    r = client.post("/api/jobs/whatever/cancel")
+    assert r.status_code == 403
+
+
+def test_events_summary(client):
+    r = client.get("/api/events/summary")
+    assert r.status_code == 200
+    data = r.get_json()
+    assert "needs_you" in data and "running_jobs" in data and "failed_posts" in data

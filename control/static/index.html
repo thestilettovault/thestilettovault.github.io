@@ -18,6 +18,11 @@
       <span class="brand-name" id="niche-name">טוען...</span>
     </div>
     <div class="topbar-spacer"></div>
+    <button class="jobs-indicator" id="jobs-indicator" type="button" title="עבודות פעילות">
+      <span id="jobs-spinner" class="spinner" style="display:none"></span>
+      <span id="jobs-count">⚡</span>
+    </button>
+    <div id="jobs-drawer" class="jobs-drawer" style="display:none"></div>
     <div class="bot-status" id="bot-status" title="סטטוס בוט">●</div>
   </header>
 
@@ -28,6 +33,7 @@
       <a href="#schedule" data-route="schedule">🗓️ לוח פרסום</a>
       <a href="#affiliates" data-route="affiliates">🤝 שותפים ו-Hub</a>
       <a href="#research" data-route="research">🔎 מחקר ולמידה</a>
+      <a href="#automations" data-route="automations">⚡ אוטומציות</a>
       <a href="#tuning" data-route="tuning">⚙️ כיוונון</a>
     </nav>
 
@@ -42,6 +48,7 @@
 <script src="/static/screens/products.js"></script>
 <script src="/static/screens/schedule.js"></script>
 <script src="/static/screens/research.js"></script>
+<script src="/static/screens/automations.js"></script>
 <script>window.CC.boot();</script>
 </body>
 </html>

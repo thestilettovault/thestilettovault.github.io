@@ -23,6 +23,8 @@ from flask import Flask, jsonify, request
 from . import hub as _hub
 from . import niche as _niche
 from . import services as _services
+from . import jobs as _jobs
+from . import workflows as _workflows
 
 ROOT = Path(__file__).resolve().parent.parent
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -384,6 +386,83 @@ def api_run(job):
     if isinstance(result, dict) and result.get("error"):
         return _err(result["error"], 400)
     return jsonify(result)
+
+
+# ── jobs / workflows ─────────────────────────────────────────────────
+
+@app.route("/api/jobs")
+def api_jobs():
+    return jsonify(_jobs.list_jobs())
+
+
+@app.route("/api/jobs/<job_id>")
+def api_job_detail(job_id):
+    job = _jobs.get(job_id)
+    if not job:
+        return _err("job not found", 404)
+    since = request.args.get("since")
+    out = dict(job)
+    log = out.get("log", [])
+    if since is not None:
+        try:
+            since_i = max(0, int(since))
+        except ValueError:
+            since_i = 0
+        out["log"] = log[since_i:]
+        out["log_offset"] = since_i
+    out["log_total"] = len(log)
+    out.pop("_cancel", None)
+    return jsonify(out)
+
+
+@app.route("/api/jobs/<job_id>/cancel", methods=["POST"])
+def api_job_cancel(job_id):
+    guard = _require_token()
+    if guard:
+        return guard
+    ok = _jobs.cancel(job_id)
+    if not ok:
+        return _err("job not found or not cancellable", 404)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/workflows")
+def api_workflows():
+    return jsonify(_workflows.list_meta())
+
+
+@app.route("/api/workflows/<name>", methods=["POST"])
+def api_workflow_run(name):
+    guard = _require_token()
+    if guard:
+        return guard
+    body = request.get_json(silent=True) or {}
+    dry_run = bool(body.get("dry_run"))
+    params = body.get("params") or {}
+    result = _workflows.run(name, dry_run=dry_run, params=params)
+    if isinstance(result, dict) and result.get("error"):
+        return _err(result["error"], 400)
+    return jsonify(result)
+
+
+@app.route("/api/events/summary")
+def api_events_summary():
+    try:
+        ov = _services.overview()
+        needs_you = len(ov.get("needs_you", [])) if isinstance(ov, dict) else 0
+        posts = ov.get("posts", {}) if isinstance(ov, dict) else {}
+        failed_posts = posts.get("failed", 0)
+        jl = _jobs.list_jobs()
+        running_jobs = len(jl.get("active", []))
+        last_metrics_time = ov.get("generated_at") if isinstance(ov, dict) else None
+        return jsonify({
+            "needs_you": needs_you,
+            "running_jobs": running_jobs,
+            "failed_posts": failed_posts,
+            "last_metrics_time": last_metrics_time,
+        })
+    except Exception as e:
+        return _err(e, 500)
 
 
 # ── single-instance guard + entrypoint ──────────────────────────────
