@@ -71,10 +71,18 @@ def _fetch():
     followers = {a.get("platform"): {"count": a.get("followersCount"),
                                     "updated": a.get("followersLastUpdated"),
                                     "username": a.get("username")} for a in accounts}
+    try:
+        import admitad_stats
+        conv = admitad_stats.fetch_conversions()
+        sales = {"total": conv.get("total_sales", 0), "commission": conv.get("commission_all", 0.0),
+                 "by_channel": conv.get("by_channel", {}), "source": "admitad"}
+    except Exception as ex:
+        sales = {"total": None, "error": str(ex)[:120]}
     if pin.get("connected"):
         followers["pinterest"] = {"count": pin.get("followers"), "updated": None, "username": pin.get("username")}
     return {
         "pinterest": pin,
+        "sales": sales,
         "totals": totals,
         "by_platform": by_platform,
         "followers": followers,
@@ -156,4 +164,4 @@ def summary(fresh=False):
             "comments": d["totals"]["comments"],
             "followers_total": sum((c.get("followers") or 0) for c in ch.values()),
             "followers": {k: c.get("followers") for k, c in ch.items()},
-            "channels": ch, "fetched_at": d.get("fetched_at")}
+            "channels": ch, "sales": d.get("sales") or {}, "fetched_at": d.get("fetched_at")}

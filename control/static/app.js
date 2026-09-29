@@ -411,6 +411,7 @@
       logs.forEach(function (log) {
         var name = log.name || log.task || "לא ידוע";
         var last = log.modified || log.last_run || log.last_run_at || log.updated;
+        if (typeof last === "number" && last < 1e12) last = new Date(last * 1000).toISOString();   // epoch seconds → ISO
         var lines = log.last_lines || log.tail || [];
         var id = "log-" + Math.random().toString(36).slice(2);
         html += card(name,
@@ -797,6 +798,7 @@
       setBadge("schedule", d.failed_posts, "פוסטים שנכשלו");
       setBadge("automations", d.running_jobs, "תהליכים רצים");
       if (window.CC_checkEngagement) window.CC_checkEngagement(d.engagement);
+      if (window.CC_checkSales && d.engagement) window.CC_checkSales(d.engagement.sales);
       lastOk = Date.now(); stamp();
     }).catch(function () {});
   }
@@ -909,8 +911,96 @@
   // was closed shows up right away (diff vs. the last totals saved in this browser); then hourly.
   function pullFresh() {
     fetch("/api/events/summary?fresh=1").then(function (r) { return r.json(); })
-      .then(function (d) { window.CC_checkEngagement(d.engagement); }).catch(function () {});
+      .then(function (d) { window.CC_checkEngagement(d.engagement);
+        if (window.CC_checkSales && d.engagement) window.CC_checkSales(d.engagement.sales); }).catch(function () {});
   }
   pullFresh();
   setInterval(pullFresh, 60 * 60 * 1000);
+})();
+
+
+// ---------- SALE: coin rain + cash-register sound, per channel ----------
+(function () {
+  var KEY = "cc_sales_seen_v1";
+  var NAME = { tiktok: "TikTok", instagram: "Instagram", pinterest: "Pinterest", site: "האתר" };
+  var ctx = null;
+  function audio() { try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); return ctx; } catch (e) { return null; } }
+  document.addEventListener("click", function () { var c = audio(); if (c) c.resume(); }, { once: true });
+
+  function coinSound(count) {
+    var c = audio(); if (!c) return;
+    var t0 = c.currentTime;
+    // "ka-ching": two bright bells + a cascade of coin clinks
+    [[1318, 0], [1760, 0.09]].forEach(function (b) {
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = "triangle"; o.frequency.value = b[0];
+      g.gain.setValueAtTime(0.0001, t0 + b[1]);
+      g.gain.exponentialRampToValueAtTime(0.35, t0 + b[1] + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + b[1] + 0.9);
+      o.connect(g); g.connect(c.destination); o.start(t0 + b[1]); o.stop(t0 + b[1] + 1);
+    });
+    var n = Math.min(14, 6 + count * 2);
+    for (var i = 0; i < n; i++) {
+      var at = t0 + 0.25 + i * 0.06 + Math.random() * 0.03;
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = "square"; o.frequency.value = 2400 + Math.random() * 1800;
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.exponentialRampToValueAtTime(0.06, at + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + 0.12);
+      o.connect(g); g.connect(c.destination); o.start(at); o.stop(at + 0.14);
+    }
+  }
+
+  function coinRain(count) {
+    var layer = document.createElement("div");
+    layer.className = "coin-rain";
+    document.body.appendChild(layer);
+    var n = Math.min(90, 35 + count * 15);
+    for (var i = 0; i < n; i++) {
+      var c = document.createElement("span");
+      c.className = "coin";
+      c.textContent = Math.random() < 0.18 ? "💵" : "🪙";
+      c.style.left = (Math.random() * 100) + "vw";
+      c.style.fontSize = (18 + Math.random() * 26) + "px";
+      c.style.animationDuration = (1.6 + Math.random() * 1.6) + "s";
+      c.style.animationDelay = (Math.random() * 0.9) + "s";
+      c.style.setProperty("--spin", (Math.random() < 0.5 ? -1 : 1) * (360 + Math.random() * 720) + "deg");
+      layer.appendChild(c);
+    }
+    setTimeout(function () { layer.remove(); }, 4200);
+  }
+
+  function saleBanner(text) {
+    var b = document.createElement("div");
+    b.className = "sale-banner";
+    b.innerHTML = '<div class="sale-emoji">💰</div><div><div class="sale-title">מכירה!</div><div class="sale-sub">' + text + "</div></div>";
+    document.body.appendChild(b);
+    setTimeout(function () { b.classList.add("out"); setTimeout(function () { b.remove(); }, 500); }, 6500);
+  }
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+
+  window.CC_checkSales = function (sales) {
+    if (!sales || sales.total === null || sales.total === undefined) return;
+    var prev = load();
+    var cur = { total: sales.total, commission: sales.commission || 0, by_channel: sales.by_channel || {} };
+    if (prev && cur.total > prev.total) {
+      var parts = [], icons = window.CC_ICON || {};
+      Object.keys(cur.by_channel).forEach(function (ch) {
+        var d = (cur.by_channel[ch].sales || 0) - (((prev.by_channel || {})[ch] || {}).sales || 0);
+        if (d > 0) parts.push((icons[ch] || "🌐") + " " + NAME[ch] + " ×" + d);
+      });
+      var dn = cur.total - prev.total;
+      var dc = Math.max(0, (cur.commission - (prev.commission || 0)));
+      saleBanner("+" + dn + " מכירות · עמלה +$" + dc.toFixed(2) + (parts.length ? " · " + parts.join(" · ") : ""));
+      coinRain(dn); coinSound(dn);
+    }
+    save(cur);
+  };
+  // dev check from the console: CC_testSale()
+  window.CC_testSale = function () {
+    saleBanner("+1 מכירות · עמלה +$1.23 · " + ((window.CC_ICON || {}).tiktok || "") + " TikTok ×1");
+    coinRain(1); coinSound(1);
+  };
 })();

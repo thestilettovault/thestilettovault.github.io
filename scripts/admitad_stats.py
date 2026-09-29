@@ -37,6 +37,17 @@ def _subid_of(a):
     return "(untagged)"
 
 
+# Admitad ad spaces → channel (reference_stiletto_affiliate_accounts: 2984133 IG, 2984134 TikTok, 2984135 site)
+WEBSITE_CHANNEL = {"2984133": "instagram", "2984134": "tiktok", "2984135": "site"}
+
+
+def _channel_of(a):
+    w = a.get("website_id")
+    if not w and isinstance(a.get("website"), dict):
+        w = a["website"].get("id")
+    return WEBSITE_CHANNEL.get(str(w or ""), "site")
+
+
 def fetch_conversions():
     """{total_sales, total_revenue, pending, per_shoe:{subid:{sales,revenue,pending}}}.
     Counts approved+pending actions (revenue from approved); declined ignored."""
@@ -54,6 +65,7 @@ def fetch_conversions():
         offset += 500
 
     per_shoe, total_sales, total_rev, pending = {}, 0, 0.0, 0
+    by_channel, commission_all = {}, 0.0
     for a in actions:
         status = (a.get("status") or "").lower()
         if status == "declined":
@@ -69,10 +81,15 @@ def fetch_conversions():
             rec["revenue"] += amt
             total_rev += amt
         total_sales += 1
+        commission_all += amt
+        ch = by_channel.setdefault(_channel_of(a), {"sales": 0, "commission": 0.0})
+        ch["sales"] += 1
+        ch["commission"] = round(ch["commission"] + amt, 2)
     for rec in per_shoe.values():
         rec["revenue"] = round(rec["revenue"], 2)
     return {"total_sales": total_sales, "total_revenue": round(total_rev, 2),
-            "pending": pending, "per_shoe": per_shoe}
+            "pending": pending, "per_shoe": per_shoe,
+            "by_channel": by_channel, "commission_all": round(commission_all, 2)}
 
 
 def fetch_clicks(date_start="01.08.2026"):

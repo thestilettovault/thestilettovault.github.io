@@ -425,3 +425,20 @@ pre.output {
 .plat-ico { display:inline-flex; vertical-align:middle; }
 .plat-ico svg { width:16px; height:16px; }
 .sc-dpost .plat-ico svg { width:18px; height:18px; }
+
+/* sale celebration */
+.coin-rain { position:fixed; inset:0; pointer-events:none; z-index:10000; overflow:hidden; }
+.coin { position:absolute; top:-60px; animation-name: coinFall; animation-timing-function: cubic-bezier(.3,.1,.6,1); animation-fill-mode: forwards;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+@keyframes coinFall { 0% { transform: translateY(0) rotate(0); opacity:1; } 85% { opacity:1; }
+  100% { transform: translateY(110vh) rotate(var(--spin)); opacity:.2; } }
+.sale-banner { position:fixed; top:84px; left:50%; transform:translateX(-50%); z-index:10001; display:flex; gap:14px; align-items:center;
+  padding:16px 26px; border-radius:18px; background: linear-gradient(135deg,#3b2a05,#1d1405); border:1px solid #f5c542;
+  box-shadow: 0 0 40px rgba(245,197,66,.45), 0 10px 30px rgba(0,0,0,.6); color:#fff3cf; animation: saleIn .5s cubic-bezier(.2,1.4,.4,1); transition: opacity .5s, transform .5s; }
+.sale-banner.out { opacity:0; transform: translateX(-50%) translateY(-14px); }
+.sale-emoji { font-size:40px; animation: salePulse 1s ease-in-out infinite; }
+.sale-title { font-size:22px; font-weight:900; color:#ffd65a; letter-spacing:.5px; }
+.sale-sub { font-size:13px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.sale-sub svg { width:16px; height:16px; vertical-align:middle; }
+@keyframes saleIn { from { opacity:0; transform: translateX(-50%) scale(.6); } to { opacity:1; transform: translateX(-50%) scale(1); } }
+@keyframes salePulse { 0%,100% { transform: scale(1) rotate(-6deg); } 50% { transform: scale(1.18) rotate(6deg); } }
