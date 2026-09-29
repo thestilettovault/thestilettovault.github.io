@@ -42,6 +42,9 @@ WEBSITE_CHANNEL = {"2984133": "instagram", "2984134": "tiktok", "2984135": "site
 
 
 def _channel_of(a):
+    ch = str(a.get("subid2") or "").lower()          # set by the site / pin links (?ch=… → subid2)
+    if ch in ("tiktok", "instagram", "pinterest", "site"):
+        return ch
     w = a.get("website_id")
     if not w and isinstance(a.get("website"), dict):
         w = a["website"].get("id")

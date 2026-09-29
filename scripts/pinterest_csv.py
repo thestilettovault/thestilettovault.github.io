@@ -154,7 +154,7 @@ def main(board, limit, remaining=False, out=None):
         if not _live(img):                       # drop dead/phantom images
             skipped += 1; continue
         slug = space_runner.slugify(it)
-        link = affiliate_links.affiliate_link(it, subid=slug)
+        link = affiliate_links.affiliate_link(it, subid=slug, channel="pinterest")
         deal = it.get("deal", {}) or {}
         is_generic = (it.get("title") or "").strip().lower() in GENERIC_TITLES
         rows.append({

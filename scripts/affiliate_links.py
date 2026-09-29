@@ -70,12 +70,16 @@ def _awin_for(url, domain, subid=""):
     return None
 
 
-def aliexpress(url, subid=""):
-    """Wrap an AliExpress product/category URL in our Admitad deeplink."""
-    q = "?ulp=" + urllib.parse.quote(url, safe="")
+def aliexpress(url, subid="", channel=""):
+    """Wrap an AliExpress product/category URL in our Admitad deeplink.
+    subid = shoe slug (per-shoe attribution); subid2 = traffic channel
+    (tiktok/instagram/pinterest/site) so a sale shows which channel drove it."""
+    q = ""
     if subid:
-        q = f"?subid={urllib.parse.quote(subid)}&ulp=" + urllib.parse.quote(url, safe="")
-    return ALIEXPRESS_DEEPLINK_BASE + q
+        q += f"subid={urllib.parse.quote(subid)}&"
+    if channel:
+        q += f"subid2={urllib.parse.quote(channel)}&"
+    return ALIEXPRESS_DEEPLINK_BASE + "?" + q + "ulp=" + urllib.parse.quote(url, safe="")
 
 
 def amazon(url):
@@ -86,7 +90,7 @@ def amazon(url):
     return urllib.parse.urlunparse(parts._replace(query=urllib.parse.urlencode(qs)))
 
 
-def affiliate_link(item, subid=""):
+def affiliate_link(item, subid="", channel=""):
     """Best affiliate link for a catalog item, chosen by domain.
     Falls back to any pre-set aff_link, then the raw url."""
     url = item.get("url", "") or item.get("aff_link", "")
@@ -97,7 +101,7 @@ def affiliate_link(item, subid=""):
     if awin_link:
         return awin_link
     if "aliexpress." in domain:
-        return aliexpress(url, subid)
+        return aliexpress(url, subid, channel)
     if "amazon." in domain:
         return item.get("aff_link") or amazon(url)
     return item.get("aff_link") or url

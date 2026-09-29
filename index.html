@@ -558,5 +558,28 @@
 
 </div>
 <!-- Skimlinks: auto-monetize outbound retailer/product links across 48.5K merchants -->
+<script>
+/* channel attribution: bio links carry ?ch=tiktok|instagram|pinterest; remember it for the
+   visit and append subid2=<ch> to every Admitad deeplink so a sale reports its channel. */
+(function () {
+  var ok = { tiktok: 1, instagram: 1, pinterest: 1 }, ch = "";
+  try {
+    var q = new URLSearchParams(location.search).get("ch");
+    if (q && ok[q.toLowerCase()]) { ch = q.toLowerCase(); sessionStorage.setItem("sv_ch", ch); }
+    else ch = sessionStorage.getItem("sv_ch") || "";
+  } catch (e) {}
+  if (!ch) {
+    var r = document.referrer || "";
+    ch = /tiktok\./.test(r) ? "tiktok" : /instagram\.|l\.instagram/.test(r) ? "instagram" : /pinterest\./.test(r) ? "pinterest" : "site";
+  }
+  function tag() {
+    document.querySelectorAll('a[href*="rzekl.com/g/"]').forEach(function (a) {
+      if (/[?&]subid2=/.test(a.href)) return;
+      a.href = a.href.replace("?", "?subid2=" + encodeURIComponent(ch) + "&");
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tag); else tag();
+})();
+</script>
 </body>
 </html>
