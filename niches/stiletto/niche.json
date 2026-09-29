@@ -8,14 +8,38 @@
   },
   "sourcing": {
     "aliexpress_searches": [
-      ["stiletto heels", "Stiletto Heels"],
-      ["pointed toe pumps", "Pointed-Toe Pump"],
-      ["platform high heels", "Platform High Heels"],
-      ["ankle boots heels", "Heeled Ankle Boots"],
-      ["slingback heels", "Slingback Heels"],
-      ["knee high heel boots", "Knee-High Heel Boots"],
-      ["thigh high heel boots", "Thigh-High Heel Boots"],
-      ["high heel sandals", "High-Heel Sandals"]
+      [
+        "stiletto heels",
+        "Stiletto Heels"
+      ],
+      [
+        "pointed toe pumps",
+        "Pointed-Toe Pump"
+      ],
+      [
+        "platform high heels",
+        "Platform High Heels"
+      ],
+      [
+        "ankle boots heels",
+        "Heeled Ankle Boots"
+      ],
+      [
+        "slingback heels",
+        "Slingback Heels"
+      ],
+      [
+        "knee high heel boots",
+        "Knee-High Heel Boots"
+      ],
+      [
+        "thigh high heel boots",
+        "Thigh-High Heel Boots"
+      ],
+      [
+        "high heel sandals",
+        "High-Heel Sandals"
+      ]
     ],
     "shops": [
       "caperobbin.com",
@@ -30,15 +54,21 @@
   "thresholds": {
     "MIN_SOLD": 300,
     "MIN_RATING": 4.6,
-    "MIN_PRICE": 20.0,
+    "MIN_PRICE": 20,
     "BATCH": 5,
-    "BRAND_MIN_PRICE": 100.0,
+    "BRAND_MIN_PRICE": 100,
     "NO_REPEAT_DAYS": 10,
-    "MIN_VALUE": 5.0
+    "MIN_VALUE": 5
   },
   "schedule": {
-    "slots": ["14:00", "18:00", "22:00"],
-    "skip_weekdays": [5]
+    "slots": [
+      "14:00",
+      "18:00",
+      "22:00"
+    ],
+    "skip_weekdays": [
+      5
+    ]
   },
   "research": {
     "trend_queries": [
