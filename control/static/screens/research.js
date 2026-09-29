@@ -143,7 +143,7 @@
     list.sort(function (a, b) { return (b.clicks || 0) - (a.clicks || 0); });
     target.innerHTML = '<div class="cards-grid">' + list.map(function (s) {
       return '<div class="card">' +
-        (s.image_url ? '<img class="thumb" style="width:100%;height:120px" loading="lazy" src="' + esc(s.image_url) + '" alt="">' : "") +
+        CC.productImg(s.image_url, s.url || s.aff_link, s.slug, 120) +
         '<div style="font-size:12px;font-weight:600;margin-top:6px">' + esc(s.title || "—") + "</div>" +
         '<div class="kpi-sub">' + CC.money(s.price) + " · " + (s.clicks || 0) + " קליקים · " + (s.sales || 0) + " מכירות</div>" +
         "<div style='margin:4px 0'>" + CC.statusBadgeHtml(s.status) + "</div>" +

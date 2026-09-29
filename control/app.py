@@ -18,9 +18,10 @@ if sys.stdout is None:
 if sys.stderr is None:
     sys.stderr = open(os.devnull, "w", encoding="utf-8")
 
-from flask import Flask, jsonify, request
+from flask import Flask, Response, jsonify, redirect, request, send_file
 
 from . import hub as _hub
+from . import thumbs as _thumbs
 from . import niche as _niche
 from . import services as _services
 from . import jobs as _jobs
@@ -477,6 +478,29 @@ def acquire_single_instance():
         return True
     except OSError:
         return False
+
+
+# ── thumbnails (any product → a picture) ────────────────────────────
+@app.route("/api/thumb")
+def api_thumb():
+    kind, val = _thumbs.resolve(request.args.get("url", ""), request.args.get("slug", ""))
+    if kind == "file":
+        return send_file(val, max_age=86400)
+    if kind == "url":
+        return redirect(val, 302)
+    return Response(_thumbs.PLACEHOLDER_SVG, mimetype="image/svg+xml")
+
+
+# ── shutdown (header "סגור" button) ─────────────────────────────────
+@app.route("/api/shutdown", methods=["POST"])
+def api_shutdown():
+    guard = _require_token()
+    if guard:
+        return guard
+    import threading
+    threading.Timer(0.5, lambda: os._exit(0)).start()   # let the response flush first
+    return jsonify({"ok": True})
+
 
 
 def main():

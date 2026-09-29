@@ -81,6 +81,22 @@ def save_sent(d):
     json.dump(d, open(SENT_LOG, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
 
+def _norm_url(u):
+    from urllib.parse import urlparse
+    u = str(u or "").split("#")[0].split("?")[0].rstrip("/").lower()
+    pr = urlparse(u)
+    return (pr.netloc.removeprefix("www.") + pr.path) if pr.netloc else u
+
+
+def load_rejected():
+    """Every shoe Ofer ever rejected (✗ in Telegram / dashboard) — never offered again."""
+    try:
+        rej = json.loads((DATA / "rejected_profile.json").read_text(encoding="utf-8")).get("rejected", [])
+    except Exception:
+        return set()
+    return {_norm_url(r.get("link")) for r in rej if r.get("link")}
+
+
 def recently_sent(sent, key):
     ts_str = sent.get(key)
     if not ts_str:
@@ -176,6 +192,7 @@ def main(dry=False):
         print("  Saturday — scout paused, no batch today.")
         return
     sent = load_sent()
+    rejected = load_rejected()
     cands = gather()
     # dedupe within run + against recent sends + keep only products we actually
     # earn on. "Earning" = an active tracking id (our_id) is configured for the
@@ -185,7 +202,7 @@ def main(dry=False):
     # Cape Robbin/Koi/Lamoda) stay hidden until their our_id is filled in.
     seen, fresh, skipped_track = set(), [], 0
     for c in cands:
-        if c["key"] in seen or recently_sent(sent, c["key"]):
+        if c["key"] in seen or recently_sent(sent, c["key"]) or _norm_url(c["url"]) in rejected:
             continue
         if not str(c.get("our_id") or "").strip():
             skipped_track += 1

@@ -310,7 +310,7 @@ def test_products_merges_all_sources_by_stage(tmp_path, monkeypatch):
     assert isinstance(out, list)
     stages = {row["title"]: row["stage"] for row in out}
     assert stages["Pending One"] == "pending"
-    assert stages["Rejected One"] == "rejected"
+    assert "Rejected One" not in stages   # rejected = internal memory only, never listed
     assert stages["Approved One"] == "approved"
     assert stages["Pool One"] == "pool"
 

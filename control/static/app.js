@@ -183,7 +183,17 @@
   }
 
   // Shared helpers + state exposed for the screen modules.
+  // Product picture: no referrer (AliExpress CDN 403s with one); missing/broken → /api/thumb
+  // (local GELEM → pool → og:image, cached server-side → placeholder).
+  function productImg(src, url, slug, h) {
+    var fb = "/api/thumb?url=" + encodeURIComponent(url || "") + "&slug=" + encodeURIComponent(slug || "");
+    return '<img class="thumb" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:' + (h || 150) +
+      'px;object-fit:cover" src="' + esc(src || fb) + '" data-fb="' + esc(fb) + '" ' +
+      'onerror="if(!this.dataset.done){this.dataset.done=1;this.src=this.dataset.fb}" alt="">';
+  }
+
   window.CC = {
+    productImg: productImg,
     h: h, esc: esc, toast: toast, api: api, safeFetch: safeFetch,
     relTime: relTime, fmtDateHe: fmtDateHe, fmtTimeHe: fmtTimeHe, money: money,
     card: card, unavailableCard: unavailableCard, emptyState: emptyState,
@@ -790,4 +800,25 @@
     }).catch(function () {});
   }
   poll(); setInterval(poll, 15000); setInterval(stamp, 5000);
+})();
+
+
+// ---------- shutdown: stop the local server and close the tab ----------
+(function () {
+  var btn = document.getElementById("cc-shutdown");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
+    var running = document.getElementById("jobs-spinner");
+    var warn = running && running.style.display !== "none" ? " ⚠️ יש תהליך שרץ עכשיו — הוא ייעצר." : "";
+    if (!confirm("לסגור את מרכז השליטה ולכבות את השרת במחשב?" + warn)) return;
+    var token = (document.querySelector('meta[name="control-token"]') || {}).content || "";
+    fetch("/api/shutdown", { method: "POST", headers: { "X-Token": token } })
+      .catch(function () {})
+      .finally(function () {
+        document.body.innerHTML = '<div style="display:grid;place-items:center;height:100vh;font-family:inherit;color:#a5a3ad;text-align:center">' +
+          '<div><div style="font-size:40px">👠</div><h2 style="color:#f2f1ee">מרכז השליטה נסגר</h2>' +
+          '<p>השרת כבוי. להפעלה מחדש: start_control.bat</p></div></div>';
+        setTimeout(function () { window.close(); }, 800);
+      });
+  });
 })();

@@ -12,7 +12,6 @@
     { key: "approved", label: "מאושר", stages: ["approved"] },
     { key: "producing", label: "בהפקה", stages: ["producing", "produced", "scheduled"] },
     { key: "published", label: "פורסם", stages: ["published"] },
-    { key: "rejected", label: "נדחה", stages: ["rejected"] }
   ];
 
   var state = { chip: "all", search: "", sort: "newest", selected: {} };
@@ -167,8 +166,7 @@
       }
       var el = h('<div class="card p-card" style="display:flex;flex-direction:column;gap:8px">' +
         (showCheckbox ? '<label style="align-self:flex-start"><input type="checkbox" class="p-select"> בחר</label>' : "") +
-        (p.image_url ? '<img class="thumb" loading="lazy" style="width:100%;height:150px" src="' + esc(p.image_url) + '" alt="">'
-          : '<div class="thumb" style="width:100%;height:150px"></div>') +
+        CC.productImg(p.image_url, p.url || p.key, p.slug, 150) +
         '<div style="font-size:13px;font-weight:600;line-height:1.3">' + esc(p.title || "—") + "</div>" +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
           CC.statusBadgeHtml(p.stage) + dealHtml +
@@ -215,7 +213,8 @@
         ? { url: p.url, title: p.title, image_url: p.image_url, domain: p.domain, commission: p.commission, pending_id: p.pending_id || "" }
         : { url: p.url, title: p.title, pending_id: p.pending_id || "" };
       // optimistic: move it out of the current chip immediately
-      p.stage = action === "approve" ? "approved" : "rejected";
+      if (action === "approve") p.stage = "approved";
+      else allProducts = allProducts.filter(function (x) { return x !== p; });   // rejected = hidden, remembered server-side
       renderGrid(allProducts);
       api("/products/" + action, { method: "POST", body: body })
         .then(function () {

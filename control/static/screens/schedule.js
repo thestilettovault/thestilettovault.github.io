@@ -57,7 +57,14 @@
     });
     document.getElementById("sc-today").addEventListener("click", function () {
       state.cursor = new Date();
+      if (state.view !== "calendar") { state.view = "calendar"; var tv = document.getElementById("sc-toggle-view"); if (tv) tv.textContent = "תצוגת רשימה"; }
       renderBody();
+      setTimeout(function () {
+        var t = document.querySelector(".sc-day-today");
+        if (!t) return;
+        t.scrollIntoView({ behavior: "smooth", block: "center" });
+        t.classList.remove("sc-flash"); void t.offsetWidth; t.classList.add("sc-flash");
+      }, 60);
     });
     document.getElementById("sc-toggle-view").addEventListener("click", function () {
       state.view = state.view === "calendar" ? "list" : "calendar";
@@ -212,7 +219,7 @@
           var icon = PLATFORM_ICON[plat] || plat;
           return '<button type="button" class="badge ' + cls + ' sc-chip" data-post-id="' + esc(p.id) +
             '" style="display:flex;align-items:center;gap:4px;width:100%;margin-bottom:3px;text-align:right;border:none">' +
-            (p.thumb ? '<img src="' + esc(p.thumb) + '" style="width:16px;height:16px;object-fit:cover;border-radius:3px" alt="">' : "") +
+            (p.thumb ? '<img referrerpolicy="no-referrer" src="' + esc(p.thumb) + '" style="width:16px;height:16px;object-fit:cover;border-radius:3px" alt="">' : "") +
             "<span>" + esc(icon) + " " + CC.fmtTimeHe(p.scheduledFor) + "</span></button>";
         }).join("");
         var extra = dayPosts.length > 4 ? '<div class="kpi-sub">+' + (dayPosts.length - 4) + " נוספים</div>" : "";
@@ -263,7 +270,7 @@
         '<div style="display:flex;justify-content:space-between;align-items:center">' +
           '<h3 style="margin:0">פרטי פוסט</h3><button type="button" class="btn small secondary" id="sc-modal-close">סגור ✕</button>' +
         "</div>" +
-        (p.thumb ? '<img src="' + esc(p.thumb) + '" style="width:100%;max-height:240px;object-fit:cover;border-radius:8px;margin:10px 0">' : "") +
+        (p.thumb ? '<img referrerpolicy="no-referrer" src="' + esc(p.thumb) + '" style="width:100%;max-height:240px;object-fit:cover;border-radius:8px;margin:10px 0">' : "") +
         '<div style="margin:8px 0"><span class="badge ' + badgeCls + '">' + esc(p.status || "—") + "</span> " + platforms + "</div>" +
         '<div class="kpi-sub">מתוזמן ל: ' + CC.fmtDateHe(p.scheduledFor) + " " + CC.fmtTimeHe(p.scheduledFor) + "</div>" +
         '<div style="margin:10px 0;font-size:13px;white-space:pre-wrap">' + esc(p.content || "") + "</div>" +

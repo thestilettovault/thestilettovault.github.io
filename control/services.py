@@ -345,7 +345,8 @@ def products():
             row["clicks"] = shoe.get("clicks_per_shoe") or shoe.get("clicks") or row.get("clicks") or 0
             row["sales"] = shoe.get("sales") or row.get("sales") or 0
 
-        return list(by_key.values())
+        # Rejected shoes are internal memory only (dedupe + never re-offer) — not shown.
+        return [r for r in by_key.values() if r.get("stage") != "rejected"]
     except Exception as e:
         return {"error": str(e)}
 
