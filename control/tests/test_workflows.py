@@ -19,7 +19,7 @@ def test_list_meta_has_all_nine_workflows():
     names = {m["name"] for m in W.list_meta()}
     expected = {
         "refresh_all", "scout_now", "schedule_chosen", "fill_gaps",
-        "retry_failed", "produce_queue", "publish_dashboard",
+        "retry_failed", "produce_queue",
         "resend_choices", "activate_brands_from_telegram",
     }
     assert expected.issubset(names)

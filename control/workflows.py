@@ -288,12 +288,7 @@ WORKFLOWS = {
         "needs_confirm": True, "est_duration": "~20 דקות, צורך קרדיטים",
         "plan": _produce_queue_plan, "steps": _produce_queue_steps,
     },
-    "publish_dashboard": {
-        "title_he": "פרסם דשבורד",
-        "description_he": "collect_metrics --push",
-        "needs_confirm": True, "est_duration": "כ-30 שניות",
-        "plan": _publish_dashboard_plan, "steps": _publish_dashboard_steps,
-    },
+    # publish_dashboard removed 2026-09-29 — public dashboard retired
     "resend_choices": {
         "title_he": "שלח בחירות שוב",
         "description_he": "שולח שוב A/B/C/D לטלגרם לכל נעל שממתינה לבחירה",

@@ -220,15 +220,9 @@ def main(push=False):
           f"followers:{data['followers']['source_status']}")
 
     if push:
-        for c in (["git", "-C", str(ROOT), "add", "dashboard"],
-                  ["git", "-C", str(ROOT), "commit", "-m", "chore(dashboard): refresh metrics snapshot"],
-                  ["git", "-C", str(ROOT), "push", "origin", "main"]):
-            r = subprocess.run(c, capture_output=True, text=True)
-            out = (r.stdout or "") + (r.stderr or "")
-            if r.returncode and not any(b in out for b in ("nothing to commit", "up to date", "up-to-date")):
-                print(out.strip()); break
-        else:
-            print("✅ pushed live")
+        # Public dashboard retired 2026-09-29 — data.json stays LOCAL for the Control
+        # Center (127.0.0.1:8787). --push is kept as a no-op so old callers don't break.
+        print("  (--push ignored: public dashboard retired; data stays local)")
 
 
 if __name__ == "__main__":
