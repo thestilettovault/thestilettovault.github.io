@@ -105,7 +105,7 @@ def build_caption(item):
     lines = [f"{headline} 🖤"]
     if coupon:
         lines.append(f"Use code {coupon} for $10 off")
-    lines.append(f"Shop the link in bio → {SITE_URL}")
+    lines.append("Link in bio 🔗  #ad #affiliate")
     lines.append("")
     lines.append(" ".join(HASHTAGS[:7]))
     return "\n".join(lines)
@@ -323,7 +323,7 @@ def schedule_drop(item, slots=None, do_publish=False, date=None):
     _sale = _d.get("sale")
     _deal_bit = (f" · {_disc} OFF" if _disc and _disc not in ("0%", "0") else "") + \
                 (f" · ${_sale}" if _sale else "")
-    tiktok_img_caption = f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤 thestilettovault.github.io"
+    tiktok_img_caption = f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤 link in bio #ad"
 
     any_ok = False
     for post, hhmm in zip(posts, slots):

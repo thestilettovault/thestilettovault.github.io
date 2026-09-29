@@ -145,7 +145,7 @@ def card_html(item, slug):
     onclick = (f"if(window.gtag)gtag('event','affiliate_click',"
                f"{{'shoe':'{slug}','discount':'{disc}'}});")
     return (
-        '      <a class="product-card" href="{href}" target="_blank" rel="noopener" onclick="{onclick}">\n'
+        '      <a class="product-card" href="{href}" target="_blank" rel="sponsored noopener" onclick="{onclick}">\n'
         '        <img src="{src}" alt="{alt}" loading="lazy">\n'
         '        <div class="card-info">\n'
         '          <span class="card-name">{name}</span>\n'
