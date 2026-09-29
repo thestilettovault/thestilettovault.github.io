@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+import json
+
+import pytest
+
+from control import app as control_app
+
+
+@pytest.fixture()
+def client():
+    control_app.app.config["TESTING"] = True
+    with control_app.app.test_client() as c:
+        yield c
+
+
+@pytest.fixture(autouse=True)
+def _stub_services(monkeypatch):
+    monkeypatch.setattr(control_app._services, "overview", lambda: {"ok": True})
+    monkeypatch.setattr(control_app._services, "health", lambda: {"ok": True})
+    monkeypatch.setattr(control_app._services, "products", lambda: [])
+    monkeypatch.setattr(control_app._services, "posts", lambda: [])
+    monkeypatch.setattr(control_app._services, "registry", lambda: [])
+    monkeypatch.setattr(control_app._services, "trends", lambda: [])
+    monkeypatch.setattr(control_app._services, "learning", lambda: {"rows": [], "summary": []})
+    yield
+
+
+def test_get_routes_do_not_need_token(client):
+    for path in ["/api/overview", "/api/health", "/api/products", "/api/posts",
+                 "/api/registry", "/api/trends", "/api/learning"]:
+        r = client.get(path)
+        assert r.status_code == 200, path
+
+
+def test_post_without_token_is_403(client):
+    r = client.post("/api/products/approve", json={"url": "u", "title": "t"})
+    assert r.status_code == 403
+    assert "error" in r.get_json()
+
+
+def test_post_with_wrong_token_is_403(client):
+    r = client.post("/api/products/approve", json={"url": "u", "title": "t"},
+                     headers={"X-Token": "wrong"})
+    assert r.status_code == 403
+
+
+def test_post_with_correct_token_is_200(client, monkeypatch):
+    monkeypatch.setattr(control_app._services, "approve", lambda *a, **k: {"ok": True})
+    r = client.post("/api/products/approve", json={"url": "u", "title": "t"},
+                     headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 200
+    assert r.get_json() == {"ok": True}
+
+
+def test_run_unknown_job_rejected(client):
+    r = client.post("/api/run/nuke", headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 400
+    assert "error" in r.get_json()
+
+
+def test_reveal_requires_token_and_localhost(client, monkeypatch):
+    monkeypatch.setattr(control_app._hub, "reveal", lambda name: "secretvalue")
+    # no token
+    r = client.post("/api/keys/reveal", json={"name": "X"})
+    assert r.status_code == 403
+    # token but non-localhost host header
+    r = client.post("/api/keys/reveal", json={"name": "X"},
+                     headers={"X-Token": control_app.CONTROL_TOKEN, "Host": "evil.com"})
+    assert r.status_code == 403
+    # token + localhost host
+    r = client.post("/api/keys/reveal", json={"name": "X"},
+                     headers={"X-Token": control_app.CONTROL_TOKEN, "Host": "127.0.0.1:8787"})
+    assert r.status_code == 200
+    assert r.get_json()["value"] == "secretvalue"
+
+
+def test_errors_are_json_not_html(client):
+    r = client.get("/api/does-not-exist")
+    assert r.status_code == 404
+    assert r.is_json
+    assert "error" in r.get_json()
+
+
+def test_hub_route_masks_keys(client, monkeypatch):
+    monkeypatch.setattr(control_app._hub, "load_hub", lambda: {"accounts": [{"a": 1}], "links": []})
+    monkeypatch.setattr(control_app._hub, "keys", lambda: [
+        {"name": "SECRET_KEY", "masked": "abcd…xyz", "set": True, "updated": None}
+    ])
+    r = client.get("/api/hub")
+    body = r.get_json()
+    assert body["keys"][0]["masked"] == "abcd…xyz"
+    body_text = json.dumps(body)
+    assert "SECRETVALUE_RAW" not in body_text
+
+
+def test_posts_move_and_cancel_require_fields(client):
+    r = client.post("/api/posts/move", json={}, headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 400
+    r = client.post("/api/posts/cancel", json={}, headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 400
+
+
+def test_niche_get_and_put(client, monkeypatch):
+    monkeypatch.setattr(control_app._niche, "load", lambda: {"a": 1})
+    r = client.get("/api/niche")
+    assert r.get_json() == {"a": 1}
+
+    monkeypatch.setattr(control_app._niche, "update", lambda body: {"a": 2, **body})
+    r = client.put("/api/niche", json={"b": 3},
+                    headers={"X-Token": control_app.CONTROL_TOKEN})
+    assert r.status_code == 200
+    assert r.get_json() == {"a": 2, "b": 3}
+
+    r = client.put("/api/niche", json={"b": 3})
+    assert r.status_code == 403

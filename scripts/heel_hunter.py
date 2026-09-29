@@ -219,6 +219,21 @@ def todays_trends():
 AFF_RE = re.compile(r"^\s*aff\s+(\S+)\s+(\S+)", re.I)
 
 
+def activate_one(domain, link):
+    """Activate a single brand with its approved tracking link. Mutates and
+    saves the registry; returns the updated entry. Shared by the Telegram
+    inbox flow (activate()) and the control-center API."""
+    reg = load_reg()
+    d = norm(domain)
+    e = reg["brands"].setdefault(d, {"domain": d})
+    q = urlparse(link).query
+    e.update(our_id=link, status="active",
+             affiliate_ref=("?" + q) if q else "",
+             activated=datetime.date.today().isoformat())
+    save_reg(reg)
+    return e
+
+
 def activate():
     reg = load_reg()
     done = []
@@ -232,16 +247,12 @@ def activate():
         if not m:
             continue
         d, link = norm(m.group(1)), m.group(2)
-        e = reg["brands"].setdefault(d, {"domain": d})
+        e = reg["brands"].get(norm(d), {})
         if e.get("our_id") == link:
             continue
-        q = urlparse(link).query
-        e.update(our_id=link, status="active",
-                 affiliate_ref=("?" + q) if q else "",
-                 activated=datetime.date.today().isoformat())
-        done.append(d)
-    if done:
-        save_reg(reg)
+        activate_one(d, link)
+        reg = load_reg()  # refresh after activate_one's own save
+        done.append(norm(d))
     return done
 
 
