@@ -13,6 +13,14 @@ Run:  py -3 daily_heel_scout.py            # send today's batch
 import os, sys, json, time, datetime, argparse
 from pathlib import Path
 
+# Niche config (niches/<active>/niche.json, editable in the Control Center → Tuning).
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 sys.stdout.reconfigure(encoding="utf-8") if sys.stdout else None
 # pythonw (scheduled task) has no console — guard so it runs headless
 if sys.stdout is None:
@@ -27,9 +35,9 @@ from product_scout import is_high_heel, scout_shopify, SHOPIFY_SOURCES
 DATA = Path(__file__).resolve().parent.parent / "data"
 SENT_LOG = DATA / "heel_sent_log.json"
 TAG = "thegothicvaul-20"
-NO_REPEAT_DAYS = 10
-BATCH = 5
-BRAND_MIN_PRICE = 100.0   # premium brand lane (registry-activated brands)
+NO_REPEAT_DAYS = _cfg("thresholds.NO_REPEAT_DAYS", 10)
+BATCH = _cfg("thresholds.BATCH", 5)
+BRAND_MIN_PRICE = _cfg("thresholds.BRAND_MIN_PRICE", 100.0)   # premium brand lane (registry-activated brands)
 
 # ── Curated Amazon HIGH-HEELS pool — MULTI-CATEGORY ──
 # The store is "high heels", not "gothic": gothic is ONE category among many.

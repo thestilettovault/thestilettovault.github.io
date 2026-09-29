@@ -25,6 +25,14 @@ HEBREW_WEEKDAYS = {
     6: "ראשון",
 }
 
+VALUE_LABELS = {"True": "עם וידאו", "False": "בלי וידאו", "true": "עם וידאו", "false": "בלי וידאו",
+                "none": "בלי הנחה", "unknown": "לא ידוע"}
+
+
+def vlabel(v):
+    return VALUE_LABELS.get(str(v), str(v))
+
+
 ATTRIBUTE_LABELS = {
     "price_band": "טווח מחיר",
     "program": "תוכנית שותפים",
@@ -184,12 +192,12 @@ def summary(rows, min_shoes=3):
         label = ATTRIBUTE_LABELS.get(attribute, attribute)
         if best is worst:
             sentences.append(
-                f"{label}: {best['value']} מוביל עם {best['clicks_per_shoe']} קליקים לנעל."
+                f"{label}: {vlabel(best['value'])} מוביל עם {best['clicks_per_shoe']} קליקים לנעל."
             )
         else:
             sentences.append(
-                f"{label}: {best['value']} מוביל עם {best['clicks_per_shoe']} קליקים לנעל; "
-                f"{worst['value']} הכי חלש ({worst['clicks_per_shoe']})."
+                f"{label}: {vlabel(best['value'])} מוביל עם {best['clicks_per_shoe']} קליקים לנעל; "
+                f"{vlabel(worst['value'])} הכי חלש ({worst['clicks_per_shoe']})."
             )
     return sentences
 

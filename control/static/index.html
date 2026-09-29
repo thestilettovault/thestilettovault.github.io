@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="control-token" content="__CONTROL_TOKEN__">
+<title>מרכז שליטה — Affiliate Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet" onerror="this.remove()">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <button class="hamburger" id="hamburger" aria-label="תפריט">☰</button>
+    <div class="brand">
+      <span class="brand-emoji" id="niche-emoji">🦇</span>
+      <span class="brand-name" id="niche-name">טוען...</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="bot-status" id="bot-status" title="סטטוס בוט">●</div>
+  </header>
+
+  <div class="shell">
+    <nav class="sidebar" id="sidebar">
+      <a href="#overview" data-route="overview">📊 סקירה</a>
+      <a href="#products" data-route="products">👠 מוצרים</a>
+      <a href="#schedule" data-route="schedule">🗓️ לוח פרסום</a>
+      <a href="#affiliates" data-route="affiliates">🤝 שותפים ו-Hub</a>
+      <a href="#research" data-route="research">🔎 מחקר ולמידה</a>
+      <a href="#tuning" data-route="tuning">⚙️ כיוונון</a>
+    </nav>
+
+    <main class="content" id="content">
+      <div class="loading-skeleton">טוען...</div>
+    </main>
+  </div>
+
+  <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

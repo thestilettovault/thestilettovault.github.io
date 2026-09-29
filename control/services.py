@@ -139,11 +139,14 @@ def _log_entry(path: Path):
 def _bot_alive():
     """The bot holds a listening lock socket on 127.0.0.1:49517 (telegram_bot.acquire_single_instance)."""
     import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        with socket.create_connection(("127.0.0.1", 49517), timeout=1):
-            return True
+        s.bind(("127.0.0.1", 49517))   # never connect: the bot doesn't accept() on its lock
     except OSError:
-        return False
+        return True                    # port held → bot running
+    finally:
+        s.close()
+    return False
 
 
 def _bot_alive_legacy():

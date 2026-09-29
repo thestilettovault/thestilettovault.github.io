@@ -25,6 +25,15 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, os.path.dirname(__file__))
 import affiliate_links
 
+# Niche config (niches/<active>/niche.json, editable in the Control Center → Tuning).
+# cfg() never raises and falls back to the literal default below.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 DATA = Path(__file__).resolve().parent.parent / "data"
 POOL = DATA / "aliexpress_pool.json"
 
@@ -42,6 +51,7 @@ SEARCHES = [
     ("thigh high heel boots", "Thigh-High Heel Boots"),
     ("high heel sandals",     "High-Heel Sandals"),
 ]
+SEARCHES = [tuple(x) for x in (_cfg("sourcing.aliexpress_searches") or SEARCHES)]
 _UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
        "(KHTML, like Gecko) Chrome/120 Safari/537.36")
 
@@ -114,9 +124,9 @@ def _deal(it):
 # Proven-converter gate (2026-09-27): 64 Admitad clicks → 0 sales on heels with
 # "1-4 sold". Buyers on AliExpress decide by social proof, so only keep heels that
 # already sell. Commission is ~6.9% of price, so a price floor lifts $/sale too.
-MIN_SOLD = 300
-MIN_RATING = 4.6
-MIN_PRICE = 20.0
+MIN_SOLD = _cfg("thresholds.MIN_SOLD", 300)
+MIN_RATING = _cfg("thresholds.MIN_RATING", 4.6)
+MIN_PRICE = _cfg("thresholds.MIN_PRICE", 20.0)
 
 
 def _sold_n(txt):

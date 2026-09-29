@@ -27,6 +27,14 @@ import os, re, sys, json, html, datetime, argparse
 from pathlib import Path
 from urllib.parse import urlparse
 
+# Niche config (niches/<active>/niche.json, editable in the Control Center → Tuning).
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 import requests
 
 if sys.stdout is None:
@@ -44,7 +52,7 @@ TRENDS = DATA / "trends.json"
 INBOX = Path(__file__).resolve().parent / "tg_inbox.jsonl"
 KIT = DATA / "affiliate_form_kit.md"
 
-MIN_VALUE = 5.0          # $ per sale (commission% × avg heel price) to earn a signup card
+MIN_VALUE = _cfg("thresholds.MIN_VALUE", 5.0)          # $ per sale (commission% × avg heel price) to earn a signup card
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120 Safari/537.36"}
 
 AFF_PATHS = ["pages/affiliate-program", "pages/affiliates", "pages/affiliate",
