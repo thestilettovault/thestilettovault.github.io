@@ -109,6 +109,22 @@ def _needs_you():
     except Exception as e:
         items.append({"kind": "error", "text": f"affiliate_registry: {e}", "action": ""})
 
+    # platform restrictions / compliance to-dos (data/account_alerts.json)
+    try:
+        import datetime as _dt
+        today = _dt.date.today().isoformat()
+        for a in (_load_json(DATA / "account_alerts.json", {"alerts": []}).get("alerts") or []):
+            if a.get("done") or (a.get("until") and a["until"] < today):
+                continue
+            items.append({
+                "kind": "account_alert",
+                "text": f"⚠️ {a.get('platform','')}: {a.get('text','')}"
+                        + (f" (עד {a['until']})" if a.get("until") else ""),
+                "action": a.get("id", ""),
+            })
+    except Exception as e:
+        items.append({"kind": "error", "text": f"account_alerts: {e}", "action": ""})
+
     # failed Zernio posts
     try:
         posts = posts_list()

@@ -4,7 +4,7 @@
     "name": "The Stiletto Vault",
     "emoji": "👠",
     "product_noun": "heel",
-    "site": "https://thestilettovault.github.io"
+    "site": "https://thestilettovault.com"
   },
   "sourcing": {
     "aliexpress_searches": [
@@ -76,5 +76,26 @@
       "tiktok made me buy it heels",
       "trending stilettos tiktok"
     ]
+  },
+  "compliance": {
+    "custom_domain": "thestilettovault.com (Porkbun, DNS: 4×A 185.199.108-111.153 + CNAME www→<user>.github.io, CNAME file in repo)",
+    "required_pages": [
+      "about.html",
+      "disclosure.html",
+      "contact.html",
+      "privacy-policy.html"
+    ],
+    "site_footer_disclosure": true,
+    "link_rel": "sponsored noopener",
+    "caption_rules": {
+      "no_urls_in_caption": true,
+      "cta": "Link in bio",
+      "disclosure_tags": [
+        "#ad",
+        "#affiliate"
+      ]
+    },
+    "max_posts_per_day_new_account": 2,
+    "secrets": "only in scripts/.env (gitignored); never in code or git remote URL"
   }
 }
