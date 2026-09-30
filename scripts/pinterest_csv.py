@@ -30,7 +30,7 @@ import space_runner, affiliate_links
 ROOT    = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "data" / "approved_catalog.json"
 OUT     = ROOT / "dashboard" / "pinterest_bulk.csv"
-SITE    = "https://thestilettovault.github.io"
+SITE    = "https://thestilettovault.com"
 
 
 def hosted_image(it):

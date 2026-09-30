@@ -53,7 +53,7 @@ ZERNIO_API_KEY      = os.getenv("ZERNIO_API_KEY", "")
 ZERNIO_TIKTOK_ID    = os.getenv("ZERNIO_TIKTOK_ID", "")
 ZERNIO_INSTAGRAM_ID = os.getenv("ZERNIO_INSTAGRAM_ID", "")
 
-SITE_URL = "https://thestilettovault.github.io"   # link-in-bio target
+SITE_URL = "https://thestilettovault.com"   # link-in-bio target
 
 # 5-8 tags per post, mixing niche + reach (per reference_posting_schedule)
 HASHTAGS = ["#heels", "#stilettoheels", "#darkfashion", "#gothicfashion",

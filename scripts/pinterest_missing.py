@@ -25,7 +25,7 @@ import space_runner, affiliate_links
 ROOT    = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "data" / "approved_catalog.json"
 OUT     = ROOT / "dashboard" / "pinterest_missing.csv"
-SITE    = "thestilettovault.github.io"
+SITE    = "thestilettovault.com"
 
 # Distinct editorial openers — one per pin, keyed by item id. Each starts with
 # different words so Pinterest's title-dedup treats them as unique pins.
