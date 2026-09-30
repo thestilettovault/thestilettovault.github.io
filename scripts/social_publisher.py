@@ -203,7 +203,7 @@ def publish(item, do_publish):
     full_caption = build_caption(item)
     # TikTok PHOTO posts use content as a slideshow title capped at 90 chars.
     tiktok_caption = full_caption if media_type == "video" else \
-        f"{item.get('title','').strip()[:60]} 🖤 thestilettovault.github.io"
+        f"{item.get('title','').strip()[:60]} 🖤 link in bio #ad"
 
     targets = []
     if ZERNIO_INSTAGRAM_ID:
