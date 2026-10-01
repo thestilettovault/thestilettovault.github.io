@@ -11,12 +11,16 @@
       "signup_url": "https://nakedwolfe.com/pages/affiliate-program",
       "requirements": "Who can join? Anyone who has made a purchase from nakedwolfe.",
       "signup_link": "https://app.socialsnowball.io",
-      "status": "approved",
+      "status": "active",
       "value_per_sale": 30.0,
       "updated": "2026-09-29",
       "carded": "2026-09-29",
       "approved_at": "2026-10-01",
-      "notes": "אושר; ממתין ללינק אישי (aff ... <link>)"
+      "notes": "Social Snowball; ref param snowball=OFER56992 on any product URL",
+      "our_id": "https://www.nakedwolfe.com/?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+      "affiliate_ref": "?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+      "activated": "2026-10-01",
+      "short_link": "https://www.nakedwolfe.com/OFER56992"
     },
     "publicdesire.com": {
       "domain": "publicdesire.com",
