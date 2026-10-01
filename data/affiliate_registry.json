@@ -6,15 +6,17 @@
       "avg_price": 300.0,
       "heel_count": 37,
       "program": "SocialSnowball",
-      "network": false,
+      "network": "socialsnowball",
       "commission": 10.0,
       "signup_url": "https://nakedwolfe.com/pages/affiliate-program",
       "requirements": "Who can join? Anyone who has made a purchase from nakedwolfe.",
       "signup_link": "https://app.socialsnowball.io",
-      "status": "carded",
+      "status": "approved",
       "value_per_sale": 30.0,
       "updated": "2026-09-29",
-      "carded": "2026-09-29"
+      "carded": "2026-09-29",
+      "approved_at": "2026-10-01",
+      "notes": "אושר; ממתין ללינק אישי (aff ... <link>)"
     },
     "publicdesire.com": {
       "domain": "publicdesire.com",
@@ -114,13 +116,14 @@
       "avg_price": 99.0,
       "heel_count": 184,
       "program": "ShareASale",
-      "network": true,
+      "network": "awin (ShareASale)",
       "signup_url": "https://jessicasimpson.com/pages/jessica-simpson-affiliate-program",
       "status": "carded",
       "value_per_sale": 7.92,
       "updated": "2026-09-29",
       "note": "heel_hunter run 1 (2026-09-29)",
-      "carded": "2026-09-29"
+      "carded": "2026-09-29",
+      "notes": "דורש חשבון Awin — ממתין לשחזור גישה"
     },
     "larroude.com": {
       "domain": "larroude.com",
@@ -177,13 +180,15 @@
       "avg_price": 89.0,
       "heel_count": 98,
       "program": "Direct",
-      "network": false,
+      "network": "upfluence",
       "signup_url": "https://azaleawang.com/pages/affiliates",
-      "status": "carded",
+      "status": "applied",
       "value_per_sale": 7.12,
       "updated": "2026-09-29",
       "note": "heel_hunter run 1 (2026-09-29)",
-      "carded": "2026-09-29"
+      "carded": "2026-09-29",
+      "applied_at": "2026-10-01",
+      "notes": "Upfluence ambassador — ממתין לאישור"
     },
     "schutz-shoes.com": {
       "domain": "schutz-shoes.com",
