@@ -10,7 +10,8 @@
       "id": "ig-bio",
       "platform": "Instagram",
       "text": "לעדכן לינק בביו ל-thestilettovault.com + שורת 'affiliate links, not a store'",
-      "done": false
+      "done": true,
+      "note": "לא ניתן לשנות בזמן ההגבלה; הלינק הישן github.io מפנה ל-.com ממילא"
     },
     {
       "id": "ig-review",
