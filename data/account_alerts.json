@@ -17,31 +17,32 @@
       "id": "ig-review",
       "platform": "Instagram",
       "text": "לשלוח Request review (דדליין 2026-10-28) עם לינק ל-disclosure.html",
-      "until": "2026-10-28"
+      "until": "2026-10-28",
+      "done": true
     },
     {
       "id": "tt-bio",
       "platform": "TikTok",
       "text": "לעדכן לינק בביו ל-thestilettovault.com",
-      "done": false
+      "done": true
     },
     {
       "id": "gh-https",
       "platform": "GitHub",
       "text": "לסמן Enforce HTTPS ב-Settings→Pages",
-      "done": false
+      "done": true
     },
     {
       "id": "gh-collab",
       "platform": "GitHub",
       "text": "להוסיף את Oferabin כ-collaborator (Write) — בלי זה auto-push נכשל ב-403",
-      "done": false
+      "done": true
     },
     {
       "id": "gh-old-token",
       "platform": "GitHub",
       "text": "לוודא שהטוקן הישן MIA-AutoDeploy נמחק",
-      "done": false
+      "done": true
     }
   ]
 }
