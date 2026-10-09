@@ -68,9 +68,16 @@ def find_variation_image(slug):
         folder = matches[0] if matches else folder
     if not folder.is_dir():
         return None
-    post = folder / "post_image.jpg"
-    if post.exists():
-        return post
+    # The site shows the CLEAN shoe photo (no burned-in price/headline) so the
+    # catalog looks uniform: the ad Ofer chose in Telegram, else the first ad.
+    # post_image.jpg (chosen ad + deal overlay) is for social posts only.
+    try:
+        st = json.loads((ROOT / "data" / "orchestrator_state.json").read_text(encoding="utf-8"))
+        chosen = (st.get(folder.name) or {}).get("chosen")
+        if chosen and (folder / chosen).exists():
+            return folder / chosen
+    except Exception:
+        pass
     ads = sorted(p for p in folder.iterdir()
                  if p.name.lower().startswith("ad_") and p.suffix.lower() in IMG_EXTS)
     return ads[0] if ads else None
