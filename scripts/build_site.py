@@ -122,6 +122,33 @@ def short_name(title, n=26):
     return t if len(t) <= n else t[:n - 1].rstrip() + "…"
 
 
+CATS = [("boots", ("boot",)), ("platforms", ("platform",)),
+        ("sandals", ("sandal", "slingback", "strappy", "mule")),
+        ("pumps", ("pump", "court")), ("stilettos", ("stiletto", "heel"))]
+COLORS = ["black", "white", "red", "pink", "nude", "beige", "brown", "silver", "gold",
+          "blue", "green", "purple", "clear", "leopard", "burgundy"]
+
+
+def card_meta(item):
+    """Facets for the on-site catalog filters: category, color, store, price, discount."""
+    t = (item.get("title", "") + " " + item.get("url", "")).lower()
+    cat = next((c for c, keys in CATS if any(k in t for k in keys)), "stilettos")
+    color = next((c for c in COLORS if c in t), "")
+    deal = item.get("deal", {}) or {}
+    try:
+        price = float(str(deal.get("sale") or item.get("price") or "").replace("$", "") or 0)
+    except ValueError:
+        price = 0
+    disc = "".join(ch for ch in str(deal.get("discount") or "") if ch.isdigit()) or "0"
+    host = (item.get("domain") or "").lower() or \
+        (item.get("url", "").split("/")[2].lower() if "://" in item.get("url", "") else "")
+    store = {"aliexpress": "AliExpress", "amazon": "Amazon", "nakedwolfe": "Naked Wolfe",
+             "publicdesire": "Public Desire", "darkinlove": "Dark In Love", "gthic": "GTHIC"}.get(
+        host.replace("www.", "").split(".")[0], host.replace("www.", "").split(".")[0].replace("-", " ").title())
+    return {"cat": cat, "color": color, "price": f"{price:.2f}" if price else "",
+            "disc": disc, "store": store, "date": (item.get("date") or "")[:10]}
+
+
 def card_html(item, slug):
     src   = resolve_image(item, slug)
     # Tag the affiliate link with subid=slug so a sale on Admitad is attributable
@@ -144,15 +171,23 @@ def card_html(item, slug):
     # even before a sale lands in Admitad. Guarded so it never breaks if gtag is blocked.
     onclick = (f"if(window.gtag)gtag('event','affiliate_click',"
                f"{{'shoe':'{slug}','discount':'{disc}'}});")
+    m = {k: esc(v) for k, v in card_meta(item).items()}
+    badge = f'        <span class="card-badge">-{m["disc"]}%</span>\n' if m["disc"] not in ("", "0") else ""
+    store = f'          <span class="card-store">{m["store"]}</span>\n' if m["store"] else ""
     return (
-        '      <a class="product-card" href="{href}" target="_blank" rel="sponsored noopener" onclick="{onclick}">\n'
+        '      <a class="product-card" href="{href}" target="_blank" rel="sponsored noopener" onclick="{onclick}" '
+        'data-cat="{m[cat]}" data-color="{m[color]}" data-price="{m[price]}" data-disc="{m[disc]}" '
+        'data-store="{m[store]}" data-date="{m[date]}">\n'
         '        <img src="{src}" alt="{alt}" loading="lazy">\n'
+        '{badge}'
         '        <div class="card-info">\n'
+        '{store}'
         '          <span class="card-name">{name}</span>\n'
         '          <span class="card-price">{price}</span>\n'
         '        </div>\n'
         '      </a>'
-    ).format(href=href, src=esc(src), alt=alt, name=name, price=price, onclick=onclick)
+    ).format(href=href, src=esc(src), alt=alt, name=name, price=price, onclick=onclick,
+             m=m, badge=badge, store=store)
 
 
 def build_cards(items):

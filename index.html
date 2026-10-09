@@ -6,7 +6,14 @@
   <meta name="p:domain_verify" content="a8baf9c03d6214ab10fb8e457d823c66"/>
   <meta name="verify-admitad" content="9a9d9ab959" />
   <title>The Stiletto Vault</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;1,300&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta name="description" content="The Stiletto Vault: hand-picked statement heels (stilettos, platforms, boots) with the best deals from trusted stores." />
+  <meta property="og:title" content="The Stiletto Vault: heels that talk back" />
+  <meta property="og:description" content="Hand-picked statement heels at the best price. Search, filter, shop." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://thestilettovault.com/" />
+  <link rel="canonical" href="https://thestilettovault.com/" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8ECQ383380"></script>
   <script>
@@ -16,331 +23,123 @@
     gtag('config', 'G-8ECQ383380');
   </script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:      #080808;
-      --surface: #0f0f0f;
-      --border:  #1e1e1e;
-      --crimson: #8B0000;
-      --gold:    #B8860B;
-      --gold-lt: #d4a843;
-      --text:    #d4cfc5;
-      --muted:   #5a5550;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#09090b;--surface:#141418;--line:#26262d;--text:#f5f3f7;--muted:#9a97a3;
+      --hot:#ff2e7e;--hot2:#ff7a3d;--glass:rgba(9,9,11,.75);--r:18px}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{color:inherit;text-decoration:none}
+    .page{max-width:1280px;margin:0 auto;padding:0 16px}
+    .topbar{position:sticky;top:0;z-index:50;background:var(--glass);backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    .topbar .page{display:flex;align-items:center;gap:16px;height:64px}
+    .logo{font-family:'Unbounded';font-weight:900;font-size:18px;letter-spacing:-.02em;white-space:nowrap}
+    .logo b,.hero h1 em{background:linear-gradient(90deg,var(--hot),var(--hot2));
+      -webkit-background-clip:text;background-clip:text;color:transparent;font-style:normal}
+    .search{flex:1;max-width:520px;margin-left:auto;position:relative}
+    .search input{width:100%;height:42px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+      color:var(--text);padding:0 16px 0 42px;font:500 15px 'Inter';outline:none;transition:border-color .2s}
+    .search input:focus{border-color:var(--hot)}
+    .search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);opacity:.6}
+    .hero{position:relative;padding:72px 0 40px}
+    .hero::before{content:'';position:absolute;width:560px;height:560px;right:-120px;top:-240px;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,46,126,.33),transparent 65%);pointer-events:none;z-index:-1}
+    .eyebrow{font:700 12px 'Inter';letter-spacing:.22em;text-transform:uppercase;color:var(--hot)}
+    .hero h1{font-family:'Unbounded';font-weight:900;font-size:clamp(40px,8vw,104px);line-height:.92;
+      letter-spacing:-.045em;margin:16px 0 20px;max-width:12ch}
+    .hero p{color:var(--muted);font-size:17px;max-width:46ch;line-height:1.6}
+    .stats{display:flex;gap:28px;margin-top:28px;flex-wrap:wrap}
+    .stats div{font-family:'Unbounded';font-weight:700;font-size:22px}
+    .stats span{display:block;font:600 11px 'Inter';color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
+    .toolbar{position:sticky;top:64px;z-index:40;background:var(--bg);padding:14px 0;display:flex;gap:10px;
+      align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+    .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{flex:none;height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:transparent;
+      color:var(--text);font:600 13px 'Inter';cursor:pointer;text-transform:capitalize;transition:all .2s}
+    .chip:hover{border-color:var(--hot)}
+    .chip[aria-pressed=true]{background:var(--text);color:#09090b;border-color:var(--text)}
+    .toolbar select{height:36px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+      color:var(--text);font:600 13px 'Inter';padding:0 14px;cursor:pointer}
+    .count{color:var(--muted);font-size:13px;white-space:nowrap}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;padding:24px 0 48px}
+    .grid .pair-grid,.grid .single-grid{display:contents}
+    .pair-sep{display:none}
+    .product-card{position:relative;display:flex;flex-direction:column;background:var(--surface);
+      border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+      transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .35s}
+    .product-card:hover{transform:translateY(-6px);border-color:rgba(255,46,126,.55);box-shadow:0 18px 40px -18px rgba(255,46,126,.45)}
+    .product-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#1b1b20;
+      transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+    .product-card:hover img{transform:scale(1.05)}
+    .card-badge{display:none;position:absolute;top:12px;left:12px;background:var(--hot);color:#fff;font:700 12px 'Inter';
+      padding:5px 10px;border-radius:999px;box-shadow:0 6px 18px -6px var(--hot)}
+    .card-info{display:flex;flex-direction:column;gap:4px;padding:14px 14px 16px;flex:1}
+    .card-store{font:600 11px 'Inter';letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+    .card-name{font:600 14px/1.35 'Inter';color:var(--text);display:-webkit-box;-webkit-line-clamp:2;
+      -webkit-box-orient:vertical;overflow:hidden}
+    .card-price{font-family:'Unbounded';font-weight:700;font-size:17px;margin-top:auto;padding-top:6px;
+      display:flex;justify-content:space-between;align-items:baseline}
+    .card-price::after{content:'Shop \2192';font:700 12px 'Inter';color:var(--hot)}
+    .product-card.hide{display:none}
+    #empty{display:none;text-align:center;color:var(--muted);padding:60px 0}
+    .lookbook{padding:12px 0 24px;border-top:1px solid var(--line)}
+    .tour-label{grid-column:1/-1;font-family:'Unbounded';font-weight:700;font-size:clamp(22px,3vw,32px);
+      letter-spacing:-.02em;margin:24px 0 0}
+    .contact{display:inline-flex;gap:10px;align-items:center;margin:8px 0 32px;padding:14px 22px;border-radius:999px;
+      border:1px solid var(--line);font-weight:600}
+    .contact:hover{border-color:var(--hot)}
+    .footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--muted);font-size:13px;line-height:1.8;text-align:center}
+    .footer a{color:var(--text)}
+    @media (max-width:640px){
+      .topbar .page{height:58px}.toolbar{top:58px}.logo{font-size:14px}.hero{padding:44px 0 28px}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .card-info{padding:10px 10px 12px}.card-name{font-size:13px}.card-price{font-size:15px}
+      .card-price::after{content:none}.stats{gap:18px}.count{display:none}
+      .chips{flex-basis:100%}.toolbar select{margin-left:auto}
     }
-
-    html, body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Crimson Pro', serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.5;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.85) 100%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 420px;
-      padding: 48px 24px 64px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0;
-    }
-
-    /* ── moth ── */
-    .moth {
-      width: 90px;
-      height: 90px;
-      margin-bottom: 20px;
-      animation: float 6s ease-in-out infinite;
-      filter: drop-shadow(0 0 12px rgba(184,134,11,0.3));
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50%       { transform: translateY(-8px); }
-    }
-
-    .brand {
-      font-family: 'Cinzel', serif;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.25em;
-      color: var(--text);
-      text-transform: uppercase;
-      text-align: center;
-      margin-bottom: 6px;
-      animation: fadeUp 0.8s 0.25s ease both, flicker 4s 1s ease-in-out infinite;
-    }
-
-    .tagline {
-      font-family: 'Crimson Pro', serif;
-      font-style: italic;
-      font-size: 13px;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .divider {
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      margin-bottom: 36px;
-      opacity: 0.35;
-    }
-
-    /* ── tour header ── */
-    .tour-label {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .tour-label::before,
-    .tour-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      opacity: 0.25;
-    }
-
-    .tour-label span {
-      font-family: 'Cinzel', serif;
-      font-size: 9px;
-      letter-spacing: 0.35em;
-      color: var(--gold-lt);
-      text-transform: uppercase;
-      white-space: nowrap;
-      opacity: 0.8;
-    }
-
-    /* ── product grid ── */
-    .links {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      margin-bottom: 36px;
-    }
-
-    .pair-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 4px;
-    }
-
-    .product-card {
-      display: flex;
-      flex-direction: column;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--text);
-      cursor: pointer;
-      overflow: hidden;
-      transition: border-color 0.25s, box-shadow 0.25s;
-    }
-
-    .product-card:hover {
-      border-color: var(--gold);
-      box-shadow: 0 0 14px rgba(184,134,11,0.1), inset 0 0 20px rgba(184,134,11,0.03);
-    }
-
-    .product-card:active {
-      transform: scale(0.99);
-    }
-
-    .product-card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      display: block;
-      filter: brightness(0.92) saturate(0.85);
-      transition: filter 0.25s;
-    }
-
-    .product-card:hover img {
-      filter: brightness(1) saturate(1);
-    }
-
-    .card-info {
-      padding: 10px 11px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .card-name {
-      font-family: 'Cinzel', serif;
-      font-size: 8.5px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    .card-price {
-      font-family: 'Crimson Pro', serif;
-      font-style: italic;
-      font-size: 14px;
-      color: var(--gold-lt);
-    }
-
-    /* ── single card (full width) ── */
-    .single-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 4px;
-    }
-
-    .single-grid .product-card img {
-      height: 220px;
-    }
-
-    /* ── pair separator ── */
-    .pair-sep {
-      font-family: 'Cinzel', serif;
-      font-size: 7px;
-      letter-spacing: 0.4em;
-      color: var(--muted);
-      text-align: center;
-      padding: 14px 0;
-      opacity: 0.35;
-    }
-
-    /* ── contact ── */
-    .contact {
-      width: 100%;
-      padding: 12px 20px;
-      border: 1px dashed var(--border);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted);
-      text-decoration: none;
-      font-family: 'Crimson Pro', serif;
-      font-style: italic;
-      font-size: 13px;
-      letter-spacing: 0.08em;
-      transition: color 0.25s, border-color 0.25s;
-      cursor: pointer;
-    }
-
-    .contact:hover {
-      color: var(--text);
-      border-color: var(--muted);
-    }
-
-    .footer {
-      margin-top: 40px;
-      font-family: 'Cinzel', serif;
-      font-size: 9px;
-      letter-spacing: 0.3em;
-      color: var(--muted);
-      opacity: 0.4;
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    /* ── entrance animations ── */
-    .container > * { animation: fadeUp 0.8s ease both; }
-    .moth       { animation-delay: 0.1s; }
-    .tagline    { animation-delay: 0.35s; }
-    .divider    { animation-delay: 0.45s; }
-    .links      { animation-delay: 0.55s; }
-    .contact    { animation-delay: 0.65s; }
-    .footer     { animation-delay: 0.75s; }
-    .footer a   { color: inherit; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes flicker {
-      0%, 100% { text-shadow: 0 0 8px rgba(184,134,11,0.15); }
-      50%       { text-shadow: 0 0 16px rgba(184,134,11,0.3); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-    }
+    @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
   </style>
 </head>
 <body>
-<div class="container">
-
-  <svg class="moth" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="50" cy="50" rx="4" ry="18" fill="#1a1a1a" stroke="#B8860B" stroke-width="0.8"/>
-    <path d="M49 34 Q38 20 30 16" stroke="#B8860B" stroke-width="0.8" stroke-linecap="round" fill="none"/>
-    <path d="M51 34 Q62 20 70 16" stroke="#B8860B" stroke-width="0.8" stroke-linecap="round" fill="none"/>
-    <circle cx="30" cy="16" r="1.5" fill="#B8860B"/>
-    <circle cx="70" cy="16" r="1.5" fill="#B8860B"/>
-    <path d="M48 38 Q28 28 14 36 Q10 46 20 54 Q34 58 46 50 Z" fill="#0d0d0d" stroke="#B8860B" stroke-width="0.7"/>
-    <path d="M52 38 Q72 28 86 36 Q90 46 80 54 Q66 58 54 50 Z" fill="#0d0d0d" stroke="#B8860B" stroke-width="0.7"/>
-    <path d="M32 38 Q26 44 28 50" stroke="#3a1a00" stroke-width="0.5" fill="none"/>
-    <path d="M38 34 Q32 40 34 48" stroke="#3a1a00" stroke-width="0.5" fill="none"/>
-    <circle cx="24" cy="44" r="2" fill="none" stroke="#8B0000" stroke-width="0.6"/>
-    <path d="M68 38 Q74 44 72 50" stroke="#3a1a00" stroke-width="0.5" fill="none"/>
-    <path d="M62 34 Q68 40 66 48" stroke="#3a1a00" stroke-width="0.5" fill="none"/>
-    <circle cx="76" cy="44" r="2" fill="none" stroke="#8B0000" stroke-width="0.6"/>
-    <path d="M47 52 Q30 56 22 66 Q26 74 38 70 Q46 64 48 56 Z" fill="#0a0a0a" stroke="#B8860B" stroke-width="0.6"/>
-    <path d="M53 52 Q70 56 78 66 Q74 74 62 70 Q54 64 52 56 Z" fill="#0a0a0a" stroke="#B8860B" stroke-width="0.6"/>
-  </svg>
-
-  <div class="brand">The Stiletto Vault</div>
-  <div class="tagline">Killer heels for the dark at heart.</div>
-  <div class="divider"></div>
-
-  <div class="links">
-
-    <!-- Auto-generated heel drops (build_site.py injects between the markers) -->
-    <div class="tour-label"><span>Latest Heels</span></div>
+<header class="topbar"><div class="page">
+  <a class="logo" href="/">THE STILETTO <b>VAULT</b></a>
+  <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="Search heels, colors, stores" aria-label="Search heels" autocomplete="off"></label>
+</div></header>
+<div class="page">
+  <section class="hero">
+    <div class="eyebrow">Hand-picked &middot; Best price &middot; Trusted stores</div>
+    <h1>Heels that <em>talk back.</em></h1>
+    <p>Statement stilettos, platforms and boots, curated daily. We find the pair, you click once and buy it straight from the store.</p>
+    <div class="stats"><div id="st-n">0<span>styles</span></div><div id="st-d">0<span>top discount</span></div><div id="st-s">0<span>stores</span></div></div>
+  </section>
+  <div class="toolbar">
+    <div class="chips" id="chips" role="group" aria-label="Category"></div>
+    <select id="sort" aria-label="Sort">
+      <option value="new">Newest</option><option value="disc">Biggest discount</option>
+      <option value="low">Price: low to high</option><option value="high">Price: high to low</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+  <section id="shop">
+    <div class="grid" id="grid">
     <!-- HEELS:START -->
     <div class="pair-grid">
-      <a class="product-card" href="https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&amp;utm_source=snowball&amp;utm_medium=default-program&amp;utm_campaign=OFER56992" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'river-white-patent','discount':''});">
+      <a class="product-card" href="https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&amp;utm_source=snowball&amp;utm_medium=default-program&amp;utm_campaign=OFER56992" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'river-white-patent','discount':''});" data-cat="stilettos" data-color="white" data-price="" data-disc="0" data-store="Naked Wolfe" data-date="2026-10-05">
         <img src="img/heels/river-white-patent.jpg" alt="River White Patent" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Naked Wolfe</span>
           <span class="card-name">River White Patent</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=platform-high-heels-3256810584098285&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810584098285.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'platform-high-heels-3256810584098285','discount':'52%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=platform-high-heels-3256810584098285&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810584098285.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'platform-high-heels-3256810584098285','discount':'52%'});" data-cat="platforms" data-color="" data-price="33.72" data-disc="52" data-store="AliExpress" data-date="2026-10-04">
         <img src="img/heels/platform-high-heels-3256810584098285.jpg" alt="Platform High Heels" loading="lazy">
+        <span class="card-badge">-52%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Platform High Heels · 52% OFF</span>
           <span class="card-price">$33.72</span>
         </div>
@@ -348,16 +147,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&amp;utm_source=snowball&amp;utm_medium=default-program&amp;utm_campaign=OFER56992" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'river-black-patent','discount':''});">
+      <a class="product-card" href="https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&amp;utm_source=snowball&amp;utm_medium=default-program&amp;utm_campaign=OFER56992" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'river-black-patent','discount':''});" data-cat="stilettos" data-color="black" data-price="" data-disc="0" data-store="Naked Wolfe" data-date="2026-10-04">
         <img src="img/heels/river-black-patent.jpg" alt="River Black Patent" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Naked Wolfe</span>
           <span class="card-name">River Black Patent</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&amp;utm_source=snowball&amp;utm_medium=default-program&amp;utm_campaign=OFER56992" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'rampage-brown-suede','discount':''});">
+      <a class="product-card" href="https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&amp;utm_source=snowball&amp;utm_medium=default-program&amp;utm_campaign=OFER56992" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'rampage-brown-suede','discount':''});" data-cat="stilettos" data-color="brown" data-price="" data-disc="0" data-store="Naked Wolfe" data-date="2026-10-02">
         <img src="img/heels/rampage-brown-suede.jpg" alt="Rampage Brown Suede" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Naked Wolfe</span>
           <span class="card-name">Rampage Brown Suede</span>
           <span class="card-price">Shop</span>
         </div>
@@ -365,16 +166,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256807553262560&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553262560.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256807553262560','discount':'62%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256807553262560&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553262560.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256807553262560','discount':'62%'});" data-cat="pumps" data-color="" data-price="50.05" data-disc="62" data-store="AliExpress" data-date="2026-10-01">
         <img src="img/heels/pointed-toe-pump-3256807553262560.jpg" alt="Pointed-Toe Pump" loading="lazy">
+        <span class="card-badge">-62%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Pointed-Toe Pump · 62% OFF</span>
           <span class="card-price">$50.05</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256805663137456&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256805663137456.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256805663137456','discount':'59%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256805663137456&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256805663137456.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256805663137456','discount':'59%'});" data-cat="stilettos" data-color="" data-price="43.77" data-disc="59" data-store="AliExpress" data-date="2026-09-29">
         <img src="img/heels/stiletto-heels-3256805663137456.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-59%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 59% OFF</span>
           <span class="card-price">$43.77</span>
         </div>
@@ -382,16 +187,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256809356402716&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256809356402716.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256809356402716','discount':'60%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256809356402716&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256809356402716.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256809356402716','discount':'60%'});" data-cat="stilettos" data-color="" data-price="41.41" data-disc="60" data-store="AliExpress" data-date="2026-09-29">
         <img src="img/heels/stiletto-heels-3256809356402716.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-60%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 60% OFF</span>
           <span class="card-price">$41.41</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256810098789067&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810098789067.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256810098789067','discount':'58%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256810098789067&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810098789067.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256810098789067','discount':'58%'});" data-cat="stilettos" data-color="" data-price="32.52" data-disc="58" data-store="AliExpress" data-date="2026-09-29">
         <img src="img/heels/stiletto-heels-3256810098789067.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-58%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 58% OFF</span>
           <span class="card-price">$32.52</span>
         </div>
@@ -399,16 +208,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808182719166&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808182719166.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808182719166','discount':'59%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808182719166&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808182719166.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808182719166','discount':'59%'});" data-cat="stilettos" data-color="" data-price="26.12" data-disc="59" data-store="AliExpress" data-date="2026-09-29">
         <img src="img/heels/stiletto-heels-3256808182719166.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-59%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 59% OFF</span>
           <span class="card-price">$26.12</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256807554485090&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807554485090.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256807554485090','discount':'62%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256807554485090&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807554485090.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256807554485090','discount':'62%'});" data-cat="stilettos" data-color="" data-price="24.12" data-disc="62" data-store="AliExpress" data-date="2026-09-28">
         <img src="img/heels/stiletto-heels-3256807554485090.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-62%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 62% OFF</span>
           <span class="card-price">$24.12</span>
         </div>
@@ -416,16 +229,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808036641274&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808036641274.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808036641274','discount':'62%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808036641274&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808036641274.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808036641274','discount':'62%'});" data-cat="stilettos" data-color="" data-price="26.12" data-disc="62" data-store="AliExpress" data-date="2026-09-28">
         <img src="img/heels/stiletto-heels-3256808036641274.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-62%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 62% OFF</span>
           <span class="card-price">$26.12</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812048305063&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812048305063.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812048305063','discount':'4%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812048305063&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812048305063.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812048305063','discount':'4%'});" data-cat="stilettos" data-color="" data-price="16.80" data-disc="4" data-store="AliExpress" data-date="2026-09-24">
         <img src="img/heels/stiletto-heels-3256812048305063.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-4%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 4% OFF</span>
           <span class="card-price">$16.8</span>
         </div>
@@ -433,16 +250,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'rotate-burgundy-croc-gold-toe-detail-court-hi','discount':''});">
+      <a class="product-card" href="https://publicdesire.com/products/rotate-burgundy-croc-gold-toe-detail-court-high-heels" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'rotate-burgundy-croc-gold-toe-detail-court-hi','discount':''});" data-cat="pumps" data-color="gold" data-price="" data-disc="0" data-store="Public Desire" data-date="2026-09-23">
         <img src="img/heels/rotate-burgundy-croc-gold-toe-detail-court-hi.jpg" alt="Rotate Burgundy Croc Gold Toe Detail Court High Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Public Desire</span>
           <span class="card-name">Rotate Burgundy Croc Gold…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'ti-amo-silver-metallic-pu-padlock-detail-bare','discount':''});">
+      <a class="product-card" href="https://publicdesire.com/products/ti-amo-silver-metallic-pu-padlock-detail-barely-there-pointed-toe-stilettos-heels" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'ti-amo-silver-metallic-pu-padlock-detail-bare','discount':''});" data-cat="stilettos" data-color="silver" data-price="" data-disc="0" data-store="Public Desire" data-date="2026-09-23">
         <img src="img/heels/ti-amo-silver-metallic-pu-padlock-detail-bare.jpg" alt="Ti Amo Silver Metallic Pu Padlock Detail Barely There Pointed Toe Stilettos Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Public Desire</span>
           <span class="card-name">Ti Amo Silver Metallic Pu…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -450,16 +269,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256810301489471&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810301489471.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256810301489471','discount':'50%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256810301489471&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810301489471.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256810301489471','discount':'50%'});" data-cat="pumps" data-color="" data-price="17.06" data-disc="50" data-store="AliExpress" data-date="2026-09-23">
         <img src="img/heels/pointed-toe-pump-3256810301489471.jpg" alt="Pointed-Toe Pump" loading="lazy">
+        <span class="card-badge">-50%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Pointed-Toe Pump · 50% OFF</span>
           <span class="card-price">$17.06</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-2255800912705100&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2255800912705100.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-2255800912705100','discount':'30%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-2255800912705100&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2255800912705100.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-2255800912705100','discount':'30%'});" data-cat="stilettos" data-color="" data-price="14.34" data-disc="30" data-store="AliExpress" data-date="2026-09-22">
         <img src="img/heels/stiletto-heels-2255800912705100.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-30%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 30% OFF</span>
           <span class="card-price">$14.34</span>
         </div>
@@ -467,16 +290,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256813014380485&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256813014380485.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256813014380485','discount':'78%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256813014380485&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256813014380485.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256813014380485','discount':'78%'});" data-cat="stilettos" data-color="" data-price="44.04" data-disc="78" data-store="AliExpress" data-date="2026-09-18">
         <img src="img/heels/stiletto-heels-3256813014380485.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-78%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 78% OFF</span>
           <span class="card-price">$44.04</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256811354738154&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811354738154.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256811354738154','discount':'50%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256811354738154&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811354738154.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256811354738154','discount':'50%'});" data-cat="pumps" data-color="" data-price="15.12" data-disc="50" data-store="AliExpress" data-date="2026-09-17">
         <img src="img/heels/pointed-toe-pump-3256811354738154.jpg" alt="Pointed-Toe Pump" loading="lazy">
+        <span class="card-badge">-50%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Pointed-Toe Pump · 50% OFF</span>
           <span class="card-price">$15.12</span>
         </div>
@@ -484,16 +311,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256811752850876&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811752850876.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256811752850876','discount':'48%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256811752850876&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811752850876.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256811752850876','discount':'48%'});" data-cat="stilettos" data-color="" data-price="84.93" data-disc="48" data-store="AliExpress" data-date="2026-09-15">
         <img src="img/heels/stiletto-heels-3256811752850876.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-48%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 48% OFF</span>
           <span class="card-price">$84.93</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812977575450&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812977575450.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812977575450','discount':'87%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812977575450&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812977575450.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812977575450','discount':'87%'});" data-cat="stilettos" data-color="" data-price="17.74" data-disc="87" data-store="AliExpress" data-date="2026-09-15">
         <img src="img/heels/stiletto-heels-3256812977575450.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-87%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 87% OFF</span>
           <span class="card-price">$17.74</span>
         </div>
@@ -501,16 +332,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256807138421381&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807138421381.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256807138421381','discount':''});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256807138421381&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807138421381.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256807138421381','discount':''});" data-cat="stilettos" data-color="" data-price="17.55" data-disc="0" data-store="AliExpress" data-date="2026-09-14">
         <img src="img/heels/stiletto-heels-3256807138421381.jpg" alt="Stiletto Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels</span>
           <span class="card-price">$17.55</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812919764230&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812919764230.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812919764230','discount':''});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812919764230&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812919764230.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812919764230','discount':''});" data-cat="stilettos" data-color="" data-price="17.74" data-disc="0" data-store="AliExpress" data-date="2026-09-14">
         <img src="img/heels/stiletto-heels-3256812919764230.jpg" alt="Stiletto Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels</span>
           <span class="card-price">$17.74</span>
         </div>
@@ -518,16 +351,19 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-2251832643910985&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2251832643910985.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-2251832643910985','discount':''});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-2251832643910985&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F2251832643910985.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-2251832643910985','discount':''});" data-cat="stilettos" data-color="" data-price="22.98" data-disc="0" data-store="AliExpress" data-date="2026-09-14">
         <img src="img/heels/stiletto-heels-2251832643910985.jpg" alt="Stiletto Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels</span>
           <span class="card-price">$22.98</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812924512778&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812924512778.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812924512778','discount':'78%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812924512778&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812924512778.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812924512778','discount':'78%'});" data-cat="stilettos" data-color="" data-price="46.55" data-disc="78" data-store="AliExpress" data-date="2026-09-13">
         <img src="img/heels/stiletto-heels-3256812924512778.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-78%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 78% OFF</span>
           <span class="card-price">$46.55</span>
         </div>
@@ -535,16 +371,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256806021490378&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256806021490378.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256806021490378','discount':'26%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256806021490378&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256806021490378.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256806021490378','discount':'26%'});" data-cat="stilettos" data-color="" data-price="23.38" data-disc="26" data-store="AliExpress" data-date="2026-09-13">
         <img src="img/heels/stiletto-heels-3256806021490378.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-26%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 26% OFF</span>
           <span class="card-price">$23.38</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808105408571&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808105408571.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808105408571','discount':'40%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808105408571&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808105408571.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808105408571','discount':'40%'});" data-cat="stilettos" data-color="" data-price="18.11" data-disc="40" data-store="AliExpress" data-date="2026-09-11">
         <img src="img/heels/stiletto-heels-3256808105408571.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-40%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 40% OFF</span>
           <span class="card-price">$18.11</span>
         </div>
@@ -552,16 +392,19 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808986169728&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808986169728.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808986169728','discount':'64%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808986169728&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808986169728.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808986169728','discount':'64%'});" data-cat="stilettos" data-color="" data-price="59.83" data-disc="64" data-store="AliExpress" data-date="2026-09-11">
         <img src="img/heels/stiletto-heels-3256808986169728.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-64%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 64% OFF</span>
           <span class="card-price">$59.83</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812400190367&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812400190367.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812400190367','discount':''});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812400190367&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812400190367.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812400190367','discount':''});" data-cat="stilettos" data-color="" data-price="19.83" data-disc="0" data-store="AliExpress" data-date="2026-09-11">
         <img src="img/heels/stiletto-heels-3256812400190367.jpg" alt="Stiletto Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels</span>
           <span class="card-price">$19.83</span>
         </div>
@@ -569,16 +412,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=platform-high-heels-3256807448476023&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807448476023.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'platform-high-heels-3256807448476023','discount':'67%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=platform-high-heels-3256807448476023&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807448476023.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'platform-high-heels-3256807448476023','discount':'67%'});" data-cat="platforms" data-color="" data-price="15.25" data-disc="67" data-store="AliExpress" data-date="2026-09-08">
         <img src="img/heels/platform-high-heels-3256807448476023.jpg" alt="Platform High Heels" loading="lazy">
+        <span class="card-badge">-67%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Platform High Heels · 67% OFF</span>
           <span class="card-price">$15.25</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808838061313&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808838061313.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808838061313','discount':'50%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808838061313&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808838061313.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808838061313','discount':'50%'});" data-cat="stilettos" data-color="" data-price="13.54" data-disc="50" data-store="AliExpress" data-date="2026-09-07">
         <img src="img/heels/stiletto-heels-3256808838061313.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-50%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 50% OFF</span>
           <span class="card-price">$13.54</span>
         </div>
@@ -586,16 +433,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812746878100&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812746878100.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812746878100','discount':'40%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812746878100&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812746878100.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812746878100','discount':'40%'});" data-cat="stilettos" data-color="" data-price="22.15" data-disc="40" data-store="AliExpress" data-date="2026-09-07">
         <img src="img/heels/stiletto-heels-3256812746878100.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-40%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 40% OFF</span>
           <span class="card-price">$22.15</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256802169872778&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256802169872778.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256802169872778','discount':'2%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256802169872778&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256802169872778.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256802169872778','discount':'2%'});" data-cat="pumps" data-color="" data-price="9.81" data-disc="2" data-store="AliExpress" data-date="2026-09-06">
         <img src="img/heels/pointed-toe-pump-3256802169872778.jpg" alt="Pointed-Toe Pump" loading="lazy">
+        <span class="card-badge">-2%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Pointed-Toe Pump · 2% OFF</span>
           <span class="card-price">$9.81</span>
         </div>
@@ -603,16 +454,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812737369387&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812737369387.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812737369387','discount':'78%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812737369387&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812737369387.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812737369387','discount':'78%'});" data-cat="stilettos" data-color="" data-price="6.07" data-disc="78" data-store="AliExpress" data-date="2026-09-06">
         <img src="img/heels/stiletto-heels-3256812737369387.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-78%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 78% OFF</span>
           <span class="card-price">$6.07</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808873806820&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808873806820.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808873806820','discount':'50%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808873806820&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808873806820.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808873806820','discount':'50%'});" data-cat="stilettos" data-color="" data-price="17.96" data-disc="50" data-store="AliExpress" data-date="2026-09-06">
         <img src="img/heels/stiletto-heels-3256808873806820.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-50%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 50% OFF</span>
           <span class="card-price">$17.96</span>
         </div>
@@ -620,16 +475,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812889137855&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812889137855.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812889137855','discount':'59%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812889137855&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812889137855.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812889137855','discount':'59%'});" data-cat="stilettos" data-color="" data-price="13.59" data-disc="59" data-store="AliExpress" data-date="2026-09-06">
         <img src="img/heels/stiletto-heels-3256812889137855.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-59%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 59% OFF</span>
           <span class="card-price">$13.59</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808461627848&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808461627848.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808461627848','discount':'14%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256808461627848&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808461627848.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256808461627848','discount':'14%'});" data-cat="stilettos" data-color="" data-price="14.47" data-disc="14" data-store="AliExpress" data-date="2026-09-04">
         <img src="img/heels/stiletto-heels-3256808461627848.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-14%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 14% OFF</span>
           <span class="card-price">$14.47</span>
         </div>
@@ -637,16 +496,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812851886473&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812851886473.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812851886473','discount':'24%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812851886473&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812851886473.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812851886473','discount':'24%'});" data-cat="stilettos" data-color="" data-price="95.04" data-disc="24" data-store="AliExpress" data-date="2026-09-03">
         <img src="https://thestilettovault.github.io/img/heels/stiletto-heels-3256812851886473/ig_image_1.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-24%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 24% OFF</span>
           <span class="card-price">$95.04</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256809453131649&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256809453131649.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256809453131649','discount':'74%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256809453131649&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256809453131649.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256809453131649','discount':'74%'});" data-cat="stilettos" data-color="" data-price="9.71" data-disc="74" data-store="AliExpress" data-date="2026-09-03">
         <img src="https://thestilettovault.github.io/img/heels/stiletto-heels-3256809453131649/ig_image_1.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-74%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 74% OFF</span>
           <span class="card-price">$9.71</span>
         </div>
@@ -654,16 +517,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256812471729513&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812471729513.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256812471729513','discount':'20%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256812471729513&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812471729513.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256812471729513','discount':'20%'});" data-cat="pumps" data-color="" data-price="76.87" data-disc="20" data-store="AliExpress" data-date="2026-09-02">
         <img src="img/heels/pointed-toe-pump-3256812471729513.jpg" alt="Pointed-Toe Pump" loading="lazy">
+        <span class="card-badge">-20%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Pointed-Toe Pump · 20% OFF</span>
           <span class="card-price">$76.87</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256805980328073&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256805980328073.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256805980328073','discount':'33%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256805980328073&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256805980328073.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256805980328073','discount':'33%'});" data-cat="stilettos" data-color="" data-price="18.25" data-disc="33" data-store="AliExpress" data-date="2026-09-01">
         <img src="img/heels/stiletto-heels-3256805980328073.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-33%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 33% OFF</span>
           <span class="card-price">$18.25</span>
         </div>
@@ -671,16 +538,20 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256807553221348&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553221348.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256807553221348','discount':'58%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=pointed-toe-pump-3256807553221348&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553221348.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pointed-toe-pump-3256807553221348','discount':'58%'});" data-cat="pumps" data-color="" data-price="54.52" data-disc="58" data-store="AliExpress" data-date="2026-09-01">
         <img src="img/heels/pointed-toe-pump-3256807553221348.jpg" alt="Pointed-Toe Pump" loading="lazy">
+        <span class="card-badge">-58%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Pointed-Toe Pump · 58% OFF</span>
           <span class="card-price">$54.52</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812312762342&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812312762342.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812312762342','discount':'67%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256812312762342&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812312762342.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256812312762342','discount':'67%'});" data-cat="stilettos" data-color="" data-price="16.83" data-disc="67" data-store="AliExpress" data-date="2026-08-31">
         <img src="img/heels/stiletto-heels-3256812312762342.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-67%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 67% OFF</span>
           <span class="card-price">$16.83</span>
         </div>
@@ -688,16 +559,19 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256811883989555&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811883989555.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256811883989555','discount':'50%'});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=stiletto-heels-3256811883989555&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811883989555.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'stiletto-heels-3256811883989555','discount':'50%'});" data-cat="stilettos" data-color="" data-price="61.36" data-disc="50" data-store="AliExpress" data-date="2026-08-29">
         <img src="img/heels/stiletto-heels-3256811883989555.jpg" alt="Stiletto Heels" loading="lazy">
+        <span class="card-badge">-50%</span>
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Stiletto Heels · 50% OFF</span>
           <span class="card-price">$61.36</span>
         </div>
       </a>
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=11cm-slingback-pointed-toe-sti-3256808390900535&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808390900535.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'11cm-slingback-pointed-toe-sti-3256808390900535','discount':''});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=11cm-slingback-pointed-toe-sti-3256808390900535&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808390900535.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'11cm-slingback-pointed-toe-sti-3256808390900535','discount':''});" data-cat="sandals" data-color="" data-price="" data-disc="0" data-store="AliExpress" data-date="2026-08-24">
         <img src="https://thestilettovault.github.io/img/heels/11cm-slingback-pointed-toe-stiletto-party-heels/ig_image_1.jpg" alt="11cm Slingback Pointed-Toe Stiletto Party Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">11cm Slingback Pointed-To…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -705,16 +579,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=black-red-soled-10cm-pointed-t-3256810250961501&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810250961501.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'black-red-soled-10cm-pointed-t-3256810250961501','discount':''});">
+      <a class="product-card" href="https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?subid=black-red-soled-10cm-pointed-t-3256810250961501&amp;ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810250961501.html" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'black-red-soled-10cm-pointed-t-3256810250961501','discount':''});" data-cat="pumps" data-color="black" data-price="" data-disc="0" data-store="AliExpress" data-date="2026-08-24">
         <img src="https://thestilettovault.github.io/img/heels/black-red-soled-10cm-pointed-toe-stiletto-pumps/ig_image_1.png" alt="Black Red-Soled 10cm Pointed-Toe Stiletto Pumps" loading="lazy">
         <div class="card-info">
+          <span class="card-store">AliExpress</span>
           <span class="card-name">Black Red-Soled 10cm Poin…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'hallie-black-butterfly-embelishment-ankle-tie','discount':''});">
+      <a class="product-card" href="https://www.publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'hallie-black-butterfly-embelishment-ankle-tie','discount':''});" data-cat="stilettos" data-color="black" data-price="" data-disc="0" data-store="Public Desire" data-date="2026-08-23">
         <img src="img/heels/hallie-black-butterfly-embelishment-ankle-tie.jpg" alt="Hallie Black Butterfly Embellishment Ankle-Tie High Heels" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Public Desire</span>
           <span class="card-name">Hallie Black Butterfly Em…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -722,16 +598,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://www.amazon.com/dp/B0FT2YGHWR?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'foklysp-studded-spike-pointed-toe-stiletto-pu','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B0FT2YGHWR?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'foklysp-studded-spike-pointed-toe-stiletto-pu','discount':''});" data-cat="pumps" data-color="" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-23">
         <img src="https://thestilettovault.github.io/img/heels/foklysp-studded-spike-pointed-toe-stiletto-pumps/ig_image_1.jpg" alt="Foklysp — Studded Spike Pointed-Toe Stiletto Pumps" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">Foklysp — Studded Spike P…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.amazon.com/dp/B08F7G1ZCW?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'dream-pairs-4-classic-pointed-toe-stiletto-pu','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B08F7G1ZCW?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'dream-pairs-4-classic-pointed-toe-stiletto-pu','discount':''});" data-cat="pumps" data-color="" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-18">
         <img src="https://thestilettovault.github.io/img/heels/dream-pairs-4-classic-pointed-toe-stiletto-pump/ig_image_1.png" alt="DREAM PAIRS — 4&quot; Classic Pointed-Toe Stiletto Pump" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">DREAM PAIRS — 4&quot; Classic…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -739,16 +617,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://www.amazon.com/dp/B0H29ZB7SK?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'vogel-vere-glitter-sparkly-pointed-toe-stilet','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B0H29ZB7SK?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'vogel-vere-glitter-sparkly-pointed-toe-stilet','discount':''});" data-cat="pumps" data-color="" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-17">
         <img src="https://thestilettovault.github.io/img/heels/vogel-vere-glitter-sparkly-pointed-toe-stiletto-pump/ig_image_1.png" alt="VOGEL VERE — Glitter Sparkly Pointed-Toe Stiletto Pump" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">VOGEL VERE — Glitter Spar…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.amazon.com/dp/B0CB2F7W3W?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'mucccute-red-metallic-chrome-stiletto-thigh-h','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B0CB2F7W3W?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'mucccute-red-metallic-chrome-stiletto-thigh-h','discount':''});" data-cat="boots" data-color="red" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-17">
         <img src="https://thestilettovault.github.io/img/heels/mucccute-red-metallic-chrome-stiletto-thigh-high-boots/ig_image_1.jpg" alt="MUCCCUTE — Red Metallic Chrome Stiletto Thigh-High Boots" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">MUCCCUTE — Red Metallic C…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -756,16 +636,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://www.amazon.com/dp/B0DDPVY6KZ?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'demoshine-black-patent-pointed-toe-stiletto-p','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B0DDPVY6KZ?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'demoshine-black-patent-pointed-toe-stiletto-p','discount':''});" data-cat="pumps" data-color="black" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-17">
         <img src="https://thestilettovault.github.io/img/heels/demoshine-black-patent-pointed-toe-stiletto-pumps/ig_image_1.png" alt="DEMOSHINE — Black Patent Pointed-Toe Stiletto Pumps" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">DEMOSHINE — Black Patent…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.killstar.com/products/gloomed-and-doomed-boots" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'gloomed-and-doomed-boots','discount':''});">
+      <a class="product-card" href="https://www.killstar.com/products/gloomed-and-doomed-boots" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'gloomed-and-doomed-boots','discount':''});" data-cat="boots" data-color="" data-price="" data-disc="0" data-store="Killstar" data-date="2026-08-16">
         <img src="https://thestilettovault.github.io/img/heels/killstar-gloomed-and-doomed/ig_1x1_01.jpg" alt="Gloomed and Doomed Boots" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Killstar</span>
           <span class="card-name">Gloomed and Doomed Boots</span>
           <span class="card-price">Shop</span>
         </div>
@@ -773,16 +655,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://www.killstar.com/products/bloodletting-knee-high-boots-b" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'bloodletting-knee-high-boots-b','discount':''});">
+      <a class="product-card" href="https://www.killstar.com/products/bloodletting-knee-high-boots-b" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'bloodletting-knee-high-boots-b','discount':''});" data-cat="boots" data-color="" data-price="" data-disc="0" data-store="Killstar" data-date="2026-08-16">
         <img src="https://thestilettovault.github.io/img/heels/killstar-bloodletting-knee-high/ig_1x1_01.jpg" alt="Bloodletting Knee-High Boots" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Killstar</span>
           <span class="card-name">Bloodletting Knee-High Bo…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.amazon.com/dp/B00775OA34?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pleaser-adore-1020-7-stiletto-lace-up-platfor','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B00775OA34?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pleaser-adore-1020-7-stiletto-lace-up-platfor','discount':''});" data-cat="boots" data-color="black" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-13">
         <img src="https://thestilettovault.github.io/img/heels/pleaser-adore-1020-7-stiletto-lace-up-platform-boot-black/ig_image_1.png" alt="Pleaser Adore-1020 — 7&quot; Stiletto Lace-Up Platform Boot, Black" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">Pleaser Adore-1020 — 7&quot; S…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -790,16 +674,18 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://www.amazon.com/dp/B0GXV38CD7?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'tracieshoes-thigh-high-gladiator-4-3-stiletto','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B0GXV38CD7?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'tracieshoes-thigh-high-gladiator-4-3-stiletto','discount':''});" data-cat="stilettos" data-color="" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-10">
         <img src="https://thestilettovault.github.io/img/heels/tracieshoes-gladiator.jpg" alt="Tracieshoes — Thigh-High Gladiator 4.3&quot; Stiletto Lace-Up" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">Tracieshoes — Thigh-High…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.amazon.com/dp/B088DYDY5T?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'lishan-lace-up-gladiator-stiletto-knee-high-b','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B088DYDY5T?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'lishan-lace-up-gladiator-stiletto-knee-high-b','discount':''});" data-cat="stilettos" data-color="black" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-10">
         <img src="https://thestilettovault.github.io/img/heels/lishan-lace-up-gladiator-stiletto-knee-high-black/ig_image_1.png" alt="LISHAN — Lace-Up Gladiator Stiletto, Knee-High Black" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">LISHAN — Lace-Up Gladiato…</span>
           <span class="card-price">Shop</span>
         </div>
@@ -807,22 +693,30 @@
     </div>
     <div class="pair-sep">· · ·</div>
     <div class="pair-grid">
-      <a class="product-card" href="https://www.amazon.com/dp/B007ST6JUQ?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pleaser-seduce-1020-black-patent-platform-ank','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B007ST6JUQ?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'pleaser-seduce-1020-black-patent-platform-ank','discount':''});" data-cat="boots" data-color="black" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-10">
         <img src="https://thestilettovault.github.io/img/heels/pleaser-seduce-1020-black-patent-platform-ankle-boot/ig_image_1.png" alt="Pleaser Seduce-1020 — Black Patent Platform Ankle Boot" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">Pleaser Seduce-1020 — Bla…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
-      <a class="product-card" href="https://www.amazon.com/dp/B0F7LSL3G1?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'fancyqueen-knee-high-gladiator-stiletto-suede','discount':''});">
+      <a class="product-card" href="https://www.amazon.com/dp/B0F7LSL3G1?tag=thegothicvaul-20" target="_blank" rel="sponsored noopener" onclick="if(window.gtag)gtag('event','affiliate_click',{'shoe':'fancyqueen-knee-high-gladiator-stiletto-suede','discount':''});" data-cat="stilettos" data-color="" data-price="" data-disc="0" data-store="Amazon" data-date="2026-08-10">
         <img src="https://thestilettovault.github.io/img/heels/fancyqueen-knee-high-gladiator-stiletto-suede-fringe/insta_1x1.jpg" alt="FancyQueen — Knee-High Gladiator Stiletto, Suede Fringe" loading="lazy">
         <div class="card-info">
+          <span class="card-store">Amazon</span>
           <span class="card-name">FancyQueen — Knee-High Gl…</span>
           <span class="card-price">Shop</span>
         </div>
       </a>
     </div>
     <!-- HEELS:END -->
+    </div>
+    <p id="empty">No heels match that. Try another search.</p>
+  </section>
+
+  <section class="lookbook">
+    <div class="grid">
 
     <div class="tour-label"><span>Dark World Tour</span></div>
 
@@ -941,6 +835,9 @@
 
   </div>
 
+    </div>
+  </section>
+
   <a class="contact" href="mailto:affiliatesbybold@gmail.com">
     <span>✉</span>
     <span>Collabs &amp; Inquiries</span>
@@ -971,6 +868,42 @@
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tag); else tag();
+})();
+</script>
+<script>
+(function(){
+  var grid=document.getElementById('grid'),cards=[].slice.call(grid.querySelectorAll('.product-card')),
+      q=document.getElementById('q'),sort=document.getElementById('sort'),chips=document.getElementById('chips'),
+      count=document.getElementById('count'),empty=document.getElementById('empty'),cat='all';
+  cards.forEach(function(c,i){var im=c.querySelector('img');c._i=i;
+    c._t=(c.textContent+' '+(im?im.alt:'')+' '+Object.keys(c.dataset).map(function(k){return c.dataset[k]}).join(' ')).toLowerCase();
+    grid.appendChild(c);});
+  [].slice.call(grid.querySelectorAll('.pair-grid,.single-grid,.pair-sep')).forEach(function(n){n.remove()});
+  var order=['all','stilettos','pumps','platforms','boots','sandals'],cats=[];
+  order.forEach(function(k){if(k==='all'||cards.some(function(c){return c.dataset.cat===k}))cats.push(k)});
+  cats.forEach(function(k){var b=document.createElement('button');b.className='chip';b.type='button';
+    b.textContent=k==='all'?'All heels':k;b.setAttribute('aria-pressed',String(k==='all'));
+    b.onclick=function(){cat=k;[].forEach.call(chips.children,function(x){x.setAttribute('aria-pressed',String(x===b))});apply();};
+    chips.appendChild(b);});
+  var maxd=0,stores={};cards.forEach(function(c){maxd=Math.max(maxd,+c.dataset.disc||0);if(c.dataset.store)stores[c.dataset.store]=1;});
+  document.getElementById('st-n').firstChild.nodeValue=cards.length;
+  document.getElementById('st-d').firstChild.nodeValue=maxd?('-'+maxd+'%'):'New';
+  document.getElementById('st-s').firstChild.nodeValue=Object.keys(stores).length;
+  function num(c,k){return parseFloat(c.dataset[k])||0}
+  function apply(){
+    var t=q.value.trim().toLowerCase().split(/\s+/).filter(Boolean),s=sort.value,shown=0;
+    cards.slice().sort(function(a,b){
+      if(s==='disc')return num(b,'disc')-num(a,'disc');
+      if(s==='low')return (num(a,'price')||1e9)-(num(b,'price')||1e9);
+      if(s==='high')return num(b,'price')-num(a,'price');
+      return a._i-b._i;
+    }).forEach(function(c){
+      var ok=(cat==='all'||c.dataset.cat===cat)&&t.every(function(w){return c._t.indexOf(w)>-1});
+      c.classList.toggle('hide',!ok);if(ok)shown++;grid.appendChild(c);});
+    count.textContent=shown+' styles';empty.style.display=shown?'none':'block';
+  }
+  var p=new URLSearchParams(location.search).get('q');if(p)q.value=p;
+  q.addEventListener('input',apply);sort.addEventListener('change',apply);apply();
 })();
 </script>
 </body>
