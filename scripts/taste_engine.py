@@ -382,9 +382,10 @@ def record_approval(url, title, image_url="", commission="", domain=""):
 
     # Approved catalog — structured for content creation
     catalog = load_json(CATALOG_FILE, [])
-    # Deduplicate by URL
-    existing_urls = {item["url"] for item in catalog}
-    if url not in existing_urls:
+    # Deduplicate by product identity (www./query/slash-insensitive) — never list a shoe twice
+    from product_key import product_key
+    existing_keys = {product_key(item.get("url")) for item in catalog}
+    if product_key(url) not in existing_keys:
         # At approval time: build the GELEM folder + _LINK.txt, try to fetch image.
         local_asset, image_ok = download_to_gelem(
             url, title, domain=domain, image_url=image_url,

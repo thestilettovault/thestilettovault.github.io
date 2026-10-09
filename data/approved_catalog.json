@@ -1142,7 +1142,8 @@
     },
     "variations_ready": true,
     "posted": true,
-    "posted_date": "2026-09-17T08:00:48.157452"
+    "posted_date": "2026-09-17T08:00:48.157452",
+    "on_site": true
   },
   {
     "title": "Stiletto Heels",
@@ -1745,20 +1746,6 @@
     "posted_date": "2026-09-23T13:29:01.850306"
   },
   {
-    "title": "Hallie Black Butterfly Embellishment Ankle Tie High Heels",
-    "url": "https://publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
-    "aff_link": "https://publicdesire.com/products/hallie-black-butterfly-embelishment-ankle-tie-high-heels",
-    "domain": "publicdesire.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/0270/6584/3821/files/HALLIEBLACK-1.jpg?v=1776330741",
-    "commission": "Publicdesire · ~10% via Skimlinks · $29.99",
-    "deal": {},
-    "date": "2026-09-23T10:41:59.242804",
-    "local_asset": "GELEM/2026-09-23/hallie-black-butterfly-embellishment-ankle-tie-high-heels",
-    "image_ok": true,
-    "downloaded": "2026-09-23",
-    "on_site": true
-  },
-  {
     "title": "Stiletto Heels",
     "url": "https://www.aliexpress.com/item/3256812048305063.html",
     "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256812048305063.html",
@@ -1978,6 +1965,180 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/stiletto-heels-3256805663137456/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-09-29T12:18:06.433755"
+  },
+  {
+    "title": "Pointed-Toe Pump",
+    "url": "https://www.aliexpress.com/item/3256807553262560.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553262560.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Sfb4152be36334d95be83551ef96eff02z.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 50.05,
+      "was": 131.46,
+      "discount": "62%",
+      "rating": "4.7",
+      "sold": "600+ sold"
+    },
+    "date": "2026-10-01T08:13:38.673650",
+    "local_asset": "GELEM/2026-10-01/pointed-toe-pump-3256807553262560",
+    "image_ok": true,
+    "downloaded": "2026-10-01",
+    "on_site": true
+  },
+  {
+    "title": "Rampage Brown Suede",
+    "url": "https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RAMPAGE_BROWN_SUEDE-01_1.jpg?v=1773915892",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-02T08:36:01.920362",
+    "local_asset": "GELEM/2026-10-02/rampage-brown-suede",
+    "image_ok": true,
+    "downloaded": "2026-10-02",
+    "on_site": true
+  },
+  {
+    "title": "River Black Patent",
+    "url": "https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RIVER-BLACK-01.jpg?v=1773915037",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-04T08:05:01.285851",
+    "local_asset": "GELEM/2026-10-04/river-black-patent",
+    "image_ok": true,
+    "downloaded": "2026-10-04",
+    "on_site": true
+  },
+  {
+    "title": "Platform High Heels",
+    "url": "https://www.aliexpress.com/item/3256810584098285.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256810584098285.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S4a5fe90daa1e46f3ba399b83dece6eabT.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 33.72,
+      "was": 70.25,
+      "discount": "52%",
+      "rating": "4.8",
+      "sold": "800+ sold"
+    },
+    "date": "2026-10-04T08:05:09.907786",
+    "local_asset": "GELEM/2026-10-04/platform-high-heels-3256810584098285",
+    "image_ok": true,
+    "downloaded": "2026-10-04",
+    "on_site": true
+  },
+  {
+    "title": "River White Patent",
+    "url": "https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RIVER-WHITE-01.jpg?v=1773915029",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-05T11:18:55.549344",
+    "local_asset": "GELEM/2026-10-05/river-white-patent",
+    "image_ok": true,
+    "downloaded": "2026-10-05",
+    "on_site": true
+  },
+  {
+    "title": "Platform High Heels",
+    "url": "https://www.aliexpress.com/item/3256811369943536.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811369943536.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se363aae037cd47c29182bf887865446aU.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 29.72,
+      "was": 37.22,
+      "discount": "20%",
+      "rating": "4.6",
+      "sold": "475 sold"
+    },
+    "date": "2026-10-05T11:19:33.881147",
+    "local_asset": "GELEM/2026-10-05/platform-high-heels-3256811369943536",
+    "image_ok": true,
+    "downloaded": "2026-10-05"
+  },
+  {
+    "title": "Rare Smoke TPU",
+    "url": "https://nakedwolfe.com/products/rare-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/rare-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RARE-SMOKE-01.jpg?v=1773915306",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-07T08:01:23.241736",
+    "local_asset": "GELEM/2026-10-07/rare-smoke-tpu",
+    "image_ok": true,
+    "downloaded": "2026-10-07"
+  },
+  {
+    "title": "Rare Brown TPU",
+    "url": "https://nakedwolfe.com/products/rare-brown-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/rare-brown-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RARE-BROWN-01_grey.jpg?v=1773925459",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-07T08:01:29.970994",
+    "local_asset": "GELEM/2026-10-07/rare-brown-tpu",
+    "image_ok": true,
+    "downloaded": "2026-10-07"
+  },
+  {
+    "title": "Heeled Ankle Boots",
+    "url": "https://www.aliexpress.com/item/3256808371208917.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808371208917.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S2563bf803f4f4fbb880e82d915ef82f1o.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 48.89,
+      "was": "",
+      "discount": "",
+      "rating": "4.9",
+      "sold": "2K+ sold"
+    },
+    "date": "2026-10-07T08:01:34.198612",
+    "local_asset": "GELEM/2026-10-07/heeled-ankle-boots-3256808371208917",
+    "image_ok": true,
+    "downloaded": "2026-10-07"
+  },
+  {
+    "title": "Tiger Lilly Smoke TPU",
+    "url": "https://nakedwolfe.com/products/tiger-lilly-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/tiger-lilly-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/TIGER-LILLY-SOLID-BLACK-01_758219f6-456f-443f-a9dd-486823cac2bb.jpg?v=1773915415",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-08T08:01:31.287293",
+    "local_asset": "GELEM/2026-10-08/tiger-lilly-smoke-tpu",
+    "image_ok": true,
+    "downloaded": "2026-10-08"
+  },
+  {
+    "title": "The Outlaw Boot Black",
+    "url": "https://nakedwolfe.com/products/the-outlaw-boot-black?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/the-outlaw-boot-black?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/THE_OUTLAW_BOOT-BLACK-01.png?v=1773916029",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-09T08:01:46.532206",
+    "local_asset": "GELEM/2026-10-09/the-outlaw-boot-black",
+    "image_ok": true,
+    "downloaded": "2026-10-09"
   }
 ]

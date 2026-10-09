@@ -20,26 +20,16 @@ only after Ofer picks an ad, in a separate flow.
    b. Upload the source: `mcp__magnific__creations_upload_image(url = entry.image_url)`
       → note the returned `identifier` (SOURCE_ID).
 
-   c. Point the Space at it. The Input panel (1b00f6ed) holds MULTIPLE reference
-      Creation nodes, ALL wired into both the concept builder (5ec8e287) and the
-      campaign image generator (93b85932). They must ALL hold the SAME shoe, or the
-      generator blends several shoes and invents a wrong one (this was the
-      consistency bug). Current reference Creation nodes:
-        0114e22a-6027-490e-aeca-b1b428d8ca91
-        02abd82d-b225-4a27-abeb-cf3b7912cfd0
-        0668d990-b1a7-43c1-93db-ef221fe6666f
-        7b24da13-2075-4f2b-9884-8f10fc769810
-      (Re-read them first with spaces_get_nodes — the ids can change if the board is
-      rearranged; the correct set is every `creation` child of panel 1b00f6ed that
-      feeds 5ec8e287/93b85932.)
-      For EACH of those nodes:
-      `mcp__magnific__spaces_edit(spaceId="a2796464-3570-4e02-aa77-65f3f4322d9f",
-        selectedElementIds=["<that node id>"],
-        query="Replace the image held by this Creation node with uploaded creation
-        <SOURCE_ID> — the new heel product photo. Do not change any wiring.")`
-      Poll `spaces_edit_status` until `allTerminal`. Verify with `spaces_get_nodes`
-      that EVERY one of those nodes now has `creationIdentifier == SOURCE_ID`.
-      Only when all match, proceed — otherwise the shoe will be inconsistent.
+   c. Point the Space at it. Since 2026-10-09 the Space uses ONE reference image:
+      Creation node `0114e22a-6027-490e-aeca-b1b428d8ca91` (panel 1b00f6ed). It is the
+      ONLY image wired into the concept builder (5ec8e287) and the campaign image
+      generator (93b85932). Do NOT re-wire other creation nodes into them.
+      `mcp__magnific__spaces_patch_node(spaceId="a2796464-3570-4e02-aa77-65f3f4322d9f",
+        patches=[{"nodeId":"0114e22a-6027-490e-aeca-b1b428d8ca91",
+                  "patch":{"data":{"creationIdentifier":"<SOURCE_ID>"}}}])`
+      Verify with `spaces_get_nodes` that 0114e22a has `creationIdentifier == SOURCE_ID`
+      AND that 93b85932 has exactly ONE incoming `reference` connection (from 0114e22a).
+      If anything else feeds it → STOP the run and report (wrong-shoe blend risk).
 
    d. Run the ads chain (NOT the video):
       `mcp__magnific__spaces_run(spaceId="a2796464-3570-4e02-aa77-65f3f4322d9f",
@@ -63,5 +53,10 @@ only after Ofer picks an ad, in a separate flow.
 - Cap: 5 leads per run. If more are approved, leave the rest for the next run.
 - Never touch entries whose status is not `approved`.
 - Never run the video generator node here.
+- CREDIT GUARD: one ads run must produce exactly 4 creations (all from 93b85932).
+  After `spaces_run_status` is terminal, if `creationIdentifiers` has MORE than 4
+  ids, the board was re-wired downstream of the ads node → STOP the whole run, do
+  not process further leads, and print "CREDIT GUARD: run produced N images" so it
+  is visible in producer.log. (2026-10-09: an extra chain made 24 images/run.)
 - If any single lead errors, log it, leave its status as `approved`, and continue
   to the next — do not abort the whole run.

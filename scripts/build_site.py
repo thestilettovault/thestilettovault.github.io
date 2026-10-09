@@ -179,8 +179,12 @@ def rebuild(limit):
         print("Catalog is empty — nothing to inject.")
         return False
 
-    # newest first, cap
+    # newest first, one card per shoe (same shoe under www./non-www or a ref param = dup)
+    from product_key import dedupe
     items = sorted(catalog, key=lambda x: x.get("date", ""), reverse=True)
+    items, dups = dedupe(items)
+    for d in dups:
+        print(f"  skip duplicate: {d.get('title','')[:50]} ({d.get('url','')})")
     # need a usable affiliate link AND a produced visual of our own (post_image/ad).
     # heels we only approved but never produced are held back until they have art.
     items = [it for it in items
