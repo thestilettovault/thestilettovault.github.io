@@ -106,6 +106,10 @@ def resolve_image(item, slug):
     Copies a local variation into img/heels/ when available; otherwise uses the
     hosted catalog image_url. Returns a src string or "".
     """
+    # Manual override: a clean store photo when we have no clean produced image
+    # (older drops whose AI art has headlines burned in). Repo-relative path.
+    if item.get("site_image") and (ROOT / item["site_image"]).exists():
+        return item["site_image"]
     var = find_variation_image(slug)
     if var:
         IMG_DIR.mkdir(parents=True, exist_ok=True)
@@ -248,7 +252,7 @@ def rebuild(limit):
     # heels we only approved but never produced are held back until they have art.
     items = [it for it in items
              if (it.get("aff_link") or it.get("url"))
-             and (find_variation_image(slugify(it)) or our_hosted_image(it))][:limit]
+             and (it.get("site_image") or find_variation_image(slugify(it)) or our_hosted_image(it))][:limit]
 
     inner = build_cards(items)
     injection = f"{START_MARK}\n{inner}\n    {END_MARK}"
