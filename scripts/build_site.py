@@ -142,7 +142,7 @@ def our_hosted_image(item):
 
 
 def esc(s):
-    return (s or "").replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;").replace(">", "&gt;")
+    return (s or "").replace("—", "-").replace("–", "-").replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def short_name(title, n=26):
