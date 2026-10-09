@@ -62,22 +62,42 @@ def find_variation_image(slug):
     Only the ad Ofer CHOSE in Telegram: un-picked AI candidates can be broken
     (2026-10-09: an un-picked ad_A with three legs went live). Returns None until
     he picks → the heel stays off the site until then."""
-    folder = GELEM_DIR / slug
-    if not folder.is_dir():
-        matches = [d for d in GELEM_DIR.glob(f"{slug}*") if d.is_dir()] if GELEM_DIR.is_dir() else []
-        folder = matches[0] if matches else folder
-    if not folder.is_dir():
-        return None
+    # A heel's folder is GELEM/<slug> or, for older drops, GELEM/<date>/<slug>.
+    folders = [GELEM_DIR / slug] + sorted(GELEM_DIR.glob(f"*/{slug}"), reverse=True) \
+        if GELEM_DIR.is_dir() else []
     # The site shows the CLEAN shoe photo (no burned-in price/headline) so the
     # catalog looks uniform. post_image.jpg (chosen ad + deal overlay) is for social only.
     try:
         st = json.loads((ROOT / "data" / "orchestrator_state.json").read_text(encoding="utf-8"))
-        chosen = (st.get(folder.name) or {}).get("chosen")
+    except Exception:
+        st = {}
+    for folder in (f for f in folders if f.is_dir()):
+        chosen = (st.get(slug) or {}).get("chosen")
         if chosen and (folder / chosen).exists():
             return folder / chosen
-    except Exception:
-        pass
+        clean = clean_ad_behind_post(folder)
+        if clean:
+            return clean
     return None
+
+
+def clean_ad_behind_post(folder):
+    """Older drops recorded no choice, but post_image.jpg IS the chosen ad with a
+    price band burned on top. The ad whose lower part matches it is the clean pick."""
+    post = folder / "post_image.jpg"
+    ads = sorted(p for p in folder.glob("ad_*") if p.suffix.lower() in IMG_EXTS)
+    if not post.exists() or not ads:
+        return None
+    try:
+        from PIL import Image, ImageChops, ImageStat
+        def lower(p):
+            im = Image.open(p).convert("L").resize((128, 128))
+            return im.crop((0, 48, 128, 128))          # skip the overlay band at the top
+        ref = lower(post)
+        scored = sorted((ImageStat.Stat(ImageChops.difference(ref, lower(a))).mean[0], a) for a in ads)
+        return scored[0][1] if scored[0][0] < 12 else None
+    except Exception:
+        return None
 
 
 def resolve_image(item, slug):
