@@ -71,7 +71,8 @@
       transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .35s}
     .product-card:hover{transform:translateY(-6px);border-color:rgba(255,46,126,.55);box-shadow:0 18px 40px -18px rgba(255,46,126,.45)}
     .product-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#1b1b20;
-      transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+      transition:transform .6s cubic-bezier(.2,.8,.2,1);background:linear-gradient(110deg,#1b1b20 30%,#26262d 50%,#1b1b20 70%) 0 0/200% 100%;animation:shim 1.4s linear infinite}
+    @keyframes shim{to{background-position:-200% 0}}
     .product-card:hover img{transform:scale(1.05)}
     .card-badge{display:none;position:absolute;top:12px;left:12px;background:var(--hot);color:#fff;font:700 12px 'Inter';
       padding:5px 10px;border-radius:999px;box-shadow:0 6px 18px -6px var(--hot)}
