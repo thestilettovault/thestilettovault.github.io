@@ -31,6 +31,18 @@ only after Ofer picks an ad, in a separate flow.
       AND that 93b85932 has exactly ONE incoming `reference` connection (from 0114e22a).
       If anything else feeds it → STOP the run and report (wrong-shoe blend risk).
 
+   c2. Write the shot brief for THIS shoe (stylist + trend agents). Look at
+      source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/stylist.md` and
+      `E:/PROJECTS/thegothicvault/data/agents/poses.md`. Pick 4 DIFFERENT poses from the
+      library (≥2 knee-down / shoe-dominant) and one outfit per shot that follows the
+      stylist rules (never the same outfit twice in this run). Write the brief into the
+      Space text node "Shot brief — per shoe" (`7c63f16a-228e-49b3-b48c-20c233e8d891`):
+      `spaces_patch_node(patches=[{"nodeId":"7c63f16a-228e-49b3-b48c-20c233e8d891",
+        "patch":{"data":{"text":"<brief>"}}}])` — real line breaks, 4 numbered shots:
+      `N. <pose id> — <frame/pose/camera/setting>. OUTFIT: <...>. The shoes exactly as the
+      reference, sharp, fully visible, worn. Single frame, no text.`
+      Also save the brief to `GELEM/<slug>/_BRIEF.md` (so we can learn which briefs win).
+
    d. Run the ads chain (NOT the video):
       `mcp__magnific__spaces_run(spaceId="a2796464-3570-4e02-aa77-65f3f4322d9f",
         startNodeId="5ec8e287-6633-44a9-bcaf-2562c656728e", mode="downstream")`
@@ -41,6 +53,11 @@ only after Ofer picks an ad, in a separate flow.
 
    f. Download to `E:/PROJECTS/thegothicvault/GELEM/<slug>/ad_A.jpg … ad_D.jpg`
       with curl (also copy source.jpg there). Order A,B,C,D = the 4 ids in order.
+
+   f2. QA every ad (data/agents/qa.md): open ad_A…ad_D next to source.jpg and LOOK at
+      them. Write `GELEM/<slug>/_QA.md` with one line per ad (`A ✅` / `B ⚠️ <reason>`).
+      Never regenerate on your own — the verdicts travel to Telegram with the ads and
+      Ofer decides.
 
    g. Send for the pick:
       `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py send <slug>`

@@ -95,9 +95,18 @@ def send_ad_choice(slug):
     ads = sorted(folder.glob("ad_*.jpg"))
     if not ads:
         print(f"! no ad_*.jpg in {folder}"); return False
+    # QA verdicts written by the producer (data/agents/qa.md): "A ✅" / "B ⚠️ 3 רגליים"
+    qa = {}
+    qa_file = folder / "_QA.md"
+    if qa_file.exists():
+        for line in qa_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if len(line) > 1 and line[0] in "ABCD" and line[1] == " ":
+                qa[line[0]] = line[2:].strip()
     for p in ads:
         letter = p.stem.split("_", 1)[1]        # ad_A -> A
-        _send_photo(p, f"*מודעה {letter}* — {slug}",
+        verdict = f"\nבדיקה: {qa[letter]}" if letter in qa else ""
+        _send_photo(p, f"*מודעה {letter}* — {slug}{verdict}",
                     buttons=[[{"text": f"✅ בחר {letter}", "callback_data": f"adpick|{slug}|{letter}"}]])
     set_state(slug, status="awaiting_choice", n_ads=len(ads), ts=time.time())
     print(f"sent {len(ads)} ad options for {slug} to Telegram")
