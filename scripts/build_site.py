@@ -59,9 +59,9 @@ slugify = space_runner.slugify
 
 def find_variation_image(slug):
     """OUR produced image for this heel — never the AliExpress source/scrape.
-    Priority: the finished post_image (chosen ad + real deal overlay), else any
-    ad candidate. Returns None if we have not produced anything yet (caller then
-    skips the heel — the site shows only heels we actually made visuals for)."""
+    Only the ad Ofer CHOSE in Telegram: un-picked AI candidates can be broken
+    (2026-10-09: an un-picked ad_A with three legs went live). Returns None until
+    he picks → the heel stays off the site until then."""
     folder = GELEM_DIR / slug
     if not folder.is_dir():
         matches = [d for d in GELEM_DIR.glob(f"{slug}*") if d.is_dir()] if GELEM_DIR.is_dir() else []
@@ -69,8 +69,7 @@ def find_variation_image(slug):
     if not folder.is_dir():
         return None
     # The site shows the CLEAN shoe photo (no burned-in price/headline) so the
-    # catalog looks uniform: the ad Ofer chose in Telegram, else the first ad.
-    # post_image.jpg (chosen ad + deal overlay) is for social posts only.
+    # catalog looks uniform. post_image.jpg (chosen ad + deal overlay) is for social only.
     try:
         st = json.loads((ROOT / "data" / "orchestrator_state.json").read_text(encoding="utf-8"))
         chosen = (st.get(folder.name) or {}).get("chosen")
@@ -78,9 +77,7 @@ def find_variation_image(slug):
             return folder / chosen
     except Exception:
         pass
-    ads = sorted(p for p in folder.iterdir()
-                 if p.name.lower().startswith("ad_") and p.suffix.lower() in IMG_EXTS)
-    return ads[0] if ads else None
+    return None
 
 
 def resolve_image(item, slug):
