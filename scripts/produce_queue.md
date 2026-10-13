@@ -34,14 +34,20 @@ only after Ofer picks an ad, in a separate flow.
    c2. Write the shot brief for THIS shoe (stylist + trend agents). Look at
       source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/stylist.md` and
       `E:/PROJECTS/thegothicvault/data/agents/poses.md`. Pick 4 DIFFERENT poses from the
-      library (≥2 knee-down / shoe-dominant) and one outfit per shot that follows the
-      stylist rules (never the same outfit twice in this run). Write the brief into the
-      Space text node "Shot brief — per shoe" (`7c63f16a-228e-49b3-b48c-20c233e8d891`):
-      `spaces_patch_node(patches=[{"nodeId":"7c63f16a-228e-49b3-b48c-20c233e8d891",
-        "patch":{"data":{"text":"<brief>"}}}])` — real line breaks, 4 numbered shots:
-      `N. <pose id> — <frame/pose/camera/setting>. OUTFIT: <...>. The shoes exactly as the
-      reference, sharp, fully visible, worn. Single frame, no text.`
-      Also save the brief to `GELEM/<slug>/_BRIEF.md` (so we can learn which briefs win).
+      library (>=2 knee-down / shoe-dominant) and one outfit per shot that follows the
+      stylist rules (never the same outfit twice in this run).
+      The Space needs FOUR SEPARATE texts (one per shot): four text nodes feed the list
+      "Shot brief list (4 shots)" (3250b608), which feeds the concept builder once per
+      item = 4 prompts = 4 images. NEVER merge the 4 shots into one text: one text makes
+      ONE collage image (this broke the 2026-10-12 run). Patch all four in one call:
+      `spaces_patch_node(patches=[
+        {"nodeId":"7c63f16a-228e-49b3-b48c-20c233e8d891","patch":{"data":{"text":"<shot 1>"}}},
+        {"nodeId":"1a8a344e-64b4-4827-9e34-8082227301c8","patch":{"data":{"text":"<shot 2>"}}},
+        {"nodeId":"785c31aa-df92-49ae-90d2-978fb0639fe9","patch":{"data":{"text":"<shot 3>"}}},
+        {"nodeId":"744723e2-3ec1-4988-b904-97b1b5c8a17c","patch":{"data":{"text":"<shot 4>"}}}])`
+      Each shot text: `<pose id> <frame/pose/camera/setting>. OUTFIT: <...>. The shoes
+      exactly as the reference, sharp, fully visible, worn. Single frame, no text.`
+      Also save the 4 shots to `GELEM/<slug>/_BRIEF.md` (so we can learn which briefs win).
 
    d. Run the ads chain (NOT the video):
       `mcp__magnific__spaces_run(spaceId="a2796464-3570-4e02-aa77-65f3f4322d9f",
@@ -70,7 +76,8 @@ only after Ofer picks an ad, in a separate flow.
 - Cap: 5 leads per run. If more are approved, leave the rest for the next run.
 - Never touch entries whose status is not `approved`.
 - Never run the video generator node here.
-- CREDIT GUARD: one ads run must produce exactly 4 creations (all from 93b85932).
+- CREDIT GUARD: one ads run must produce exactly 4 creations (all from 93b85932);
+  FEWER than 4 (e.g. 1 collage) is also a failure → STOP and report, do not retry.
   After `spaces_run_status` is terminal, if `creationIdentifiers` has MORE than 4
   ids, the board was re-wired downstream of the ads node → STOP the whole run, do
   not process further leads, and print "CREDIT GUARD: run produced N images" so it
