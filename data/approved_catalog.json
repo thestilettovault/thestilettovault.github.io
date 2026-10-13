@@ -2011,21 +2011,35 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/pointed-toe-pump-3256807553262560/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-10-13T10:22:50.955999"
   },
   {
     "title": "Rampage Brown Suede",
     "url": "https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "aff_link": "https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "domain": "nakedwolfe.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RAMPAGE_BROWN_SUEDE-01_1.jpg?v=1773915892",
+    "image_url": "https://thestilettovault.github.io/img/heels/rampage-brown-suede/ig_image_1.jpg",
     "commission": "10%",
     "deal": {},
     "date": "2026-10-02T08:36:01.920362",
     "local_asset": "GELEM/2026-10-02/rampage-brown-suede",
     "image_ok": true,
     "downloaded": "2026-10-02",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/rampage-brown-suede/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/rampage-brown-suede/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/rampage-brown-suede/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "River Black Patent",
