@@ -169,7 +169,16 @@ def finalize(slug):
     ad_path = GELEM / slug / chosen
     posted_img = overlay_mod.apply_overlay(str(ad_path), deal,
                                            str(GELEM / slug / "post_image.jpg"))
+    # No deal data (full-price brand heels, e.g. Naked Wolfe) → no overlay is drawn.
+    # The clean chosen ad is then the post image; without this the heel had no
+    # drop and silently never got scheduled (2026-10-13: 5 Naked Wolfe heels stuck).
+    post_path = GELEM / slug / "post_image.jpg"
+    if not posted_img or not post_path.exists():
+        shutil.copyfile(ad_path, post_path)
+        posted_img = str(post_path)
     drop = build_drop(slug)
+    if not drop:
+        print(f"! {slug}: no drop built — NOT finalized"); return False
     set_state(slug, status="finalized",
               post_image=posted_img,
               video=str(GELEM / slug / "video.mp4"),   # one 9:16 video -> both IG + TikTok
