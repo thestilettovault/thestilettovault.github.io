@@ -2020,14 +2020,26 @@
     "url": "https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "aff_link": "https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "domain": "nakedwolfe.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RIVER-BLACK-01.jpg?v=1773915037",
+    "image_url": "https://thestilettovault.github.io/img/heels/river-black-patent/ig_image_1.jpg",
     "commission": "10%",
     "deal": {},
     "date": "2026-10-04T08:05:01.285851",
     "local_asset": "GELEM/2026-10-04/river-black-patent",
     "image_ok": true,
     "downloaded": "2026-10-04",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/river-black-patent/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/river-black-patent/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/river-black-patent/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "Platform High Heels",
@@ -2059,7 +2071,9 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/platform-high-heels-3256810584098285/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-10-13T10:17:37.980266"
   },
   {
     "title": "River White Patent",
