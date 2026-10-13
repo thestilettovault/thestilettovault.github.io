@@ -1986,7 +1986,7 @@
     "url": "https://www.aliexpress.com/item/3256807553262560.html",
     "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807553262560.html",
     "domain": "aliexpress.com",
-    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Sfb4152be36334d95be83551ef96eff02z.jpg",
+    "image_url": "https://thestilettovault.github.io/img/heels/pointed-toe-pump-3256807553262560/ig_image_1.jpg",
     "commission": "6.9%",
     "deal": {
       "sale": 50.05,
@@ -1999,7 +1999,19 @@
     "local_asset": "GELEM/2026-10-01/pointed-toe-pump-3256807553262560",
     "image_ok": true,
     "downloaded": "2026-10-01",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/pointed-toe-pump-3256807553262560/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/pointed-toe-pump-3256807553262560/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/pointed-toe-pump-3256807553262560/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "Rampage Brown Suede",
@@ -2039,7 +2051,9 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/river-black-patent/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-10-13T10:20:22.371769"
   },
   {
     "title": "Platform High Heels",
