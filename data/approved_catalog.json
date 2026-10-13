@@ -2039,7 +2039,9 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/rampage-brown-suede/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-10-13T10:24:33.594713"
   },
   {
     "title": "River Black Patent",
@@ -2136,7 +2138,7 @@
     "url": "https://www.aliexpress.com/item/3256811369943536.html",
     "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256811369943536.html",
     "domain": "aliexpress.com",
-    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se363aae037cd47c29182bf887865446aU.jpg",
+    "image_url": "https://thestilettovault.github.io/img/heels/platform-high-heels-3256811369943536/ig_image_1.jpg",
     "commission": "6.9%",
     "deal": {
       "sale": 29.72,
@@ -2149,7 +2151,19 @@
     "local_asset": "GELEM/2026-10-05/platform-high-heels-3256811369943536",
     "image_ok": true,
     "downloaded": "2026-10-05",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/platform-high-heels-3256811369943536/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/platform-high-heels-3256811369943536/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/platform-high-heels-3256811369943536/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "Rare Smoke TPU",
