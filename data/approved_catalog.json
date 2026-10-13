@@ -2054,14 +2054,26 @@
     "url": "https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "aff_link": "https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "domain": "nakedwolfe.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RIVER-WHITE-01.jpg?v=1773915029",
+    "image_url": "https://thestilettovault.github.io/img/heels/river-white-patent/ig_image_1.jpg",
     "commission": "10%",
     "deal": {},
     "date": "2026-10-05T11:18:55.549344",
     "local_asset": "GELEM/2026-10-05/river-white-patent",
     "image_ok": true,
     "downloaded": "2026-10-05",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/river-white-patent/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/river-white-patent/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/river-white-patent/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "Platform High Heels",
@@ -2080,7 +2092,8 @@
     "date": "2026-10-05T11:19:33.881147",
     "local_asset": "GELEM/2026-10-05/platform-high-heels-3256811369943536",
     "image_ok": true,
-    "downloaded": "2026-10-05"
+    "downloaded": "2026-10-05",
+    "on_site": true
   },
   {
     "title": "Rare Smoke TPU",
@@ -2093,7 +2106,8 @@
     "date": "2026-10-07T08:01:23.241736",
     "local_asset": "GELEM/2026-10-07/rare-smoke-tpu",
     "image_ok": true,
-    "downloaded": "2026-10-07"
+    "downloaded": "2026-10-07",
+    "on_site": true
   },
   {
     "title": "Rare Brown TPU",
@@ -2125,7 +2139,8 @@
     "date": "2026-10-07T08:01:34.198612",
     "local_asset": "GELEM/2026-10-07/heeled-ankle-boots-3256808371208917",
     "image_ok": true,
-    "downloaded": "2026-10-07"
+    "downloaded": "2026-10-07",
+    "on_site": true
   },
   {
     "title": "Tiger Lilly Smoke TPU",
@@ -2138,7 +2153,8 @@
     "date": "2026-10-08T08:01:31.287293",
     "local_asset": "GELEM/2026-10-08/tiger-lilly-smoke-tpu",
     "image_ok": true,
-    "downloaded": "2026-10-08"
+    "downloaded": "2026-10-08",
+    "on_site": true
   },
   {
     "title": "The Outlaw Boot Black",
@@ -2152,5 +2168,75 @@
     "local_asset": "GELEM/2026-10-09/the-outlaw-boot-black",
     "image_ok": true,
     "downloaded": "2026-10-09"
+  },
+  {
+    "title": "Stiletto Heels",
+    "url": "https://www.aliexpress.com/item/3256807290674315.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256807290674315.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S873dd0fc94db4eef8d7df193048ac37fS.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 54.25,
+      "was": 113.02,
+      "discount": "52%",
+      "rating": "4.9",
+      "sold": "498 sold"
+    },
+    "date": "2026-10-11T08:01:19.790009",
+    "local_asset": "GELEM/2026-10-11/stiletto-heels-3256807290674315",
+    "image_ok": true,
+    "downloaded": "2026-10-11"
+  },
+  {
+    "title": "Stiletto Heels",
+    "url": "https://www.aliexpress.com/item/3256806808422394.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256806808422394.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se86d076bcf764d08ac8c326032c585a3r.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 39.76,
+      "was": 92.52,
+      "discount": "57%",
+      "rating": "4.9",
+      "sold": "1,000+ sold"
+    },
+    "date": "2026-10-11T08:01:49.924225",
+    "local_asset": "GELEM/2026-10-11/stiletto-heels-3256806808422394",
+    "image_ok": true,
+    "downloaded": "2026-10-11"
+  },
+  {
+    "title": "The Bag Boot Black Leather",
+    "url": "https://nakedwolfe.com/products/the-bag-boot-black-leather?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "aff_link": "https://nakedwolfe.com/products/the-bag-boot-black-leather?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "domain": "nakedwolfe.com",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/THE_BAG_BOOT-BLACK_LEATHER-01.jpg?v=1773916005",
+    "commission": "10%",
+    "deal": {},
+    "date": "2026-10-12T08:58:05.457989",
+    "local_asset": "GELEM/2026-10-12/the-bag-boot-black-leather",
+    "image_ok": true,
+    "downloaded": "2026-10-12"
+  },
+  {
+    "title": "Stiletto Heels",
+    "url": "https://www.aliexpress.com/item/3256808183302545.html",
+    "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808183302545.html",
+    "domain": "aliexpress.com",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S485f4c29aa624a51a30d48737e967bfcW.jpg",
+    "commission": "6.9%",
+    "deal": {
+      "sale": 24.78,
+      "was": 59.25,
+      "discount": "58%",
+      "rating": "4.7",
+      "sold": "428 sold"
+    },
+    "date": "2026-10-13T09:34:33.469179",
+    "local_asset": "GELEM/2026-10-13/stiletto-heels-3256808183302545",
+    "image_ok": true,
+    "downloaded": "2026-10-13"
   }
 ]
