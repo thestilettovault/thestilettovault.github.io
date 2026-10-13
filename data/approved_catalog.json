@@ -2163,21 +2163,35 @@
       ],
       "image_1x1": "https://thestilettovault.github.io/img/heels/platform-high-heels-3256811369943536/ig_image_1.jpg"
     },
-    "variations_ready": true
+    "variations_ready": true,
+    "posted": true,
+    "posted_date": "2026-10-13T10:26:29.550203"
   },
   {
     "title": "Rare Smoke TPU",
     "url": "https://nakedwolfe.com/products/rare-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "aff_link": "https://nakedwolfe.com/products/rare-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
     "domain": "nakedwolfe.com",
-    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RARE-SMOKE-01.jpg?v=1773915306",
+    "image_url": "https://thestilettovault.github.io/img/heels/rare-smoke-tpu/ig_image_1.jpg",
     "commission": "10%",
     "deal": {},
     "date": "2026-10-07T08:01:23.241736",
     "local_asset": "GELEM/2026-10-07/rare-smoke-tpu",
     "image_ok": true,
     "downloaded": "2026-10-07",
-    "on_site": true
+    "on_site": true,
+    "assets": {
+      "videos_ig": [],
+      "videos_tt": [],
+      "images_ig": [
+        "https://thestilettovault.github.io/img/heels/rare-smoke-tpu/ig_image_1.jpg"
+      ],
+      "images_tt": [
+        "https://thestilettovault.github.io/img/heels/rare-smoke-tpu/tt_image_1.jpg"
+      ],
+      "image_1x1": "https://thestilettovault.github.io/img/heels/rare-smoke-tpu/ig_image_1.jpg"
+    },
+    "variations_ready": true
   },
   {
     "title": "Rare Brown TPU",
