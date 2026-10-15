@@ -56,8 +56,8 @@ ZERNIO_INSTAGRAM_ID = os.getenv("ZERNIO_INSTAGRAM_ID", "")
 SITE_URL = "https://thestilettovault.com"   # link-in-bio target
 
 # 5-8 tags per post, mixing niche + reach (per reference_posting_schedule)
-HASHTAGS = ["#heels", "#stilettoheels", "#darkfashion", "#gothicfashion",
-            "#shoelover", "#heelsaddict", "#altfashion", "#statementheels"]
+HASHTAGS = ["#heels", "#stilettos", "#highheels", "#heelslover",
+            "#shoesoftheday", "#nycstyle", "#outfitinspo", "#statementheels"]   # stiletto, not gothic
 
 # A "drop" = 3 posts for one heel, spread across the day at 3 different times.
 # 22:00 IL is the proven optimal slot (reference_posting_schedule); the two
@@ -89,6 +89,22 @@ def media_url(item):
     return item.get("video_url") or item.get("media_url") or ""
 
 
+def ina_caption(item):
+    """Ina's caption for this heel: GELEM/<slug>/_CAPTION.md or GELEM/<date>/<slug>/...
+    Strips any URL defensively (compliance: no links in captions)."""
+    import re as _re
+    slug = slugify(item)
+    gelem = Path(__file__).resolve().parent.parent / "GELEM"
+    for f in [gelem / slug / "_CAPTION.md"] + sorted(gelem.glob(f"*/{slug}/_CAPTION.md"), reverse=True):
+        if f.exists():
+            txt = "\n".join(l for l in f.read_text(encoding="utf-8").splitlines()
+                            if l.strip() and not l.startswith("#")).strip()
+            txt = _re.sub(r"https?://\S+|\b\w+\.(?:com|io|net)\S*", "", txt).strip()
+            if txt:
+                return txt[:400]
+    return ""
+
+
 def build_caption(item):
     title = item.get("title", "").strip()
     # Include the deal so each heel's caption is unique — the raw title is generic
@@ -102,6 +118,17 @@ def build_caption(item):
     if sale:
         headline += f" · ${sale}"
     coupon = "OFERRABIN" if "darkinlove.com" in item.get("domain", "") else None
+    ina = ina_caption(item)
+    if ina:   # Ina's first-person voice (data/agents/ina.md), written by the producer
+        deal_bit = (f"{disc} off" if disc and disc not in ("0%", "0", "") else "") + \
+                   (f" · ${sale}" if sale else "")
+        lines = [ina]
+        if deal_bit:
+            lines.append(f"({deal_bit.strip(' ·')})")
+        if coupon:
+            lines.append(f"code {coupon} = $10 off")
+        lines += ["link in bio 🔗 #ad #affiliate", "", " ".join(HASHTAGS[:7])]
+        return "\n".join(lines)
     lines = [f"{headline} 🖤"]
     if coupon:
         lines.append(f"Use code {coupon} for $10 off")
@@ -323,7 +350,9 @@ def schedule_drop(item, slots=None, do_publish=False, date=None):
     _sale = _d.get("sale")
     _deal_bit = (f" · {_disc} OFF" if _disc and _disc not in ("0%", "0") else "") + \
                 (f" · ${_sale}" if _sale else "")
-    tiktok_img_caption = f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤 link in bio #ad"
+    _ina = ina_caption(item).splitlines()
+    tiktok_img_caption = (f"{_ina[0][:80]} · link in bio #ad" if _ina else
+                          f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤 link in bio #ad")
 
     any_ok = False
     for post, hhmm in zip(posts, slots):

@@ -33,14 +33,19 @@ only after Ofer picks an ad, in a separate flow.
         patches=[{"nodeId":"0114e22a-6027-490e-aeca-b1b428d8ca91",
                   "patch":{"data":{"creationIdentifier":"<SOURCE_ID>"}}}])`
       Verify with `spaces_get_nodes` that 0114e22a has `creationIdentifier == SOURCE_ID`
-      AND that 93b85932 has exactly ONE incoming `reference` connection (from 0114e22a).
-      If anything else feeds it → STOP the run and report (wrong-shoe blend risk).
+      AND that 93b85932 has exactly TWO incoming `reference` connections: the shoe
+      (0114e22a) and INA, the model (6a6dbbd1, never change it). Anything else feeding
+      it → STOP and report (wrong-shoe / wrong-model blend risk).
 
    c2. Write the shot brief for THIS shoe (stylist + trend agents). Look at
-      source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/stylist.md` and
-      `E:/PROJECTS/thegothicvault/data/agents/poses.md`. Pick 4 DIFFERENT poses from the
-      library (>=2 knee-down / shoe-dominant) and one outfit per shot that follows the
-      stylist rules (never the same outfit twice in this run).
+      source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/ina.md`,
+      `.../data/agents/stylist.md` and `.../data/agents/poses.md`. Every shot is INA
+      (face never visible). Pick 2 WORK poses (P..) + 2 STORY scenes (S..), all different,
+      >=2 knee-down / shoe-dominant, and one outfit per shot from the stylist for that
+      moment (never the same outfit twice in this run).
+      Also write Ina's post caption for this shoe (ina.md "Her voice") into
+      `GELEM/<slug>/_CAPTION.md`: 1-3 short first-person lines, no URL. The publisher
+      appends the deal (if any) and `link in bio 🔗 #ad #affiliate` itself.
       The Space needs FOUR SEPARATE texts (one per shot): four text nodes feed the list
       "Shot brief list (4 shots)" (3250b608), which feeds the concept builder once per
       item = 4 prompts = 4 images. NEVER merge the 4 shots into one text: one text makes
