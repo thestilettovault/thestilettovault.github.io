@@ -10,7 +10,7 @@ already scheduled. Before 2026-10-13 nothing ran this step, so picked heels pile
 
 Cost: 0 credits (PIL overlay, GitHub Pages hosting, existing Zernio plan).
 """
-import sys, json, datetime, subprocess, argparse
+import sys, re, json, datetime, subprocess, argparse
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -39,6 +39,15 @@ def next_free_day(taken):
     while d.weekday() == 5 or d.isoformat() in taken:      # 5 = Saturday
         d += datetime.timedelta(days=1)
     return d
+
+
+def parse_schedule_result(stdout):
+    """(ok, total) from the `SCHEDULED_OK <ok>/<total>` machine line that
+    social_publisher.schedule_drop prints after a real publish. (0, 0) if absent."""
+    m = None
+    for m in re.finditer(r"^SCHEDULED_OK (\d+)/(\d+)\s*$", stdout or "", re.M):
+        pass                                     # keep the LAST such line
+    return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
 
 
 def mark_queue(slug_tail, status):
@@ -77,8 +86,21 @@ def main():
                             "--folder", f"{slug}/drop", "--slots", SLOT,
                             "--date", day.isoformat(), "--push", "--publish"],
                            capture_output=True, text=True, encoding="utf-8", errors="replace")
-        ok = "pickup_drop complete" in r.stdout and "→ instagram" in r.stdout
-        print("  ✅ scheduled" if ok else f"  ! scheduling failed:\n{r.stdout[-600:]}{r.stderr[-300:]}")
+        n_ok, n_total = parse_schedule_result(r.stdout)
+        complete = "pickup_drop complete" in r.stdout
+        if complete and n_total > 0 and n_ok == n_total:
+            ok = True
+            print(f"  ✅ scheduled ({n_ok}/{n_total})")
+        elif complete and 0 < n_ok < n_total:
+            # posts DO exist in Zernio: re-running would duplicate them, so keep it scheduled
+            ok = True
+            failed = [ln.strip() for ln in r.stdout.splitlines() if ln.lstrip().startswith("! ")]
+            print(f"  ⚠ PARTIAL schedule {n_ok}/{n_total} for {tail} - treated as scheduled; failed:")
+            for ln in failed[-10:]:
+                print(f"      {ln}")
+        else:
+            ok = False
+            print(f"  ! scheduling failed ({n_ok}/{n_total}):\n{r.stdout[-600:]}{r.stderr[-300:]}")
         if ok:
             taken.add(day.isoformat()); mark_queue(tail, "scheduled")
         else:

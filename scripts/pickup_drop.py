@@ -75,8 +75,8 @@ def load_catalog():
 
 
 def save_catalog(catalog):
-    with open(CATALOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(catalog, f, ensure_ascii=False, indent=2)
+    import catalog_io   # atomic + locked write (scripts dir is on sys.path)
+    catalog_io.save_catalog(catalog, CATALOG_FILE)
 
 
 # slugify lives in space_runner so the folder name that Space output was staged
@@ -320,9 +320,11 @@ def git_push(slug):
     # the site card uses the flat cover img/heels/<slug>.<ext> (NOT inside the folder) —
     # it was never added, so every drop went live with an empty card (fixed 2026-09-29)
     covers = [str(p) for p in IMG_DIR.glob(f"{slug}.*") if p.is_file()]
+    paths = [str(out_dir), *covers, "data/approved_catalog.json", "index.html"]
     cmds = [
-        ["git", "-C", str(ROOT), "add", "-f", str(out_dir), *covers, "data/approved_catalog.json", "index.html"],
-        ["git", "-C", str(ROOT), "commit", "-m", f"drop: {slug} assets live"],
+        ["git", "-C", str(ROOT), "add", "-f", *paths],
+        # explicit pathspec: only OUR paths are committed, never unrelated pre-staged files
+        ["git", "-C", str(ROOT), "commit", "-m", f"drop: {slug} assets live", "--", *paths],
         ["git", "-C", str(ROOT), "push", "origin", "main"],
     ]
     for c in cmds:
@@ -355,11 +357,18 @@ def main():
                     "(this heel's every-other-day slot); default = next free day")
     ap.add_argument("--push", action="store_true", help="commit + push assets live")
     ap.add_argument("--publish", action="store_true", help="schedule the 3 posts via Zernio")
+    ap.add_argument("--force", action="store_true",
+                    help="schedule even if the catalog item is already posted=True (duplicates live posts)")
     a = ap.parse_args()
 
     item = find_item(a.slug)
     if not item:
         print(f"slug not found in catalog: {a.slug}")
+        sys.exit(1)
+
+    if a.publish and item.get("posted") and not a.force:
+        print(f"  ! {a.slug}: already posted ({item.get('posted_date', '?')}) — refusing to "
+              f"schedule again (pass --force to override)")
         sys.exit(1)
 
     folder = gelem_folder(a.slug, a.folder)
@@ -405,7 +414,17 @@ def main():
     fresh = find_item(a.slug)                     # reload with assets attached
     print(f"\nScheduling drop → {len(sp.drop_assets(fresh))} posts @ {slots}"
           f"{' (DRY RUN — pass --publish)' if not a.publish else ''}")
-    sp.schedule_drop(fresh, slots, a.publish, date=a.date)
+    res = sp.schedule_drop(fresh, slots, a.publish, date=a.date, force=a.force)
+
+    if a.publish:
+        if res["refused"] or res["total"] == 0 or res["ok"] == 0:
+            print(f"\n! publishing failed ({res['ok']}/{res['total']} scheduled)"
+                  f"{' — failed: ' + '; '.join(res['failed']) if res['failed'] else ''}")
+            sys.exit(1)
+        if res["ok"] < res["total"]:
+            # posts DO exist in Zernio, so exit 0 (re-running would duplicate them)
+            print(f"\n⚠ PARTIAL: {res['ok']}/{res['total']} scheduled — failed: "
+                  + "; ".join(res["failed"]))
 
     print("\n✅ pickup_drop complete")
 

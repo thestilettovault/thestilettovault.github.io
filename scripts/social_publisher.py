@@ -73,8 +73,8 @@ def load_catalog():
 
 
 def save_catalog(catalog):
-    with open(CATALOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(catalog, f, ensure_ascii=False, indent=2)
+    import catalog_io   # atomic + locked write (scripts dir is on sys.path)
+    catalog_io.save_catalog(catalog, CATALOG_FILE)
 
 
 def slugify(item):
@@ -89,6 +89,32 @@ def media_url(item):
     return item.get("video_url") or item.get("media_url") or ""
 
 
+_URL_RE = re.compile(
+    r"https?://\S+|\bwww\.\S+|"
+    r"\b[\w-]+(?:\.[\w-]+)*\.(?:com|net|org|io|co|uk|shop|store|me|ly|app|link)\b\S*",
+    re.I)
+
+
+def clean_caption(text):
+    """Compliance: no link or domain-like token may ever appear in a caption
+    (the link lives in the bio). Keeps hashtags, #ad and 'link in bio'."""
+    text = _URL_RE.sub("", text or "")
+    text = re.sub(r"(?i)https?\S*", "", text)            # belt and braces: no stray 'http'
+    text = "\n".join(re.sub(r"[ \t]{2,}", " ", ln).rstrip() for ln in text.splitlines())
+    assert "http" not in text.lower()
+    return text.strip()
+
+
+def tiktok_title(head, tail=" · link in bio #ad", limit=90):
+    """TikTok photo-post title (<= `limit` chars). Only the head is shortened, so the
+    disclosure tail (#ad) is never cut."""
+    head = clean_caption(head)
+    room = max(0, limit - len(tail))
+    if len(head) > room:
+        head = head[:room].rstrip()
+    return head + tail
+
+
 def ina_caption(item):
     """Ina's caption for this heel: GELEM/<slug>/_CAPTION.md or GELEM/<date>/<slug>/...
     Strips any URL defensively (compliance: no links in captions)."""
@@ -99,7 +125,7 @@ def ina_caption(item):
         if f.exists():
             txt = "\n".join(l for l in f.read_text(encoding="utf-8").splitlines()
                             if l.strip() and not l.startswith("#")).strip()
-            txt = _re.sub(r"https?://\S+|\b\w+\.(?:com|io|net)\S*", "", txt).strip()
+            txt = clean_caption(txt)
             if txt:
                 return txt[:400]
     return ""
@@ -128,14 +154,14 @@ def build_caption(item):
         if coupon:
             lines.append(f"code {coupon} = $10 off")
         lines += ["link in bio 🔗 #ad #affiliate", "", " ".join(HASHTAGS[:7])]
-        return "\n".join(lines)
+        return clean_caption("\n".join(lines))
     lines = [f"{headline} 🖤"]
     if coupon:
         lines.append(f"Use code {coupon} for $10 off")
     lines.append("Link in bio 🔗  #ad #affiliate")
     lines.append("")
     lines.append(" ".join(HASHTAGS[:7]))
-    return "\n".join(lines)
+    return clean_caption("\n".join(lines))
 
 
 def next_2200_israel():
@@ -210,7 +236,28 @@ def _zernio_post(content, platform, account_id, media_url, media_type,
         headers={"Authorization": f"Bearer {ZERNIO_API_KEY}", "Content-Type": "application/json"},
         json=payload, timeout=60,
     )
-    return r.ok, f"{r.status_code}: {r.text[:160]}"
+    info = _PostInfo(f"{r.status_code}: {r.text[:160]}")
+    if r.ok:
+        try:
+            info.post_id = _extract_post_id(r.json())
+        except Exception:
+            pass
+    return r.ok, info
+
+
+class _PostInfo(str):
+    """Info string from _zernio_post; `.post_id` carries the Zernio post id if returned."""
+    post_id = None
+
+
+def _extract_post_id(j):
+    """Zernio post id from a create-post response: {"post": {"_id"}} / {"_id"} / {"data": {"_id"}}."""
+    if not isinstance(j, dict):
+        return None
+    for node in (j.get("post"), j, j.get("data")):
+        if isinstance(node, dict) and (node.get("_id") or node.get("id")):
+            return node.get("_id") or node.get("id")
+    return None
 
 
 # next 22:00 Israel as a naive local ISO string (paired with timezone above)
@@ -230,7 +277,7 @@ def publish(item, do_publish):
     full_caption = build_caption(item)
     # TikTok PHOTO posts use content as a slideshow title capped at 90 chars.
     tiktok_caption = full_caption if media_type == "video" else \
-        f"{item.get('title','').strip()[:60]} 🖤 link in bio #ad"
+        tiktok_title(f"{item.get('title','').strip()[:60]} 🖤", " link in bio #ad")
 
     targets = []
     if ZERNIO_INSTAGRAM_ID:
@@ -316,16 +363,32 @@ def drop_assets(item):
     return [p for p in posts if p["ig"] or p["tk"]]
 
 
-def schedule_drop(item, slots=None, do_publish=False, date=None):
+def _result(ok=0, total=0, failed=None, refused=False, do_publish=False):
+    """Structured schedule_drop result. When actually publishing, also print the
+    machine line `SCHEDULED_OK <ok>/<total>` that auto_schedule parses."""
+    res = {"ok": ok, "total": total, "failed": list(failed or []), "refused": refused}
+    if do_publish:
+        print(f"SCHEDULED_OK {ok}/{total}")
+    return res
+
+
+def schedule_drop(item, slots=None, do_publish=False, date=None, force=False):
     """Schedule one heel as 3 posts across the day (IG + TikTok each).
     `date` (a datetime.date or 'YYYY-MM-DD') pins the posts to a specific day —
-    e.g. this heel's every-other-day slot — instead of the next free day."""
+    e.g. this heel's every-other-day slot — instead of the next free day.
+    Refuses an item that is already posted=True unless force=True (re-running would
+    duplicate live posts). Returns {"ok", "total", "failed": [labels], "refused"}
+    where ok/total count (post, platform) submissions."""
     slug  = slugify(item)
     slots = slots or DEFAULT_SLOTS
+    if item.get("posted") and not force:
+        print(f"  ! {slug}: already posted ({item.get('posted_date', '?')}) — refusing to "
+              f"schedule again (pass --force to override)")
+        return _result(refused=True, do_publish=do_publish)
     posts = drop_assets(item)
     if not posts:
         print(f"  ! {slug}: no hosted assets (item['assets']) — run pickup_drop first")
-        return False
+        return _result(do_publish=do_publish)
     # Fit the number of time-slots to the number of posts (content varies per shoe).
     SLOT_POOL = ["12:00", "14:00", "16:00", "18:00", "20:00", "22:00"]
     if len(posts) <= len(slots):
@@ -351,10 +414,12 @@ def schedule_drop(item, slots=None, do_publish=False, date=None):
     _deal_bit = (f" · {_disc} OFF" if _disc and _disc not in ("0%", "0") else "") + \
                 (f" · ${_sale}" if _sale else "")
     _ina = ina_caption(item).splitlines()
-    tiktok_img_caption = (f"{_ina[0][:80]} · link in bio #ad" if _ina else
-                          f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤 link in bio #ad")
+    tiktok_img_caption = (tiktok_title(_ina[0]) if _ina else
+                          tiktok_title(f"{item.get('title','').strip()[:50]}{_deal_bit} 🖤",
+                                       " link in bio #ad"))
 
-    any_ok = False
+    n_ok = n_total = 0
+    failed, post_ids = [], []
     for post, hhmm in zip(posts, slots):
         when       = slot_iso(hhmm, base)
         label      = post["label"]
@@ -375,8 +440,9 @@ def schedule_drop(item, slots=None, do_publish=False, date=None):
             continue
         if not ZERNIO_API_KEY:
             print("  ! ZERNIO_API_KEY not set — cannot publish")
-            return False
+            return _result(do_publish=do_publish)
         for platform, account_id, content, media_url in targets:
+            n_total += 1
             # Instagram video → Reel that also lands in the feed (post + reel).
             pdata = ({"shareToFeed": True}
                      if platform == "instagram" and media_type == "video" else None)
@@ -385,18 +451,27 @@ def schedule_drop(item, slots=None, do_publish=False, date=None):
                                         media_url, media_type, scheduled_for=when,
                                         platform_data=pdata)
                 print(f"  {'✅' if ok else '!'} {slug} · {label} → {platform} @ {when}: {info}")
-                any_ok = any_ok or ok
+                if ok:
+                    n_ok += 1
+                    pid = getattr(info, "post_id", None)
+                    if pid:
+                        post_ids.append(pid)
+                else:
+                    failed.append(f"{label} → {platform}")
             except Exception as e:
                 print(f"  ! {slug} · {label} → {platform} failed: {e}")
+                failed.append(f"{label} → {platform}")
 
-    if any_ok:
+    if n_ok:
         catalog = load_catalog()
         for it in catalog:
             if it.get("url") == item.get("url"):
                 it["posted"] = True
                 it["posted_date"] = datetime.datetime.now().isoformat()
+                if post_ids:
+                    it["post_ids"] = list(it.get("post_ids") or []) + post_ids
         save_catalog(catalog)
-    return any_ok
+    return _result(n_ok, n_total, failed, do_publish=do_publish)
 
 
 if __name__ == "__main__":
@@ -406,7 +481,16 @@ if __name__ == "__main__":
                     help="schedule ONE heel as 3 posts across the day (2 images + 1 video)")
     ap.add_argument("--slots", default=",".join(DEFAULT_SLOTS),
                     help="comma-separated HH:MM times for the 3 drop posts")
+    ap.add_argument("--force", action="store_true",
+                    help="schedule even if the item is already posted=True (duplicates live posts)")
+    ap.add_argument("--legacy-all", action="store_true",
+                    help="allow --publish without --drop: legacy publish of ALL ready items at one instant")
     args = ap.parse_args()
+
+    if args.publish and not args.drop and not args.legacy_all:
+        print("refusing: --publish without --drop would publish EVERY ready item at one instant "
+              "(legacy path). Use --drop SLUG, or pass --legacy-all if you really mean it.")
+        sys.exit(2)
 
     if args.drop:
         it = find_by_slug(args.drop)
@@ -416,7 +500,9 @@ if __name__ == "__main__":
         slots = [s.strip() for s in args.slots.split(",") if s.strip()]
         print(f"Scheduling drop '{args.drop}' → 3 posts @ {slots}"
               f"{' (DRY RUN — use --publish to send)' if not args.publish else ''}")
-        schedule_drop(it, slots, args.publish)
+        res = schedule_drop(it, slots, args.publish, force=args.force)
+        if args.publish and (res["refused"] or res["ok"] == 0):
+            sys.exit(1)
     else:
         todo = pending()
         print(f"{len(todo)} product(s) ready to post"

@@ -16,7 +16,7 @@ Usage:
     python build_site.py --push    # rebuild + git commit + push live
     python build_site.py --limit 12   # (default = all)
 """
-import sys, os, re, json, shutil, subprocess, argparse
+import sys, os, re, json, shutil, subprocess, argparse, html as _html
 from pathlib import Path
 from datetime import datetime
 
@@ -47,8 +47,8 @@ def load_catalog():
 
 
 def save_catalog(catalog):
-    with open(CATALOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(catalog, f, ensure_ascii=False, indent=2)
+    import catalog_io   # atomic + locked write (scripts dir is on sys.path)
+    catalog_io.save_catalog(catalog, CATALOG_FILE)
 
 
 # Reuse space_runner.slugify so each AliExpress heel gets a UNIQUE slug (it
@@ -197,8 +197,12 @@ def card_html(item, slug):
     price = esc(str(price))
     # GA event on click → we see how many people clicked "buy" per shoe, live,
     # even before a sale lands in Admitad. Guarded so it never breaks if gtag is blocked.
+    def _js(v):   # JS single-quoted string literal body, then HTML-attribute safe
+        v = re.sub(r"[\r\n]+", " ", str(v))
+        v = re.sub(r"[\\']", lambda m: "\\" + m.group(0), v)
+        return _html.escape(v, quote=True)
     onclick = (f"if(window.gtag)gtag('event','affiliate_click',"
-               f"{{'shoe':'{slug}','discount':'{disc}'}});")
+               f"{{'shoe':'{_js(slug)}','discount':'{_js(disc)}'}});")
     m = {k: esc(v) for k, v in card_meta(item).items()}
     badge = f'        <span class="card-badge">-{m["disc"]}%</span>\n' if m["disc"] not in ("", "0") else ""
     store = f'          <span class="card-store">{m["store"]}</span>\n' if m["store"] else ""
