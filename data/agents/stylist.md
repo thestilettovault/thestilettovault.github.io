@@ -9,9 +9,9 @@ story: work (shoots), life (vlog moments), behind the scenes. Dress HER for the 
 - **Life / vlog:** what she would really wear there. Date night = slip dress or fitted
   mini, heels peeking under the restaurant table. Home = oversized shirt or lounge set,
   heels on in front of the mirror before going out. Taxi / street = trend outfit of the week.
-- **Behind the scenes:** robe, cropped tee and shorts, shoe boxes around her.
+- **Behind the scenes:** robe, cropped tee and shorts, a clothing rail behind her (no shoe boxes, no other shoes).
 Her reference photos all show a black blazer + white camisole. Never copy that outfit:
-take only her face, hair and body from the reference.
+take only her hair, skin tone and body from the reference - never the face (it is never shown).
 
 ## Read the shoe first (from source.jpg)
 Colour, finish (patent / suede / satin / metallic / clear), silhouette (pump, sandal, boot,

@@ -219,19 +219,32 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Collect the 4 ads in the background: run_collect.bat -> collect_queue.md.
         if action == "boardrun":
             import orchestrator
-            orchestrator.set_state(pid, status="run_clicked", run_clicked_ts=time.time())
-            subprocess.Popen(["cmd", "/c", str(Path(__file__).parent / "run_collect.bat")],
-                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            slug = orchestrator.resolve_cb(pid)
+            if not orchestrator.claim_collect(slug):
+                try:
+                    await query.message.reply_text("כבר אוסף / כבר טופל - לא מפעיל שוב.")
+                except Exception:
+                    pass
+                return
+            try:
+                subprocess.Popen(["cmd", "/c", str(Path(__file__).parent / "run_collect.bat")],
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            except Exception as e:
+                orchestrator.set_status(slug, "board_ready")
+                logger.error(f"run_collect launch failed: {e}")
+                await query.edit_message_text(f"⚠️ לא הצלחתי להפעיל את האיסוף: {e}")
+                return
             await query.edit_message_text(
-                f"👍 קיבלתי. אוסף את 4 המודעות של {pid.split('/')[-1]} ושולח לבחירה בעוד כמה דקות.")
+                f"👍 קיבלתי. אוסף את 4 המודעות של {slug.split('/')[-1]} ושולח לבחירה בעוד כמה דקות.")
             return
 
-        # Ad A/B winner pick (from orchestrator.send_ad_choice). pid = "<slug>|A".
+        # Ad A/B/C/D winner pick (from orchestrator.send_ad_choice). pid = "<slug-or-token>|A".
         if action == "adpick":
-            slug, _, choice = pid.partition("|")
+            slug, _, choice = pid.rpartition("|")
             import orchestrator
+            slug = orchestrator.resolve_cb(slug)
             ok, info = orchestrator.record_choice(slug, choice)
-            msg = (f"✅ נבחר {choice} — הוידאו לאינסטגרם + טיקטוק בדרך 🎬"
+            msg = (f"✅ נבחר {choice} - המודעה נכנסת לתור הפרסום 🎬"
                    if ok else f"⚠️ {info}")
             try:
                 await query.edit_message_caption(caption=msg, parse_mode="Markdown")

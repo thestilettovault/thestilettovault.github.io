@@ -16,8 +16,11 @@ neatly in perfect proportion, fresh glossy pedicure (colour per stylist.md). Lon
 toned legs. Luxury beauty-campaign finish, never "real-life" feet. Ugly or odd feet = QA fail.
 
 ## Visual rules (every image)
-- Face never visible: crop at the chin or lips, shoot from behind, face turned away,
-  hair or phone covering the face, or legs-only framing. A visible face = QA fail.
+- Face never visible: crop at the COLLARBONE (nothing at or above the chin in frame), shoot
+  from behind, or legs-only framing; a phone or hair in front of the face is a backup, not
+  the plan. A visible face = QA fail.
+- One pair of shoes only (both on her feet). No shoe boxes, no other shoes. Clean images:
+  no text, price or headline burned in.
 - Take only her body, skin tone and hair from the reference. Never copy the reference
   outfit (black blazer + white camisole). The stylist dresses her (stylist.md).
 - Mix per shoe: 2 work shots (shoots, special NYC locations) + 2 life / vlog shots

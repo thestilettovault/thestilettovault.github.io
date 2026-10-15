@@ -19,9 +19,10 @@ only after Ofer picks an ad, in a separate flow.
 2. Take the NEWEST entry with `status == "approved"` (the shoe Ofer approved most
    recently; exactly ONE per run):
 
-   a. slug = run `py -3 E:/PROJECTS/thegothicvault/scripts/space_runner.py` is not
-      needed — derive it the same way: AliExpress `/item/<id>` → `<title-slug>-<id>`.
-      The folder is the entry's `local_asset` basename; use that slug.
+   a. slug = the entry's `local_asset` WITHOUT the leading `GELEM/` (so it includes the
+      date folder, e.g. `2026-10-13/stiletto-heels-3256...`). Never just the basename.
+      Get it with: `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py slug-of "<local_asset>"`
+      Use that exact string for the GELEM folder and every orchestrator command below.
 
    b. Upload the source: `mcp__magnific__creations_upload_image(url = entry.image_url)`
       → note the returned `identifier` (SOURCE_ID).
@@ -39,8 +40,6 @@ only after Ofer picks an ad, in a separate flow.
       and arched foot (f738222d); CLOSED toe: leave those two unwired (they confuse it).
       The generator model stays Nano Banana Pro (imagen-nano-banana-2). Never change Ina's nodes. Anything else
       feeding it → STOP and report (wrong-shoe / wrong-model blend risk).
-      In QA, also fail any ad where the shoe is the plain nude pump from Ina's sheet
-      instead of the product.
 
    c2. Write the shot brief for THIS shoe (stylist + trend agents). Look at
       source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/ina.md`,
@@ -68,7 +67,9 @@ only after Ofer picks an ad, in a separate flow.
       `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py ready <slug>`
       (copy source.jpg into GELEM/<slug>/ first so the message shows the shoe).
 
-   e. Set that entry's `status = "board_ready"` in production_queue.json and save. STOP.
+   e. Mark the queue entry (never edit the JSON by hand):
+      `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py queue-set <slug> board_ready`
+      STOP.
       When Ofer taps the button, run_collect.bat follows collect_queue.md.
 
 3. Print a one-line summary: how many leads produced, how many skipped, any errors.
@@ -78,3 +79,7 @@ only after Ofer picks an ad, in a separate flow.
 - One lead per run. Never touch entries whose status is not `approved`.
 - Never run the video generator node.
 - If the lead errors, log it, leave its status as `approved`, and STOP.
+- Never hand-edit production_queue.json or orchestrator_state.json; use the orchestrator
+  CLI (`queue-set`, `set-status`, `ready`).
+- Never call a generating or paid Magnific tool (images_generate, video_generate, upscale,
+  variations, ...); the runner blocks them anyway.

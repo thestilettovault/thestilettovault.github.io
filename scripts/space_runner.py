@@ -14,18 +14,11 @@ plain Python:
   • download  — given result URLs from the Space, save them to GELEM/<slug>/
   • mark      — flag catalog items variations_ready = true
 
-The agent glue (run once MCP `spaces_*` is reconnected) is:
-
-    for item in space_runner.queue():
-        img = space_runner.stage(item)                      # local file
-        # --- MCP calls (agent) ---
-        spaces_add_creations(space_id=SPACE_ID, creation_ids=[upload(img)])
-        run = spaces_run(space_id=SPACE_ID)
-        poll spaces_run_status(run_id=run.id) until complete
-        urls = [c.url for c in spaces_show(space_id=SPACE_ID).new_creations]
-        # --- back to Python ---
-        space_runner.download(item, urls)
-        space_runner.mark_ready(item)
+HISTORICAL (superseded 2026-10): an older flow had the agent call spaces_run /
+spaces_run_status via the API. That costs credits and is now FORBIDDEN: the agent only
+prepares the board (produce_queue.md) and collects results (collect_queue.md); Ofer
+presses Run in the Magnific app (free). See orchestrator.py for the current flow.
+The plain-Python helpers below (queue / stage / download / mark_ready) are still used.
 
 Usage (plain-Python parts, runnable now):
     python space_runner.py queue                 # list products needing art
@@ -49,8 +42,8 @@ SPACE_ID = "a2796464-3570-4e02-aa77-65f3f4322d9f"
 # Entry: the heel source image is uploaded (creations_upload_image) and wired as
 # the `reference` of the Campaign image generator via the MCP glue below.
 SPACE_INPUT_IMAGE_NODE = "93b85932-6752-4bfa-a801-28fd3c0c097c"  # Campaign image generator
-# Outputs we download: the static-ad list (for the deal overlay) and the two
-# Veo video-generator nodes (INSTA + TikTok).
+# DEAD (no per-lead video step any more; ads are collected via creations_search):
+# the static-ad list and the two Veo video-generator nodes (INSTA + TikTok).
 SPACE_OUTPUT_ADS_LIST   = "9a64a219-35fa-4dc5-a8d7-c0c67164f134"
 SPACE_OUTPUT_VIDEO_INSTA   = "1ecb7df2-1a63-47d2-b4f3-09a75894816c"
 SPACE_OUTPUT_VIDEO_TIKTOK  = "bd04349b-fdde-4306-a8d8-cb262b322e96"
@@ -96,7 +89,7 @@ def queue():
 def stage(item):
     """
     Ensure the product's source image sits at GELEM/<slug>/source.jpg so the
-    Space (or magnific_producer fallback) can pick it up. Downloads image_url.
+    Space can pick it up. Downloads image_url.
     Returns the local path, or None if no source image is available.
     """
     slug = slugify(item)

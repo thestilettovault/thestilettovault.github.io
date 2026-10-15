@@ -1,26 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-orchestrator.py - run ONE heel end-to-end through the Smart-Heel Space, with the
+orchestrator.py - state + Telegram hand-offs for ONE heel at a time, with the
 single human decision (which ad wins) happening in Telegram.
 
-Roles:  [agent] = Claude via the Magnific MCP tools.   [py] = this module.
+CURRENT FLOW (agents never spend credits; Ofer presses Run in the Magnific app,
+where Unlimited makes it free):
 
-    1. [py]    stage(item)                       -> GELEM/<slug>/source.jpg
-    2. [agent] creations_upload_image(source)    -> creation id
-    3. [agent] wire it as the Campaign image generator reference (spaces_edit)
-    4. [agent] spaces_run  ... down to the two static ads
-    5. [agent] download the 2 ad images          -> GELEM/<slug>/ad_A.jpg, ad_B.jpg
-    6. [py]    send_ad_choice(slug)              -> 2 photos + "choose" buttons to Telegram
-    7.  Ofer taps  "בחר A/B"  -> telegram_bot callback -> [py] record_choice(slug, x)
-    8. [agent] spaces_run ONE 9:16 video from the CHOSEN ad (serves IG + TikTok)
-    9. [agent] download the video   -> GELEM/<slug>/video.mp4
-   10. [py]    finalize(slug)  -> burn the deal overlay on the chosen ad + queue the
-                                  Instagram + TikTok posts (social_publisher / Zernio)
+    1. run_producer.bat -> produce_queue.md: PREPARE the Space board for the newest
+       approved lead (upload source, patch nodes, 4 shot briefs) -> `ready <slug>`
+       sends the "board ready" message with a boardrun button; queue status=board_ready.
+    2. Ofer presses Run in the Magnific app, taps the button -> telegram_bot
+       (claim_collect: board_ready -> collecting) -> run_collect.bat -> collect_queue.md.
+    3. collect_queue.md downloads the 4 ads (ad_A..ad_D.jpg), QA -> _QA.md,
+       then `send <slug>` posts them with pick buttons (status awaiting_choice).
+    4. Ofer taps a pick -> telegram_bot adpick -> record_choice (status chosen).
+    5. auto_schedule.py -> finalize(slug): the chosen ad becomes post_image.jpg
+       (clean, no burned-in text) + the per-platform drop for social_publisher.
+       There is no per-lead video step any more.
 
-State for the async human step lives in data/orchestrator_state.json so the
-Telegram callback (a different process) and the agent can hand off cleanly.
+slug = local_asset minus the leading "GELEM/", e.g. "2026-10-13/stiletto-heels-123"
+(CLI: `slug-of <local_asset>`). It is the key of orchestrator state and the GELEM subfolder.
+
+CLI: send | choose | finalize | pending | state | ready | slug-of | set-status |
+     queue-set | claim | resolve-cb
+
+State for the async human steps lives in data/orchestrator_state.json (atomic,
+lock-protected writes) so the Telegram callback (a different process) and the
+headless agents hand off cleanly.
 """
-import os, sys, json, time, shutil
+import os, sys, json, time, shutil, hashlib, contextlib
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -38,6 +46,7 @@ import telegram_sender as ts   # reuse its proven token/chat/.env loading
 ROOT       = Path(__file__).resolve().parent.parent
 GELEM      = ROOT / "GELEM"
 STATE_FILE = ROOT / "data" / "orchestrator_state.json"
+QUEUE_FILE = ROOT / "data" / "production_queue.json"
 
 BOT_TOKEN = ts.BOT_TOKEN
 CHAT_ID   = ts.CHAT_ID
@@ -47,22 +56,141 @@ BURN_DEAL_OVERLAY = False   # clean posts (Ofer 2026-10-15)
 
 # ---------------- state ----------------
 
+@contextlib.contextmanager
+def _lock(path, timeout=10.0, stale=60.0):
+    """Cross-process lock via an O_CREAT|O_EXCL lock file next to `path`."""
+    lock = str(path) + ".lock"
+    deadline = time.time() + timeout
+    while True:
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.close(fd)
+            break
+        except FileExistsError:
+            try:
+                if time.time() - os.path.getmtime(lock) > stale:
+                    os.remove(lock)
+                    continue
+            except OSError:
+                pass
+            if time.time() > deadline:
+                raise TimeoutError(f"lock busy: {lock}")
+            time.sleep(0.05)
+    try:
+        yield
+    finally:
+        try:
+            os.remove(lock)
+        except OSError:
+            pass
+
+def _read_json(path, default):
+    path = Path(path)
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    return default
+
+def _write_json_atomic(path, data):
+    path = Path(path)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(tmp, path)
+
 def _load():
-    if STATE_FILE.exists():
-        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
-    return {}
+    return _read_json(STATE_FILE, {})
 
 def _save(st):
-    STATE_FILE.write_text(json.dumps(st, ensure_ascii=False, indent=2), encoding="utf-8")
+    with _lock(STATE_FILE):
+        _write_json_atomic(STATE_FILE, st)
+
+def _update(fn):
+    """Locked read-modify-write of the state file. fn(state) -> result."""
+    with _lock(STATE_FILE):
+        st = _read_json(STATE_FILE, {})
+        res = fn(st)
+        _write_json_atomic(STATE_FILE, st)
+        return res
 
 def set_state(slug, **kw):
-    st = _load()
-    st.setdefault(slug, {}).update(kw)
-    _save(st)
-    return st[slug]
+    def f(st):
+        st.setdefault(slug, {}).update(kw)
+        return dict(st[slug])
+    return _update(f)
 
 def get_state(slug):
     return _load().get(slug, {})
+
+def slug_of(local_asset):
+    """local_asset 'GELEM/2026-10-13/foo-123' -> state key '2026-10-13/foo-123'."""
+    s = str(local_asset).replace("\\", "/").strip().strip("/")
+    if s.upper().startswith("GELEM/"):
+        s = s[len("GELEM/"):]
+    return s
+
+def set_status(slug, status):
+    """Set only the orchestrator status of a slug (used by the .md runners)."""
+    return set_state(slug, status=status)
+
+def queue_set(slug, status):
+    """Set status of the production_queue.json entry whose local_asset maps to slug.
+    Returns True if an entry was updated."""
+    with _lock(QUEUE_FILE):
+        q = _read_json(QUEUE_FILE, [])
+        hit = False
+        for e in q:
+            if slug_of(e.get("local_asset", "")) == slug:
+                e["status"] = status
+                hit = True
+        if hit:
+            _write_json_atomic(QUEUE_FILE, q)
+    return hit
+
+COLLECT_STALE_S = 30 * 60
+
+
+def claim_collect(slug):
+    """Atomically flip board_ready -> collecting. False if not board_ready
+    (already collecting / double tap). A 'collecting' claim older than
+    COLLECT_STALE_S (crashed run) and the legacy 'run_clicked' can be re-claimed."""
+    def f(st):
+        cur = st.get(slug, {})
+        s = cur.get("status")
+        stale = s == "collecting" and time.time() - cur.get("collect_ts", 0) > COLLECT_STALE_S
+        if s not in ("board_ready", "run_clicked") and not stale:
+            return False
+        cur.update(status="collecting", collect_ts=time.time())
+        st[slug] = cur
+        return True
+    return _update(f)
+
+
+# ---------------- Telegram callback tokens (64-byte limit) ----------------
+
+CB_LIMIT = 64
+
+def _cb_token(slug):
+    """Short token (10 hex of sha1) registered in state['_cb'] -> slug."""
+    short = hashlib.sha1(slug.encode("utf-8")).hexdigest()[:10]
+    def f(st):
+        st.setdefault("_cb", {})[short] = slug
+    _update(f)
+    return short
+
+def make_callback(action, slug, extra=None):
+    """Build callback_data (<=64 bytes). Old full-slug format when it fits, short
+    token otherwise."""
+    tail = f"|{extra}" if extra else ""
+    full = f"{action}|{slug}{tail}"
+    if len(full.encode("utf-8")) <= CB_LIMIT:
+        return full
+    data = f"{action}|{_cb_token(slug)}{tail}"
+    assert len(data.encode("utf-8")) <= CB_LIMIT, data
+    return data
+
+def resolve_cb(token):
+    """Accept a short token or a full slug (buttons already in chat); return the slug."""
+    cb = _load().get("_cb", {})
+    return cb.get(token, token)
 
 
 # ---------------- Telegram ----------------
@@ -104,13 +232,18 @@ def send_ad_choice(slug):
             line = line.strip()
             if len(line) > 1 and line[0] in "ABCD" and line[1] == " ":
                 qa[line[0]] = line[2:].strip()
+    sent = 0
     for p in ads:
         letter = p.stem.split("_", 1)[1]        # ad_A -> A
         verdict = f"\nבדיקה: {qa[letter]}" if letter in qa else ""
-        _send_photo(p, f"*מודעה {letter}* — {slug}{verdict}",
-                    buttons=[[{"text": f"✅ בחר {letter}", "callback_data": f"adpick|{slug}|{letter}"}]])
-    set_state(slug, status="awaiting_choice", n_ads=len(ads), ts=time.time())
-    print(f"sent {len(ads)} ad options for {slug} to Telegram")
+        if _send_photo(p, f"*מודעה {letter}* — {slug}{verdict}",
+                       buttons=[[{"text": f"✅ בחר {letter}",
+                                  "callback_data": make_callback("adpick", slug, letter)}]]):
+            sent += 1
+    if sent < 1:
+        print(f"! {slug}: no ad could be sent to Telegram - status left unchanged"); return False
+    set_state(slug, status="awaiting_choice", n_ads=len(ads), n_sent=sent, ts=time.time())
+    print(f"sent {sent}/{len(ads)} ad options for {slug} to Telegram")
     return True
 
 
@@ -125,7 +258,7 @@ def board_ready(slug):
                "1. פתח את Magnific > הלוח thestilettovault Ad campaign\n"
                "2. לחץ Run על Creative concept builder\n"
                "3. כשרואים 4 תמונות, לחץ על הכפתור כאן")
-    btn = [[{"text": "✅ הרצתי, יש 4 תמונות", "callback_data": f"boardrun|{slug}"}]]
+    btn = [[{"text": "✅ הרצתי, יש 4 תמונות", "callback_data": make_callback("boardrun", slug)}]]
     if src.exists():
         _send_photo(src, caption, buttons=btn)
     else:
@@ -138,10 +271,13 @@ def board_ready(slug):
 
 
 def record_choice(slug, choice):
-    """choice in {'A','B'} — mark the winner. The agent watches for status=chosen,
-    then runs the two videos from GELEM/<slug>/ad_<choice>.jpg."""
+    """choice in {'A','B','C','D'} - mark the winner. Only allowed while the slug is
+    awaiting_choice (or already chosen: re-pick); anything else is 'already handled'."""
     choice = choice.upper().strip()
     chosen = f"ad_{choice}.jpg"
+    cur = get_state(slug).get("status")
+    if cur not in ("awaiting_choice", "chosen"):
+        return False, f"already handled ({cur or 'unknown'})"
     if not (GELEM / slug / chosen).exists():
         return False, f"no {chosen} for {slug}"
     set_state(slug, status="chosen", chosen=chosen, choice=choice, chosen_ts=time.time())
@@ -149,8 +285,8 @@ def record_choice(slug, choice):
     return True, chosen
 
 def pending_video_jobs():
-    """Slugs the agent still has to render videos for (status=chosen)."""
-    return [s for s, v in _load().items() if v.get("status") == "chosen"]
+    """Slugs whose ad was chosen but not finalized yet (status=chosen)."""
+    return [s for s, v in _load().items() if isinstance(v, dict) and v.get("status") == "chosen"]
 
 
 # ---------------- finalize (after videos are downloaded) ----------------
@@ -181,14 +317,16 @@ def build_drop(slug):
 
 
 def finalize(slug):
-    """Burn the deal overlay on the chosen ad and stage the per-platform drop for
-    social_publisher. Runs once the 9:16 video is downloaded into GELEM/<slug>/."""
+    """Make the chosen ad the post image (deal overlay only if BURN_DEAL_OVERLAY) and
+    stage the per-platform drop for social_publisher. video.mp4 is optional."""
     st = get_state(slug)
     chosen = st.get("chosen")
     if not chosen:
         print(f"! {slug}: no chosen ad yet"); return False
-    deal = overlay_mod._deal_for_folder(slug)
     ad_path = GELEM / slug / chosen
+    if not ad_path.exists():
+        print(f"! {slug}: chosen ad {chosen} missing on disk - NOT finalized"); return False
+    deal = overlay_mod._deal_for_folder(slug)
     # Ofer 2026-10-15: posts are CLEAN photos from now on (no burned-in price or
     # headline). The deal still travels in the caption. Set BURN_DEAL_OVERLAY = True
     # to bring the overlay back.
@@ -218,7 +356,8 @@ def finalize(slug):
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["send", "choose", "finalize", "pending", "state", "ready"])
+    ap.add_argument("cmd", choices=["send", "choose", "finalize", "pending", "state", "ready",
+                                    "slug-of", "set-status", "queue-set", "claim", "resolve-cb"])
     ap.add_argument("args", nargs="*")
     a = ap.parse_args()
     if sys.stdout:
@@ -227,12 +366,26 @@ if __name__ == "__main__":
     if a.cmd == "ready":
         board_ready(a.args[0])
     elif a.cmd == "send":
-        send_ad_choice(a.args[0])
+        sys.exit(0 if send_ad_choice(a.args[0]) else 1)
     elif a.cmd == "choose":
         print(record_choice(a.args[0], a.args[1]))
     elif a.cmd == "finalize":
-        finalize(a.args[0])
+        sys.exit(0 if finalize(a.args[0]) else 1)
     elif a.cmd == "pending":
         print(pending_video_jobs())
+    elif a.cmd == "slug-of":
+        print(slug_of(a.args[0]))
+    elif a.cmd == "set-status":
+        print(set_status(a.args[0], a.args[1]).get("status"))
+    elif a.cmd == "queue-set":
+        ok = queue_set(a.args[0], a.args[1])
+        print("ok" if ok else "no matching queue entry")
+        sys.exit(0 if ok else 1)
+    elif a.cmd == "claim":
+        ok = claim_collect(a.args[0])
+        print("claimed" if ok else "not claimable")
+        sys.exit(0 if ok else 1)
+    elif a.cmd == "resolve-cb":
+        print(resolve_cb(a.args[0]))
     elif a.cmd == "state":
         print(json.dumps(get_state(a.args[0]) if a.args else _load(), ensure_ascii=False, indent=2))

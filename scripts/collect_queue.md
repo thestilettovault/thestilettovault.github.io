@@ -2,14 +2,26 @@
 
 Ofer ran the ads board in the Magnific app and tapped "✅ הרצתי" in Telegram.
 Task: fetch his 4 new ad images, QA them, send them for his A/B/C/D pick, then
-prepare the board for the next shoe. **NEVER call spaces_run** (credits).
+prepare the board for the next shoe. **NEVER call spaces_run** or any generating Magnific tool (credits; the runner blocks them).
 
 ## Steps
 
 1. Read `E:/PROJECTS/thegothicvault/data/production_queue.json` and
-   `E:/PROJECTS/thegothicvault/data/orchestrator_state.json`. The lead to collect is
-   the queue entry with `status == "board_ready"`; its slug = `local_asset` basename,
-   and its orchestrator state holds `board_ready_ts` (unix seconds). None → STOP.
+   `E:/PROJECTS/thegothicvault/data/orchestrator_state.json`. The lead to collect is the
+   queue entry with `status == "board_ready"`. Its slug = `local_asset` WITHOUT the leading
+   `GELEM/` (e.g. `2026-10-13/stiletto-heels-3256...`):
+   `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py slug-of "<local_asset>"`.
+   Its orchestrator state must have `status == "collecting"` (the Telegram bot sets it
+   when Ofer taps the button) and holds `board_ready_ts` (unix seconds).
+   If the state is still `board_ready` (manual start): run
+   `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py claim <slug>` first; if that
+   fails, someone else is collecting - STOP.
+   No such lead / state is neither → STOP.
+
+   ON ANY FAILURE OR EARLY STOP after this point (fewer than 4 images, download error,
+   send error, anything unexpected) restore the slug so Ofer can tap again:
+   `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py set-status <slug> board_ready`
+   Never edit the JSON files by hand.
 
 2. Find the 4 images Ofer just made:
    `mcp__magnific__creations_search(from="history", fileType="image",
@@ -20,7 +32,7 @@ prepare the board for the next shoe. **NEVER call spaces_run** (credits).
    - Fewer than 4 → the run is not finished or failed. Send Telegram text
      "⚠️ <slug>: אני רואה רק N תמונות. אם הריצה הסתיימה, לחץ שוב על הכפתור."
      with `py -3 -c "import sys; sys.path.insert(0, r'E:/PROJECTS/thegothicvault/scripts'); import telegram_sender as t; t.send_text('<message>', parse_mode=None)"`,
-     set the orchestrator status back to `board_ready`, STOP.
+     run the `set-status <slug> board_ready` restore above, STOP.
 
 3. Download to `E:/PROJECTS/thegothicvault/GELEM/<slug>/ad_A.jpg … ad_D.jpg` with curl
    (source.jpg is already there).
@@ -29,7 +41,8 @@ prepare the board for the next shoe. **NEVER call spaces_run** (credits).
    `GELEM/<slug>/_QA.md`, one line per ad (`A ✅` / `B ⚠️ <reason>`). Never regenerate.
 
 5. `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py send <slug>`
-   and set the queue entry `status = "awaiting_choice"`.
+   If it exits non-zero (nothing reached Telegram) → restore with `set-status` as above, STOP.
+   Otherwise: `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py queue-set <slug> awaiting_choice`
 
 6. Board is free again: follow `E:/PROJECTS/thegothicvault/scripts/produce_queue.md`
    to prepare the NEXT approved shoe (it sends the next "הלוח מוכן" message).

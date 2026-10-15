@@ -46,4 +46,4 @@ photo: natural light, slight grain, not studio-perfect.
 ## Rules
 - Four shots per shoe = four DIFFERENT entries; at least two must be knee-down / shoe-dominant.
 - Never a split-screen, collage or before/after.
-- Shoe always worn (except P10's second shoe), fully visible, sharp.
+- Shoe always worn (one pair, both on her feet), fully visible, sharp.
