@@ -42,11 +42,21 @@ sys.stdout.reconfigure(encoding="utf-8") if sys.stdout else None
 sys.path.insert(0, os.path.dirname(__file__))
 import space_runner   # single source of truth for slugify (AliExpress /item ids)
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 ROOT         = Path(__file__).resolve().parent.parent
 CATALOG_FILE = ROOT / "data" / "approved_catalog.json"
 GELEM_DIR    = ROOT / "GELEM"
-IMG_DIR      = ROOT / "img" / "heels"
-SITE_URL     = "https://thestilettovault.github.io"
+IMG_REL      = _cfg("site.img_dir", "img/heels").strip("/")
+IMG_DIR      = ROOT / IMG_REL
+SITE_URL     = _cfg("site.assets_base_url", "https://thestilettovault.github.io").rstrip("/")
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
@@ -208,14 +218,14 @@ def host_assets(slug, staged):
         name = web_name(role, src)
         names[role] = name
         shutil.copyfile(src, out_dir / name)      # copy AS-IS — no format conversion
-        hosted[role] = f"{SITE_URL}/img/heels/{slug}/{name}"
+        hosted[role] = f"{SITE_URL}/{IMG_REL}/{slug}/{name}"
         print(f"  hosted {role} → {hosted[role]}")
     # IG-valid 4:5 companion for the vertical still — same format (a crop, not a conversion)
     if "image_9x16" in staged:
         ext = Path(names["image_9x16"]).suffix.lower()
         fx = out_dir / f"insta_4x5{ext}"
         if make_4x5(out_dir / names["image_9x16"], fx):
-            hosted["image_4x5"] = f"{SITE_URL}/img/heels/{slug}/insta_4x5{ext}"
+            hosted["image_4x5"] = f"{SITE_URL}/{IMG_REL}/{slug}/insta_4x5{ext}"
             print(f"  hosted image_4x5 → {hosted['image_4x5']}")
     return hosted
 
@@ -279,7 +289,7 @@ def host_all(slug, media):
         for i, src in enumerate(paths, 1):
             name = f"{label[bucket]}_{i}{src.suffix.lower()}"
             shutil.copyfile(src, out_dir / name)
-            urls.append(f"{SITE_URL}/img/heels/{slug}/{name}")
+            urls.append(f"{SITE_URL}/{IMG_REL}/{slug}/{name}")
         assets[bucket] = urls
         if urls:
             print(f"  hosted {bucket}: {len(urls)} file(s)")
@@ -351,7 +361,7 @@ def main():
     ap.add_argument("--from-gelem", action="store_true",
                     help="reuse assets already downloaded in the GELEM folder")
     ap.add_argument("--folder", help="explicit GELEM folder name/path (overrides auto-resolve)")
-    ap.add_argument("--slots", default="14:00,18:00,22:00",
+    ap.add_argument("--slots", default=",".join(_cfg("schedule.slots", ["14:00", "18:00", "22:00"])),
                     help="comma-separated HH:MM times for the 3 posts")
     ap.add_argument("--date", help="pin the drop to a specific day YYYY-MM-DD "
                     "(this heel's every-other-day slot); default = next free day")

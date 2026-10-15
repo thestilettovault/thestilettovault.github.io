@@ -4,7 +4,12 @@
     "name": "The Stiletto Vault",
     "emoji": "👠",
     "product_noun": "heel",
-    "site": "https://thestilettovault.com"
+    "site": "https://thestilettovault.com",
+    "product_noun_plural": "heels",
+    "handle": "@thestilettovault",
+    "lang_ui": "he",
+    "currency": "USD",
+    "timezone": "Asia/Jerusalem"
   },
   "sourcing": {
     "aliexpress_searches": [
@@ -68,7 +73,11 @@
     ],
     "skip_weekdays": [
       5
-    ]
+    ],
+    "post_slot": "16:00",
+    "tiktok_slot_local": "16:00",
+    "tiktok_max_per_day": 1,
+    "timezone": "Asia/Jerusalem"
   },
   "research": {
     "trend_queries": [
@@ -97,5 +106,86 @@
     },
     "max_posts_per_day_new_account": 2,
     "secrets": "only in scripts/.env (gitignored); never in code or git remote URL"
+  },
+  "site": {
+    "public_url": "https://thestilettovault.com",
+    "assets_base_url": "https://thestilettovault.github.io",
+    "img_dir": "img/heels",
+    "pages_repo": "thestilettovault/thestilettovault.github.io",
+    "pages_dir": "."
+  },
+  "publishing": {
+    "provider": "zernio",
+    "hashtags": [
+      "#heels",
+      "#stilettos",
+      "#highheels",
+      "#heelslover",
+      "#shoesoftheday",
+      "#nycstyle",
+      "#outfitinspo",
+      "#statementheels"
+    ],
+    "cta": "Link in bio 🔗",
+    "disclosure_tags": [
+      "#ad",
+      "#affiliate"
+    ],
+    "env": {
+      "api_url": "ZERNIO_API_URL",
+      "api_key": "ZERNIO_API_KEY",
+      "tiktok_id": "ZERNIO_TIKTOK_ID",
+      "instagram_id": "ZERNIO_INSTAGRAM_ID"
+    }
+  },
+  "production": {
+    "space_id": "a2796464-3570-4e02-aa77-65f3f4322d9f",
+    "space_label": "thestilettovault Ad campaign",
+    "nodes": {
+      "input_image": "93b85932-6752-4bfa-a801-28fd3c0c097c",
+      "source_creation": "0114e22a-6027-490e-aeca-b1b428d8ca91",
+      "ads_list": "9a64a219-35fa-4dc5-a8d7-c0c67164f134",
+      "video_insta": "1ecb7df2-1a63-47d2-b4f3-09a75894816c",
+      "video_tiktok": "bd04349b-fdde-4306-a8d8-cb262b322e96"
+    },
+    "burn_overlay": false,
+    "agents_dir": "data/agents"
+  },
+  "pinterest": {
+    "board": "Stiletto Finds",
+    "title_openers": [
+      "Glossy Black Pointed-Toe Stilettos",
+      "Sleek Party Heels You'll Live In",
+      "Date-Night Stilettos That Do The Talking",
+      "The Little Black Heel, Perfected",
+      "Barely-There Strappy Stilettos",
+      "Editor-Approved Everyday Heels",
+      "Sky-High Pointed Pumps",
+      "Minimalist Stilettos, Maximum Impact",
+      "Your New Going-Out Heel",
+      "Classic Court Heels, Reworked",
+      "Sharp Pointed-Toe Pumps",
+      "The Under-$20 Heel Worth Hoarding",
+      "Runway-Ready Stiletto Pumps",
+      "Sultry Slingback Stilettos",
+      "Statement Platform Heels",
+      "The Heel That Elevates Everything",
+      "Polished Pointed Pumps",
+      "Wear-With-Anything Black Stilettos",
+      "Elegant High-Shine Heels",
+      "Bold Pointed-Toe Party Pumps",
+      "Timeless Stiletto Court Shoes",
+      "The 'Where'd-You-Get-Those' Heel",
+      "Chic Closet-Staple Stilettos",
+      "Effortless Evening Heels",
+      "Modern Pointed Stilettos",
+      "The Quiet-Luxury Black Heel",
+      "Show-Stopping Stiletto Pumps",
+      "Sleek Platform Party Stilettos",
+      "Refined Pointed-Toe Heels",
+      "Everyday Luxe Stilettos"
+    ],
+    "hashtags": "#heels #stilettos #shoefinds #affordablefashion #heelsaddict",
+    "keywords": "high heels, stilettos, heels, shoe finds, affordable heels, party shoes"
   }
 }

@@ -26,13 +26,23 @@ from collections import defaultdict
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 K = os.getenv("ZERNIO_API_KEY")
 U = os.getenv("ZERNIO_API_URL", "https://zernio.com/api/v1").rstrip("/")   # same env + default as social_publisher
 H = {"Authorization": f"Bearer {K}", "Content-Type": "application/json"}
 
-MAX_TT_PER_DAY = 1                     # Ofer 2026-10-15: one TikTok post a day (capacity errors at 2-3)
-IL             = ZoneInfo("Asia/Jerusalem")
-SLOT_TIMES     = ["16:00"]           # LOCAL Israel time (same slot as the image posts); converted to UTC per day (DST-safe)
+MAX_TT_PER_DAY = _cfg("schedule.tiktok_max_per_day", 1)                     # Ofer 2026-10-15: one TikTok post a day (capacity errors at 2-3)
+IL             = ZoneInfo(_cfg("schedule.timezone", "Asia/Jerusalem"))
+SKIP_WEEKDAYS  = tuple(_cfg("schedule.skip_weekdays", [5]))   # 5 = Saturday
+SLOT_TIMES     = [_cfg("schedule.tiktok_slot_local", "16:00")]           # LOCAL Israel time (same slot as the image posts); converted to UTC per day (DST-safe)
 REVIVE_MAX_AGE_DAYS = 14             # never resurrect a failed post older than this
 TRANSIENT_RE   = re.compile(r"capacity|rate.?limit|too many|throttl|temporar|try again|\b429\b|\b503\b", re.I)
 
@@ -118,7 +128,7 @@ def next_slots(load, taken, n, start):
     out, d = [], start
     while len(out) < n:
         key = d.isoformat()
-        if d.weekday() != 5 and load[key] < MAX_TT_PER_DAY:
+        if d.weekday() not in SKIP_WEEKDAYS and load[key] < MAX_TT_PER_DAY:
             for t in SLOT_TIMES:
                 if (key, t) in taken[key]:
                     continue

@@ -27,10 +27,21 @@ sys.stdout.reconfigure(encoding="utf-8") if sys.stdout else None
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import space_runner, affiliate_links
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+PIN_HASHTAGS = _cfg("pinterest.hashtags", "#heels #stilettos #shoefinds #affordablefashion #heelsaddict")
+PIN_KEYWORDS = _cfg("pinterest.keywords", "high heels, stilettos, heels, shoe finds, affordable heels, party shoes")
+
 ROOT    = Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "data" / "approved_catalog.json"
 OUT     = ROOT / "dashboard" / "pinterest_bulk.csv"
-SITE    = "https://thestilettovault.com"
+SITE    = _cfg("site.public_url", "https://thestilettovault.com")
 
 
 def hosted_image(it):
@@ -120,7 +131,7 @@ def deal_desc(deal):
         head = f"Obsessed. Just ${sale}."
     return (f"{head} The stiletto that looks way more expensive than it is. "
             f"Tap to grab yours before it sells out \U0001f5a4 "
-            f"#heels #stilettos #shoefinds #affordablefashion #heelsaddict")
+            f"{PIN_HASHTAGS}")
 
 
 def _live(url):
@@ -165,7 +176,7 @@ def main(board, limit, remaining=False, out=None):
             "Description": deal_desc(deal)[:480],
             "Link": link,
             "Publish date": "",
-            "Keywords": "high heels, stilettos, heels, shoe finds, affordable heels, party shoes",
+            "Keywords": PIN_KEYWORDS,
         })
         if is_generic:
             gidx += 1
@@ -184,7 +195,7 @@ def main(board, limit, remaining=False, out=None):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--board", default="Stiletto Finds")
+    ap.add_argument("--board", default=_cfg("pinterest.board", "Stiletto Finds"))
     ap.add_argument("--limit", type=int, default=200)
     ap.add_argument("--remaining", action="store_true",
                     help="only the no-deal rows that failed the first upload (dup titles)")

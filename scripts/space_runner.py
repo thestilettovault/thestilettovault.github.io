@@ -34,18 +34,27 @@ ROOT         = Path(__file__).resolve().parent.parent
 CATALOG_FILE = ROOT / "data" / "approved_catalog.json"
 GELEM_DIR    = ROOT / "GELEM"
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 # The Smart-Heel sales Space we upgraded: "thestilettovault Ad campaign".
 # Full pipeline: product photo in → 4 hook shot-concepts → photoshoot angles →
 # static ads (with clean negative-space for the deal overlay) → format
 # adaptation (1:1 / 4:5 / 9:16) → 9:16 Veo video ad out.
-SPACE_ID = "a2796464-3570-4e02-aa77-65f3f4322d9f"
+SPACE_ID = _cfg("production.space_id", "a2796464-3570-4e02-aa77-65f3f4322d9f")
 # Entry: the heel source image is uploaded (creations_upload_image) and wired as
 # the `reference` of the Campaign image generator via the MCP glue below.
-SPACE_INPUT_IMAGE_NODE = "93b85932-6752-4bfa-a801-28fd3c0c097c"  # Campaign image generator
+SPACE_INPUT_IMAGE_NODE = _cfg("production.nodes.input_image", "93b85932-6752-4bfa-a801-28fd3c0c097c")  # Campaign image generator
 # DEAD (no per-lead video step any more; ads are collected via creations_search):
 # the static-ad list and the two Veo video-generator nodes (INSTA + TikTok).
-SPACE_OUTPUT_ADS_LIST   = "9a64a219-35fa-4dc5-a8d7-c0c67164f134"
-SPACE_OUTPUT_VIDEO_INSTA   = "1ecb7df2-1a63-47d2-b4f3-09a75894816c"
+SPACE_OUTPUT_ADS_LIST   = _cfg("production.nodes.ads_list", "9a64a219-35fa-4dc5-a8d7-c0c67164f134")
+SPACE_OUTPUT_VIDEO_INSTA   = _cfg("production.nodes.video_insta", "1ecb7df2-1a63-47d2-b4f3-09a75894816c")
 SPACE_OUTPUT_VIDEO_TIKTOK  = "bd04349b-fdde-4306-a8d8-cb262b322e96"
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "

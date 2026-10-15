@@ -1,0 +1,117 @@
+{
+  "_doc": "TEMPLATE niche config. Do not edit in place: `py -3 -m control.niche clone _template <id> \"<Name>\"` then fill niches/<id>/niche.json. Keys starting with _doc are comments. Run `py -3 -m control.niche check <id>` until it exits 0.",
+  "identity": {
+    "_doc": "Who the brand is. product_noun is singular ('handbag'), product_noun_plural ('handbags'). handle = social @ (same on IG/TikTok). lang_ui = Control Center UI language. timezone = IANA name used for scheduling.",
+    "id": "",
+    "name": "",
+    "emoji": "",
+    "product_noun": "",
+    "product_noun_plural": "",
+    "handle": "",
+    "site": "",
+    "lang_ui": "he",
+    "currency": "USD",
+    "timezone": "UTC"
+  },
+  "site": {
+    "_doc": "public_url = link-in-bio target / canonical domain. assets_base_url = host that serves hosted images (GitHub Pages host or the custom domain). img_dir = repo folder for product images. pages_repo = owner/repo of the GitHub Pages site. pages_dir = folder (relative to this repo) holding the compliance pages; '.' = repo root.",
+    "public_url": "",
+    "assets_base_url": "",
+    "img_dir": "img/products",
+    "pages_repo": "",
+    "pages_dir": ""
+  },
+  "sourcing": {
+    "_doc": "aliexpress_searches = [[search term, clean English category label], ...]. shops = brand/shop domains for the scout. Need at least one of the two.",
+    "aliexpress_searches": [],
+    "shops": []
+  },
+  "thresholds": {
+    "_doc": "Scout quality gates: min orders sold, min rating, min price (USD), batch size per scout run, brand min price, days before a product may repeat, min value score.",
+    "MIN_SOLD": 300,
+    "MIN_RATING": 4.6,
+    "MIN_PRICE": 20,
+    "BATCH": 5,
+    "BRAND_MIN_PRICE": 100,
+    "NO_REPEAT_DAYS": 10,
+    "MIN_VALUE": 5
+  },
+  "schedule": {
+    "_doc": "slots = daily post times for a 3-post drop (local time). skip_weekdays: 0=Mon..6=Sun. post_slot = slot for single image posts. tiktok_slot_local / tiktok_max_per_day = TikTok re-spread rules. timezone = IANA name.",
+    "slots": [
+      "14:00",
+      "18:00",
+      "22:00"
+    ],
+    "skip_weekdays": [
+      5
+    ],
+    "post_slot": "16:00",
+    "tiktok_slot_local": "16:00",
+    "tiktok_max_per_day": 1,
+    "timezone": "UTC"
+  },
+  "research": {
+    "_doc": "trend_queries = web/TikTok searches for the trend scout.",
+    "trend_queries": []
+  },
+  "publishing": {
+    "_doc": "provider = scheduler API (zernio). hashtags = 5-8 niche+reach tags. cta = call to action (never a URL in captions). disclosure_tags = mandatory affiliate disclosure. env = NAMES of env vars in scripts/.env (values never go here).",
+    "provider": "zernio",
+    "hashtags": [],
+    "cta": "Link in bio",
+    "disclosure_tags": [
+      "#ad",
+      "#affiliate"
+    ],
+    "env": {
+      "api_url": "ZERNIO_API_URL",
+      "api_key": "ZERNIO_API_KEY",
+      "tiktok_id": "ZERNIO_<ID>_TIKTOK_ID",
+      "instagram_id": "ZERNIO_<ID>_INSTAGRAM_ID"
+    }
+  },
+  "production": {
+    "_doc": "space_id = the Magnific Space duplicated for this niche; nodes = node ids inside it (input_image = campaign image generator, source_creation = source product creation node, ads_list, video_insta, video_tiktok). space_label = Space title shown to the owner in Telegram. burn_overlay = burn price/deal into posts (false = clean photos). agents_dir = folder with persona/poses/stylist/qa .md.",
+    "space_id": "",
+    "space_label": "",
+    "nodes": {
+      "input_image": "",
+      "source_creation": "",
+      "ads_list": "",
+      "video_insta": "",
+      "video_tiktok": ""
+    },
+    "burn_overlay": false,
+    "agents_dir": "niches/<id>/agents"
+  },
+  "pinterest": {
+    "_doc": "board = target board name. title_openers = list of editorial pin-title openers (distinct leading words; Pinterest dedups on them). hashtags / keywords = strings used in pin description / Keywords column.",
+    "board": "",
+    "title_openers": [],
+    "hashtags": "",
+    "keywords": ""
+  },
+  "compliance": {
+    "_doc": "Affiliate-program safety rules. Keep them: IG restricted links once. required_pages must exist in site.pages_dir.",
+    "custom_domain": "",
+    "required_pages": [
+      "about.html",
+      "disclosure.html",
+      "contact.html",
+      "privacy-policy.html"
+    ],
+    "site_footer_disclosure": true,
+    "link_rel": "sponsored noopener",
+    "caption_rules": {
+      "no_urls_in_caption": true,
+      "cta": "Link in bio",
+      "disclosure_tags": [
+        "#ad",
+        "#affiliate"
+      ]
+    },
+    "max_posts_per_day_new_account": 2,
+    "secrets": "only in scripts/.env (gitignored); never in code or git remote URL"
+  }
+}

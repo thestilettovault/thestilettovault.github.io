@@ -48,21 +48,33 @@ ROOT         = Path(__file__).resolve().parent.parent
 CATALOG_FILE = ROOT / "data" / "approved_catalog.json"
 GELEM_DIR    = ROOT / "GELEM"
 
-ZERNIO_API_URL      = os.getenv("ZERNIO_API_URL", "https://zernio.com/api/v1").rstrip("/")
-ZERNIO_API_KEY      = os.getenv("ZERNIO_API_KEY", "")
-ZERNIO_TIKTOK_ID    = os.getenv("ZERNIO_TIKTOK_ID", "")
-ZERNIO_INSTAGRAM_ID = os.getenv("ZERNIO_INSTAGRAM_ID", "")
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
 
-SITE_URL = "https://thestilettovault.com"   # link-in-bio target
+ZERNIO_API_URL      = os.getenv(_cfg("publishing.env.api_url", "ZERNIO_API_URL"), "https://zernio.com/api/v1").rstrip("/")
+ZERNIO_API_KEY      = os.getenv(_cfg("publishing.env.api_key", "ZERNIO_API_KEY"), "")
+ZERNIO_TIKTOK_ID    = os.getenv(_cfg("publishing.env.tiktok_id", "ZERNIO_TIKTOK_ID"), "")
+ZERNIO_INSTAGRAM_ID = os.getenv(_cfg("publishing.env.instagram_id", "ZERNIO_INSTAGRAM_ID"), "")
+
+SITE_URL = _cfg("site.public_url", "https://thestilettovault.com")   # link-in-bio target
+TIMEZONE = _cfg("schedule.timezone", "Asia/Jerusalem")
+CTA      = _cfg("publishing.cta", "Link in bio 🔗")
+DISCLOSURE = " ".join(_cfg("publishing.disclosure_tags", ["#ad", "#affiliate"]))
 
 # 5-8 tags per post, mixing niche + reach (per reference_posting_schedule)
-HASHTAGS = ["#heels", "#stilettos", "#highheels", "#heelslover",
-            "#shoesoftheday", "#nycstyle", "#outfitinspo", "#statementheels"]   # stiletto, not gothic
+HASHTAGS = list(_cfg("publishing.hashtags", ["#heels", "#stilettos", "#highheels", "#heelslover",
+            "#shoesoftheday", "#nycstyle", "#outfitinspo", "#statementheels"]))   # stiletto, not gothic
 
 # A "drop" = 3 posts for one heel, spread across the day at 3 different times.
 # 22:00 IL is the proven optimal slot (reference_posting_schedule); the two
 # earlier slots build reach ahead of it. Override with --slots HH:MM,HH:MM,HH:MM.
-DEFAULT_SLOTS = ["14:00", "18:00", "22:00"]
+DEFAULT_SLOTS = list(_cfg("schedule.slots", ["14:00", "18:00", "22:00"]))
 
 
 def load_catalog():
@@ -153,12 +165,12 @@ def build_caption(item):
             lines.append(f"({deal_bit.strip(' ·')})")
         if coupon:
             lines.append(f"code {coupon} = $10 off")
-        lines += ["link in bio 🔗 #ad #affiliate", "", " ".join(HASHTAGS[:7])]
+        lines += [f"{CTA.lower()} {DISCLOSURE}", "", " ".join(HASHTAGS[:7])]
         return clean_caption("\n".join(lines))
     lines = [f"{headline} 🖤"]
     if coupon:
         lines.append(f"Use code {coupon} for $10 off")
-    lines.append("Link in bio 🔗  #ad #affiliate")
+    lines.append(f"{CTA}  {DISCLOSURE}")
     lines.append("")
     lines.append(" ".join(HASHTAGS[:7]))
     return clean_caption("\n".join(lines))
@@ -213,7 +225,7 @@ def _zernio_post(content, platform, account_id, media_url, media_type,
     payload = {
         "content": content,
         "scheduledFor": scheduled_for or SCHEDULE_LOCAL,   # e.g. 2026-08-10T22:00:00
-        "timezone": "Asia/Jerusalem",
+        "timezone": TIMEZONE,
         "platforms": [target],
         "mediaItems": media_items,
     }

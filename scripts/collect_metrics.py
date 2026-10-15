@@ -20,6 +20,20 @@ sys.stdout.reconfigure(encoding="utf-8") if sys.stdout else None
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import space_runner  # slugify (unique per AliExpress /item)
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+# Host-agnostic: both the Pages host and the custom domain count as "ours".
+OUR_HOSTS = [h for h in dict.fromkeys(
+    str(_cfg(k, d)).split("//")[-1].strip("/")
+    for k, d in (("site.assets_base_url", "https://thestilettovault.github.io"),
+                 ("site.public_url", "https://thestilettovault.com"))) if h]
+
 ROOT     = Path(__file__).resolve().parent.parent
 DATA     = ROOT / "data"
 GELEM    = ROOT / "GELEM"
@@ -59,7 +73,7 @@ def our_hosted_image(it):
     produced, same rule as build_site.our_hosted_image."""
     a = it.get("assets", {}) or {}
     for v in [a.get("image_1x1")] + (a.get("images_ig") or []) + [it.get("image_url", "")]:
-        if v and "thestilettovault.github.io" in v:
+        if v and any(h in v for h in OUR_HOSTS):
             return v
     return None
 

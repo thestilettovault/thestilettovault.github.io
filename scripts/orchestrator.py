@@ -43,6 +43,15 @@ import space_runner
 import overlay as overlay_mod
 import telegram_sender as ts   # reuse its proven token/chat/.env loading
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 ROOT       = Path(__file__).resolve().parent.parent
 GELEM      = ROOT / "GELEM"
 STATE_FILE = ROOT / "data" / "orchestrator_state.json"
@@ -51,7 +60,8 @@ QUEUE_FILE = ROOT / "data" / "production_queue.json"
 BOT_TOKEN = ts.BOT_TOKEN
 CHAT_ID   = ts.CHAT_ID
 API       = ts.BASE_URL
-BURN_DEAL_OVERLAY = False   # clean posts (Ofer 2026-10-15)
+BURN_DEAL_OVERLAY = bool(_cfg("production.burn_overlay", False))   # clean posts (Ofer 2026-10-15)
+SPACE_LABEL = _cfg("production.space_label", "thestilettovault Ad campaign")
 
 
 # ---------------- state ----------------
@@ -255,7 +265,7 @@ def board_ready(slug):
     button; the bot then collects the 4 ads (run_collect.bat)."""
     src = GELEM / slug / "source.jpg"
     caption = (f"🎬 הלוח מוכן: {slug.split('/')[-1]}\n"
-               "1. פתח את Magnific > הלוח thestilettovault Ad campaign\n"
+               f"1. פתח את Magnific > הלוח {SPACE_LABEL}\n"
                "2. לחץ Run על Creative concept builder\n"
                "3. כשרואים 4 תמונות, לחץ על הכפתור כאן")
     btn = [[{"text": "✅ הרצתי, יש 4 תמונות", "callback_data": make_callback("boardrun", slug)}]]

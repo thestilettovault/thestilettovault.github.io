@@ -25,11 +25,22 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import space_runner      # single source of truth for slugify (AliExpress /item ids)
 import affiliate_links   # subid-tagged deeplinks for per-shoe sale attribution
 
+# Niche config (niches/<active>/niche.json). cfg() never raises; the literal
+# default is today's stiletto value, so output is identical without config.
+try:
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 ROOT         = Path(__file__).resolve().parent.parent      # E:\PROJECTS\thegothicvault
 CATALOG_FILE = ROOT / "data" / "approved_catalog.json"
 INDEX_FILE   = ROOT / "index.html"
 GELEM_DIR    = ROOT / "GELEM"
-IMG_DIR      = ROOT / "img" / "heels"
+IMG_REL      = _cfg("site.img_dir", "img/heels").strip("/")
+IMG_DIR      = ROOT / IMG_REL
+ASSETS_HOST  = _cfg("site.assets_base_url", "https://thestilettovault.github.io").split("//")[-1].strip("/")
 
 START_MARK = "<!-- HEELS:START -->"
 END_MARK   = "<!-- HEELS:END -->"
@@ -116,7 +127,7 @@ def resolve_image(item, slug):
         dest = IMG_DIR / f"{slug}.jpg"
         try:
             shutil.copyfile(var, dest)
-            return f"img/heels/{slug}.jpg"
+            return f"{IMG_REL}/{slug}.jpg"
         except Exception as e:
             print(f"  ! copy failed for {slug}: {e}")
     hosted = our_hosted_image(item)   # older heels: produced assets already on our Pages
@@ -131,11 +142,11 @@ def our_hosted_image(item):
     art lives in the catalog `assets`/`image_url` rather than GELEM."""
     a = item.get("assets", {}) or {}
     for v in [a.get("image_1x1")] + (a.get("images_ig") or []) + [item.get("image_url", "")]:
-        if v and "thestilettovault.github.io" in v:
+        if v and ASSETS_HOST in v:
             # Our Pages serves the repo root, so a hosted URL is only real if the
             # file backing it exists in the repo. Otherwise it 404s on the live
             # site (a "phantom" heel) — return None so the heel is skipped.
-            rel = v.split("thestilettovault.github.io/", 1)[-1].split("?")[0].lstrip("/")
+            rel = v.split(ASSETS_HOST + "/", 1)[-1].split("?")[0].lstrip("/")
             if rel and (ROOT / rel).exists():
                 return v
     return None

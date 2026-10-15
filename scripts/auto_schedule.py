@@ -17,10 +17,18 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(ROOT))
 
+# Niche config; falls back to today's literals if control is unavailable.
+try:
+    from control.niche import cfg as _cfg
+except Exception:
+    def _cfg(_path, default=None):
+        return default
+
 import orchestrator
 from control import services
 
-SLOT = "16:00"            # the slot the image-only posts have been using
+SKIP_WEEKDAYS = tuple(_cfg("schedule.skip_weekdays", [5]))   # 5 = Saturday
+SLOT = _cfg("schedule.post_slot", "16:00")            # the slot the image-only posts have been using
 QUEUE = ROOT / "data" / "production_queue.json"
 
 
@@ -36,7 +44,7 @@ def scheduled_days():
 def next_free_day(taken):
     d = max([datetime.date.today()] +
             [datetime.date.fromisoformat(x) for x in taken if x]) + datetime.timedelta(days=1)
-    while d.weekday() == 5 or d.isoformat() in taken:      # 5 = Saturday
+    while d.weekday() in SKIP_WEEKDAYS or d.isoformat() in taken:      # 5 = Saturday
         d += datetime.timedelta(days=1)
     return d
 
