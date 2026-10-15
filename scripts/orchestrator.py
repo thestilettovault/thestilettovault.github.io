@@ -42,6 +42,7 @@ STATE_FILE = ROOT / "data" / "orchestrator_state.json"
 BOT_TOKEN = ts.BOT_TOKEN
 CHAT_ID   = ts.CHAT_ID
 API       = ts.BASE_URL
+BURN_DEAL_OVERLAY = False   # clean posts (Ofer 2026-10-15)
 
 
 # ---------------- state ----------------
@@ -188,8 +189,12 @@ def finalize(slug):
         print(f"! {slug}: no chosen ad yet"); return False
     deal = overlay_mod._deal_for_folder(slug)
     ad_path = GELEM / slug / chosen
-    posted_img = overlay_mod.apply_overlay(str(ad_path), deal,
-                                           str(GELEM / slug / "post_image.jpg"))
+    # Ofer 2026-10-15: posts are CLEAN photos from now on (no burned-in price or
+    # headline). The deal still travels in the caption. Set BURN_DEAL_OVERLAY = True
+    # to bring the overlay back.
+    posted_img = (overlay_mod.apply_overlay(str(ad_path), deal,
+                                            str(GELEM / slug / "post_image.jpg"))
+                  if BURN_DEAL_OVERLAY else None)
     # No deal data (full-price brand heels, e.g. Naked Wolfe) → no overlay is drawn.
     # The clean chosen ad is then the post image; without this the heel had no
     # drop and silently never got scheduled (2026-10-13: 5 Naked Wolfe heels stuck).
