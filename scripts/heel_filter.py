@@ -84,7 +84,7 @@ def is_high_heel(title, tags=None):
         return True
     if _has_word(title_l, NONHEEL_EXCLUDE, plural=True):
         return False
-    if _has_word(title_l, HEEL_POSITIVE):
+    if _has_word(title_l, HEEL_POSITIVE, plural=True):
         return True
     if tag_l and any(w in tag_l for w in HEEL_POSITIVE):
         return True
