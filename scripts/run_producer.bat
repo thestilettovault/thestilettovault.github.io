@@ -12,6 +12,7 @@ py -3 scripts\auto_schedule.py --apply >> scripts\producer.log 2>&1
 echo auto schedule done: %date% %time% >> scripts\producer.log
 REM self-heal TikTok "at capacity" failures: revive failed posts into future
 REM openings, capped/spread so we never cluster and trip the limit again.
+py -3 scripts\tiktok_retry.py --spread --apply >> scripts\producer.log 2>&1
 py -3 scripts\tiktok_retry.py --apply >> scripts\producer.log 2>&1
 echo tiktok retry done: %date% %time% >> scripts\producer.log
 REM refresh the control dashboard (funnel/shoes/sales) and push it live
