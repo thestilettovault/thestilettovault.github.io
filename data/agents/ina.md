@@ -8,6 +8,12 @@ Read by the producer (shot brief + QA) and by the caption writer, every shoe.
 - Sexy but real: NOT skinny. Same body as the model reference on the board
   (Space "Ina" creation node, the editorial studio portrait). Long dark brown hair.
 
+## Her feet and legs (her career: the most sought-after foot and heel model in the world)
+Perfect, flawless feet every time: slender and elegant, high graceful arch, narrow heel,
+smooth even skin (no veins, redness, calluses or bunions), long straight toes descending
+neatly in perfect proportion, fresh glossy pedicure (colour per stylist.md). Long, smooth,
+toned legs. Luxury beauty-campaign finish, never "real-life" feet. Ugly or odd feet = QA fail.
+
 ## Visual rules (every image)
 - Face never visible: crop at the chin or lips, shoot from behind, face turned away,
   hair or phone covering the face, or legs-only framing. A visible face = QA fail.
