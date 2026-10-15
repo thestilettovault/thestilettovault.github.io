@@ -391,7 +391,7 @@
       "rating": "5",
       "sold": "4 sold"
     },
-    "status": "awaiting_choice",
+    "status": "scheduled",
     "approved_ts": "2026-09-23T08:39:56.438293"
   },
   {
@@ -423,5 +423,287 @@
     "status": "done",
     "approved_ts": "2026-09-23T10:41:59.248354",
     "scheduled_img": true
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256812048305063.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-24/stiletto-heels-3256812048305063",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S4328897458b6415b8fb4701892375e94a.jpg",
+    "deal": {
+      "sale": 16.8,
+      "was": 17.5,
+      "discount": "4%",
+      "rating": "4",
+      "sold": "4 sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-09-24T08:18:45.546757"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256808036641274.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-28/stiletto-heels-3256808036641274",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S37865394418b4523af065878b85c94f8i.jpg",
+    "deal": {
+      "sale": 26.12,
+      "was": 68.25,
+      "discount": "62%",
+      "rating": "4.9",
+      "sold": "500+ sold"
+    },
+    "status": "approved",
+    "approved_ts": "2026-09-28T08:11:50.784879"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256807554485090.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-28/stiletto-heels-3256807554485090",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S6e7f8226fb72463d89e3285ef0091722n.jpg",
+    "deal": {
+      "sale": 24.12,
+      "was": 64.25,
+      "discount": "62%",
+      "rating": "4.8",
+      "sold": "600+ sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-09-28T08:12:06.457815"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256808182719166.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-29/stiletto-heels-3256808182719166",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Sbe9a2c2cba434b4d903e986014b0454dG.jpg",
+    "deal": {
+      "sale": 26.12,
+      "was": 64.25,
+      "discount": "59%",
+      "rating": "4.7",
+      "sold": "500+ sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-09-29T09:48:06.497272"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256810098789067.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-29/stiletto-heels-3256810098789067",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Scd49dbf8694d45d2bee7348e4b5ff20fS.jpg",
+    "deal": {
+      "sale": 32.52,
+      "was": 77.03,
+      "discount": "58%",
+      "rating": "4.9",
+      "sold": "477 sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-09-29T09:48:09.527735"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256809356402716.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-29/stiletto-heels-3256809356402716",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S873dd0fc94db4eef8d7df193048ac37fS.jpg",
+    "deal": {
+      "sale": 41.41,
+      "was": 103.07,
+      "discount": "60%",
+      "rating": "4.7",
+      "sold": "432 sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-09-29T09:48:12.500168"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256805663137456.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-09-29/stiletto-heels-3256805663137456",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se86d076bcf764d08ac8c326032c585a3r.jpg",
+    "deal": {
+      "sale": 43.77,
+      "was": 106.81,
+      "discount": "59%",
+      "rating": "4.9",
+      "sold": "337 sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-09-29T09:48:19.322669"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256807553262560.html",
+    "title": "Pointed-Toe Pump",
+    "local_asset": "GELEM/2026-10-01/pointed-toe-pump-3256807553262560",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Sfb4152be36334d95be83551ef96eff02z.jpg",
+    "deal": {
+      "sale": 50.05,
+      "was": 131.46,
+      "discount": "62%",
+      "rating": "4.7",
+      "sold": "600+ sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-10-01T08:13:38.694134"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/rampage-brown-suede?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "Rampage Brown Suede",
+    "local_asset": "GELEM/2026-10-02/rampage-brown-suede",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RAMPAGE_BROWN_SUEDE-01_1.jpg?v=1773915892",
+    "deal": {},
+    "status": "scheduled",
+    "approved_ts": "2026-10-02T08:36:01.952623"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/river-black-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "River Black Patent",
+    "local_asset": "GELEM/2026-10-04/river-black-patent",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RIVER-BLACK-01.jpg?v=1773915037",
+    "deal": {},
+    "status": "scheduled",
+    "approved_ts": "2026-10-04T08:05:01.323950"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256810584098285.html",
+    "title": "Platform High Heels",
+    "local_asset": "GELEM/2026-10-04/platform-high-heels-3256810584098285",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S4a5fe90daa1e46f3ba399b83dece6eabT.jpg",
+    "deal": {
+      "sale": 33.72,
+      "was": 70.25,
+      "discount": "52%",
+      "rating": "4.8",
+      "sold": "800+ sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-10-04T08:05:09.919615"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/river-white-patent?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "River White Patent",
+    "local_asset": "GELEM/2026-10-05/river-white-patent",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RIVER-WHITE-01.jpg?v=1773915029",
+    "deal": {},
+    "status": "scheduled",
+    "approved_ts": "2026-10-05T11:18:55.576651"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256811369943536.html",
+    "title": "Platform High Heels",
+    "local_asset": "GELEM/2026-10-05/platform-high-heels-3256811369943536",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se363aae037cd47c29182bf887865446aU.jpg",
+    "deal": {
+      "sale": 29.72,
+      "was": 37.22,
+      "discount": "20%",
+      "rating": "4.6",
+      "sold": "475 sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-10-05T11:19:33.889436"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/rare-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "Rare Smoke TPU",
+    "local_asset": "GELEM/2026-10-07/rare-smoke-tpu",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RARE-SMOKE-01.jpg?v=1773915306",
+    "deal": {},
+    "status": "scheduled",
+    "approved_ts": "2026-10-07T08:01:23.285698"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/rare-brown-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "Rare Brown TPU",
+    "local_asset": "GELEM/2026-10-07/rare-brown-tpu",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RARE-BROWN-01_grey.jpg?v=1773925459",
+    "deal": {},
+    "status": "awaiting_choice",
+    "approved_ts": "2026-10-07T08:01:29.978864"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256808371208917.html",
+    "title": "Heeled Ankle Boots",
+    "local_asset": "GELEM/2026-10-07/heeled-ankle-boots-3256808371208917",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S2563bf803f4f4fbb880e82d915ef82f1o.jpg",
+    "deal": {
+      "sale": 48.89,
+      "was": "",
+      "discount": "",
+      "rating": "4.9",
+      "sold": "2K+ sold"
+    },
+    "status": "scheduled",
+    "approved_ts": "2026-10-07T08:01:34.201911"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/tiger-lilly-smoke-tpu?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "Tiger Lilly Smoke TPU",
+    "local_asset": "GELEM/2026-10-08/tiger-lilly-smoke-tpu",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/TIGER-LILLY-SOLID-BLACK-01_758219f6-456f-443f-a9dd-486823cac2bb.jpg?v=1773915415",
+    "deal": {},
+    "status": "scheduled",
+    "approved_ts": "2026-10-08T08:01:31.318553"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/the-outlaw-boot-black?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "The Outlaw Boot Black",
+    "local_asset": "GELEM/2026-10-09/the-outlaw-boot-black",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/THE_OUTLAW_BOOT-BLACK-01.png?v=1773916029",
+    "deal": {},
+    "status": "approved",
+    "approved_ts": "2026-10-09T08:01:46.571716"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256807290674315.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-10-11/stiletto-heels-3256807290674315",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S873dd0fc94db4eef8d7df193048ac37fS.jpg",
+    "deal": {
+      "sale": 54.25,
+      "was": 113.02,
+      "discount": "52%",
+      "rating": "4.9",
+      "sold": "498 sold"
+    },
+    "status": "approved",
+    "approved_ts": "2026-10-11T08:01:19.827595"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256806808422394.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-10-11/stiletto-heels-3256806808422394",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/Se86d076bcf764d08ac8c326032c585a3r.jpg",
+    "deal": {
+      "sale": 39.76,
+      "was": 92.52,
+      "discount": "57%",
+      "rating": "4.9",
+      "sold": "1,000+ sold"
+    },
+    "status": "approved",
+    "approved_ts": "2026-10-11T08:01:49.931939"
+  },
+  {
+    "url": "https://nakedwolfe.com/products/the-bag-boot-black-leather?snowball=OFER56992&utm_source=snowball&utm_medium=default-program&utm_campaign=OFER56992",
+    "title": "The Bag Boot Black Leather",
+    "local_asset": "GELEM/2026-10-12/the-bag-boot-black-leather",
+    "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/THE_BAG_BOOT-BLACK_LEATHER-01.jpg?v=1773916005",
+    "deal": {},
+    "status": "approved",
+    "approved_ts": "2026-10-12T08:58:05.484321"
+  },
+  {
+    "url": "https://www.aliexpress.com/item/3256808183302545.html",
+    "title": "Stiletto Heels",
+    "local_asset": "GELEM/2026-10-13/stiletto-heels-3256808183302545",
+    "image_url": "https://ae-pic-a1.aliexpress-media.com/kf/S485f4c29aa624a51a30d48737e967bfcW.jpg",
+    "deal": {
+      "sale": 24.78,
+      "was": 59.25,
+      "discount": "58%",
+      "rating": "4.7",
+      "sold": "428 sold"
+    },
+    "status": "approved",
+    "approved_ts": "2026-10-13T09:34:33.508888"
   }
 ]

@@ -77,6 +77,14 @@ def funnel(catalog):
     produced  = sum(1 for it in catalog if is_produced(it))
     published = sum(1 for it in catalog if it.get("posted"))
     scheduled = len(parse_schedule())
+    try:   # the real numbers live in Zernio (catalog "posted" + _SCHEDULE.md were stale)
+        sys.path.insert(0, str(ROOT))
+        from control import services as _sv
+        posts = _sv.zernio_all_posts()
+        published = sum(1 for p in posts if p.get("status") == "published")
+        scheduled = sum(1 for p in posts if p.get("status") == "scheduled")
+    except Exception as e:
+        print(f"  ~ Zernio counts unavailable ({e}); using catalog")
     return {"scanned": scanned, "approved": approved, "produced": produced,
             "scheduled": scheduled, "published": published}
 
@@ -174,6 +182,16 @@ def traffic():
 
 # ── Followers (manual file → later Zernio/API) ───────────────────────
 def followers():
+    try:   # live counts from Zernio accounts (same source as the Control Center)
+        sys.path.insert(0, str(ROOT))
+        from control import engagement as _eg
+        f = (_eg.get() or {}).get("followers") or {}
+        if f:
+            out = {k: (v or {}).get("count") for k, v in f.items()}
+            out["source_status"] = "zernio"
+            return out
+    except Exception:
+        pass
     manual = _load(DATA / "manual_followers.json", {})
     if manual:
         manual["source_status"] = "manual"
