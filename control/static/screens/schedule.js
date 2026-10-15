@@ -221,7 +221,7 @@
         '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">' +
           '<div><span class="badge ' + badgeCls + '">' + esc(p.status || "—") + "</span> " + platforms +
           ' <span class="kpi-sub">' + CC.fmtTimeHe(p.scheduledFor) + "</span></div>" +
-          (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="kpi-sub">צפה בפוסט ↗</a>' : "") +
+          (p.url ? '<a href="' + esc(CC.safeUrl(p.url)) + '" target="_blank" rel="noopener" class="kpi-sub">צפה בפוסט ↗</a>' : "") +
         "</div>" +
         '<div style="margin:8px 0;font-size:13px">' + esc((p.content || "").slice(0, 180)) + "</div>" +
         '<div class="row" style="align-items:center">' +
@@ -353,7 +353,7 @@
         '<div class="kpi-sub">מתוזמן ל: ' + CC.fmtDateHe(p.scheduledFor) + " " + CC.fmtTimeHe(p.scheduledFor) + "</div>" +
         (state.eng[p.id] ? '<div style="margin-top:6px">' + engLine(p.id) + "</div>" : "") +
         '<div style="margin:10px 0;font-size:13px;white-space:pre-wrap">' + esc(p.content || "") + "</div>" +
-        (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener" class="btn small secondary">פתח פוסט ↗</a>' : "") +
+        (p.url ? '<a href="' + esc(CC.safeUrl(p.url)) + '" target="_blank" rel="noopener" class="btn small secondary">פתח פוסט ↗</a>' : "") +
         '<div class="row" style="margin-top:14px">' +
           '<input type="datetime-local" id="sc-modal-date" style="flex:1">' +
           '<button class="btn small" id="sc-modal-move" type="button">הזז</button>' +

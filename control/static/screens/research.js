@@ -81,7 +81,7 @@
           '<div class="kpi-sub">' + (t.views ?? "—") + " צפיות · " + esc(t.domain || "—") + "</div>" +
           "<div style='margin-top:6px'>" + CC.statusBadgeHtml(t.affiliate_status) + "</div>" +
           '<div class="row" style="margin-top:8px">' +
-            (t.url ? '<a href="' + esc(t.url) + '" target="_blank" rel="noopener" class="kpi-sub">מקור ↗</a>' : "") +
+            (t.url ? '<a href="' + esc(CC.safeUrl(t.url)) + '" target="_blank" rel="noopener" class="kpi-sub">מקור ↗</a>' : "") +
             '<a href="#affiliates" class="btn small secondary">פתח מותג בשותפים</a>' +
           "</div></div>";
       }).join("") + "</div>";
@@ -148,7 +148,7 @@
         '<div class="kpi-sub">' + CC.money(s.price) + " · " + (s.clicks || 0) + " קליקים · " + (s.sales || 0) + " מכירות</div>" +
         "<div style='margin:4px 0'>" + CC.statusBadgeHtml(s.status) + "</div>" +
         '<div class="row">' +
-          (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" class="kpi-sub">מוצר ↗</a>' : "") +
+          (s.url ? '<a href="' + esc(CC.safeUrl(s.url)) + '" target="_blank" rel="noopener" class="kpi-sub">מוצר ↗</a>' : "") +
         "</div></div>";
     }).join("") + "</div>";
   }

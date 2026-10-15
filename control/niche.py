@@ -8,9 +8,20 @@ from __future__ import annotations
 
 import copy
 import json
-import os
+import re
 import sys
 from pathlib import Path
+
+from .atomic import write_json
+
+_ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{1,31}$")
+
+
+def validate_id(nid) -> str:
+    """Niche ids become path segments — only [a-z0-9][a-z0-9_-]{1,31} allowed."""
+    if not isinstance(nid, str) or not _ID_RE.fullmatch(nid):
+        raise ValueError(f"invalid niche id: {nid!r}")
+    return nid
 
 ROOT = Path(__file__).resolve().parent.parent
 NICHES_DIR = ROOT / "niches"
@@ -35,11 +46,11 @@ def active_id() -> str:
 
 
 def _niche_json_path(nid: str) -> Path:
-    return _niches_dir() / nid / "niche.json"
+    return _niches_dir() / validate_id(nid) / "niche.json"
 
 
 def _hub_json_path(nid: str) -> Path:
-    return _niches_dir() / nid / "hub.json"
+    return _niches_dir() / validate_id(nid) / "hub.json"
 
 
 def load(nid: str | None = None) -> dict:
@@ -48,17 +59,14 @@ def load(nid: str | None = None) -> dict:
     if not nid:
         return {}
     try:
-        path = _niche_json_path(nid)
+        path = _niche_json_path(nid)  # invalid id -> ValueError -> {}
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return {}
 
 
 def _atomic_write(path: Path, data: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    os.replace(tmp, path)
+    write_json(path, data)
 
 
 def save(cfg_data: dict, nid: str | None = None) -> None:
@@ -134,6 +142,8 @@ def clone(src: str, dst: str, name: str) -> dict:
     data, keep hub account shells but clear login values. Raises if dst
     already exists.
     """
+    validate_id(src)
+    validate_id(dst)
     src_dir = _niches_dir() / src
     dst_dir = _niches_dir() / dst
     if not src_dir.exists():

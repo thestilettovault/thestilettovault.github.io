@@ -16,16 +16,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 DATA = ROOT / "data"
-PY = "py"
+
+from . import services as _services
+PYCMD = list(_services.PYCMD)   # single python resolution, shared with services.run()
+PY = PYCMD[0]
 
 from . import jobs as _jobs
 from . import niche as _niche
-from . import services as _services
 
 
 def _sub(title, script_args, timeout=1800):
     return {"type": "subprocess", "title": title,
-            "cmd": [PY, "-3"] + script_args, "cwd": str(ROOT), "timeout": timeout}
+            "cmd": PYCMD + script_args, "cwd": str(ROOT), "timeout": timeout}
 
 
 def _py(title, fn):
@@ -114,7 +116,7 @@ def _scout_now_steps(params):
     return [
         _sub("איסוף מוצרים מאלי אקספרס", ["scripts/aliexpress_scout.py", "--write"]),
         {"type": "subprocess", "title": "סריקת בוקר יומית (אמיתי)",
-         "cmd": [PY, "-3", "-c", "import daily_heel_scout as d; d.main(dry=False)"],
+         "cmd": PYCMD + ["-c", "import daily_heel_scout as d; d.main(dry=False)"],
          "cwd": str(SCRIPTS), "timeout": 900},
     ]
 

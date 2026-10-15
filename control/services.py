@@ -16,6 +16,8 @@ import time
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
+from .atomic import write_json
+
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 DATA = ROOT / "data"
@@ -36,6 +38,10 @@ def _real_python():
 PYCMD = _real_python()
 
 
+def _utf8_env():
+    return {**os.environ, "PYTHONUTF8": "1"}
+
+
 def _load_json(path, default):
     try:
         with open(path, encoding="utf-8-sig") as f:
@@ -45,7 +51,7 @@ def _load_json(path, default):
 
 
 def _save_json(path, data):
-    Path(path).write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_json(path, data)
 
 
 def _normalize_url(url):
@@ -215,7 +221,7 @@ def _bot_alive_legacy():
         # fallback: tasklist /v (Windows)
         out = subprocess.run(
             ["tasklist", "/v", "/fo", "csv"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=10,
         ).stdout
         if "telegram_bot" in out or "python" in out.lower():
             # tasklist /v doesn't reliably show full cmdline; can't confirm script name
@@ -548,7 +554,8 @@ def retry_failed():
     try:
         proc = subprocess.run(
             [*PYCMD, "scripts/tiktok_retry.py", "--apply"],
-            cwd=str(ROOT), capture_output=True, text=True, timeout=600,
+            cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace",
+            env=_utf8_env(), timeout=600,
         )
         tail = (proc.stdout or "")[-4000:] + (("\n" + proc.stderr[-2000:]) if proc.stderr else "")
         return {"ok": proc.returncode == 0, "output_tail": tail}
@@ -622,7 +629,8 @@ def learning_shoes():
 def _run_cmd(cmd, cwd=None, timeout=600):
     try:
         proc = subprocess.run(cmd, cwd=cwd or str(ROOT), capture_output=True,
-                               text=True, timeout=timeout)
+                               text=True, encoding="utf-8", errors="replace",
+                               env=_utf8_env(), timeout=timeout)
         tail = (proc.stdout or "")[-4000:] + (("\n" + proc.stderr[-2000:]) if proc.stderr else "")
         return {"ok": proc.returncode == 0, "output_tail": tail}
     except Exception as e:

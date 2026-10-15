@@ -105,7 +105,9 @@
       var jobCard = document.getElementById("wf-job-card");
       panel.style.display = "block";
       var poll = setInterval(function () {
+        if (!document.body.contains(jobCard)) { clearInterval(poll); return; }
         safeFetch(api("/jobs/" + jobId)).then(function (res) {
+          if (!document.body.contains(jobCard)) { clearInterval(poll); return; }
           if (!res.ok) { clearInterval(poll); return; }
           var j = res.data;
           var stepsHtml = (j.steps || []).map(function (s) {

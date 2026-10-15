@@ -5,11 +5,15 @@ Order: local GELEM folder (post_image / ad_* / source / any image) → AliExpres
 image by item id → og:image of the product page (cached in data/thumb_cache.json,
 local only). Returns ("file", Path) | ("url", str) | (None, None).
 """
+import ipaddress
 import json
 import re
+import socket
 import threading
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urljoin, urlsplit
+
+from .atomic import write_json
 
 ROOT = Path(__file__).resolve().parent.parent
 GELEM = ROOT / "GELEM"
@@ -35,7 +39,7 @@ def _load():
 
 def _save(c):
     try:
-        CACHE.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
+        write_json(CACHE, c, indent=1)
     except Exception:
         pass
 
@@ -53,13 +57,50 @@ def _best_image(folder):
     return sorted(imgs, key=rank)[0]
 
 
+_SLUG_RE = re.compile(r"^[\w .\-/]+$")
+
+
+def valid_slug(slug) -> bool:
+    if not isinstance(slug, str) or not slug or not _SLUG_RE.fullmatch(slug):
+        return False
+    parts = slug.split("/")
+    return not any(p in ("", ".", "..") for p in parts) and not slug.startswith("/")
+
+
+def _inside_gelem(p: Path) -> bool:
+    try:
+        return p.resolve().is_relative_to(GELEM.resolve())
+    except Exception:
+        return False
+
+
+def is_public_http_url(url) -> bool:
+    """http(s) only, and the host must not resolve to a private/loopback/link-local address."""
+    try:
+        parts = urlsplit(str(url))
+        if parts.scheme not in ("http", "https") or not parts.hostname:
+            return False
+        infos = socket.getaddrinfo(parts.hostname, parts.port or (443 if parts.scheme == "https" else 80),
+                                   proto=socket.IPPROTO_TCP)
+        if not infos:
+            return False
+        for info in infos:
+            ip = ipaddress.ip_address(info[4][0].split("%")[0])
+            if (ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_multicast
+                    or ip.is_reserved or ip.is_unspecified):
+                return False
+        return True
+    except Exception:
+        return False
+
+
 def local_image(slug):
-    if not slug or not GELEM.exists():
+    if not valid_slug(slug) or not GELEM.exists():
         return None
     for folder in [GELEM / slug] + list(GELEM.glob(f"*/{slug}")):
-        if folder.is_dir():
+        if folder.is_dir() and _inside_gelem(folder):
             img = _best_image(folder)
-            if img:
+            if img and _inside_gelem(img):
                 return img
     return None
 
@@ -81,7 +122,22 @@ def _pool_image(url):
 def _og_image(url):
     import requests
     try:
-        r = requests.get(url, headers=UA, timeout=8, allow_redirects=True)
+        cur = url
+        r = None
+        for _ in range(4):                      # follow redirects by hand: every hop must be public http(s)
+            if not is_public_http_url(cur):
+                return None
+            r = requests.get(cur, headers=UA, timeout=8, allow_redirects=False)
+            if r.is_redirect or r.status_code in (301, 302, 303, 307, 308):
+                loc = r.headers.get("Location")
+                if not loc:
+                    return None
+                cur = urljoin(cur, loc)
+                r = None
+                continue
+            break
+        if r is None:
+            return None
         h = r.text[:400000]
     except Exception:
         return None
@@ -96,6 +152,10 @@ def _og_image(url):
 
 
 def resolve(url="", slug=""):
+    if slug and not valid_slug(slug):
+        slug = ""
+    if url and not str(url).lower().startswith(("http://", "https://")):
+        url = ""
     img = local_image(slug)
     if img:
         return "file", img

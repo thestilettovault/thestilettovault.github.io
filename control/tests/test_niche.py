@@ -85,10 +85,10 @@ def test_update_no_active_niche_raises(isolated_root):
 
 
 def test_list_niches(isolated_root):
-    _write_niche(isolated_root, "a", {"identity": {"id": "a"}})
-    _write_niche(isolated_root, "b", {"identity": {"id": "b"}})
+    _write_niche(isolated_root, "aa", {"identity": {"id": "aa"}})
+    _write_niche(isolated_root, "bb", {"identity": {"id": "bb"}})
     (isolated_root / "niches" / "empty_dir").mkdir()
-    assert niche.list_niches() == ["a", "b"]
+    assert niche.list_niches() == ["aa", "bb"]
 
 
 def test_set_active_unknown_raises(isolated_root):
@@ -97,9 +97,9 @@ def test_set_active_unknown_raises(isolated_root):
 
 
 def test_set_active_writes_file(isolated_root):
-    _write_niche(isolated_root, "a", {"identity": {"id": "a"}})
-    niche.set_active("a")
-    assert niche.active_id() == "a"
+    _write_niche(isolated_root, "aa", {"identity": {"id": "aa"}})
+    niche.set_active("aa")
+    assert niche.active_id() == "aa"
 
 
 def test_clone_blanks_search_fields_and_hub_logins(isolated_root):
@@ -147,3 +147,17 @@ def test_clone_refuses_existing_dst(isolated_root):
 def test_clone_missing_src_raises(isolated_root):
     with pytest.raises(ValueError):
         niche.clone("ghost", "bags", "The Bag Vault")
+
+
+@pytest.mark.parametrize("bad", ["../x", "a/b", "..", "A", "x", "", "a" * 40, "a b", "..\\evil"])
+def test_invalid_niche_ids_rejected(isolated_root, bad):
+    with pytest.raises(ValueError):
+        niche.validate_id(bad)
+    with pytest.raises(ValueError):
+        niche.set_active(bad)
+    with pytest.raises(ValueError):
+        niche.clone(bad, "okay-id", "N")
+    _write_niche(isolated_root, "good-id", {"identity": {}})
+    with pytest.raises(ValueError):
+        niche.clone("good-id", bad, "N")
+    assert niche.load(bad) == {}

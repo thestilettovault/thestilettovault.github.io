@@ -181,7 +181,7 @@ def test_run_rejects_unknown_job():
 def test_run_metrics_no_push_flag(monkeypatch):
     captured = {}
 
-    def fake_run(cmd, cwd=None, capture_output=None, text=None, timeout=None):
+    def fake_run(cmd, cwd=None, capture_output=None, text=None, timeout=None, **kw):
         captured["cmd"] = cmd
         return types.SimpleNamespace(returncode=0, stdout="ok", stderr="")
 
@@ -194,7 +194,7 @@ def test_run_metrics_no_push_flag(monkeypatch):
 def test_run_tiktok_retry_uses_apply_flag(monkeypatch):
     captured = {}
 
-    def fake_run(cmd, cwd=None, capture_output=None, text=None, timeout=None):
+    def fake_run(cmd, cwd=None, capture_output=None, text=None, timeout=None, **kw):
         captured["cmd"] = cmd
         return types.SimpleNamespace(returncode=0, stdout="done", stderr="")
 

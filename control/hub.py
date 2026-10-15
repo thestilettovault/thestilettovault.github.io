@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import datetime
 import json
-import os
 import re
 from pathlib import Path
 
 from . import niche as _niche
+from .atomic import write_json
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_PATH = ROOT / "scripts" / ".env"
@@ -80,7 +80,7 @@ def reveal(name: str) -> str | None:
 
 
 def _hub_path(nid: str) -> Path:
-    return ROOT / "niches" / nid / "hub.json"
+    return ROOT / "niches" / _niche.validate_id(nid) / "hub.json"
 
 
 def load_hub(nid: str | None = None) -> dict:
@@ -98,10 +98,7 @@ def save_hub(data: dict, nid: str | None = None) -> None:
     if not nid:
         raise ValueError("no active niche and no nid given")
     path = _hub_path(nid)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    os.replace(tmp, path)
+    write_json(path, data)
 
 
 def accounts(nid: str | None = None) -> list[dict]:

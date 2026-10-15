@@ -14,6 +14,14 @@ def _reset(monkeypatch, tmp_path):
     monkeypatch.setattr(J, "HISTORY_FILE", tmp_path / "jobs_history.json")
     monkeypatch.setattr(J, "ENV_FILE", tmp_path / "does_not_exist.env")
     yield
+    # let any still-running worker finish before the patched state is undone
+    deadline = time.time() + 3
+    while time.time() < deadline:
+        with J._LOCK:
+            running = [j for j in J._JOBS.values() if j["status"] in ("queued", "running")]
+        if not running:
+            break
+        time.sleep(0.02)
 
 
 def _wait(job_id, timeout=5):
@@ -105,3 +113,57 @@ def test_redaction(monkeypatch, tmp_path):
     joined = "\n".join(job["log"])
     assert "supersecretvalue123" not in joined
     assert "REDACTED" in joined
+
+
+def test_subprocess_timeout_with_silent_child():
+    import sys
+    t0 = time.time()
+    job_id = J.start("silent", [{
+        "type": "subprocess", "title": "s", "timeout": 1,
+        "cmd": [sys.executable, "-c", "import time; time.sleep(5)"],
+    }])
+    job = _wait(job_id, timeout=4)
+    assert job["status"] == "failed"
+    assert "timed out" in job["error"]
+    assert time.time() - t0 < 4
+
+
+def test_subprocess_cancel_with_silent_child():
+    import sys
+    job_id = J.start("silent-cancel", [{
+        "type": "subprocess", "title": "s", "timeout": 30,
+        "cmd": [sys.executable, "-c", "import time; time.sleep(10)"],
+    }])
+    time.sleep(0.4)
+    assert J.cancel(job_id) is True
+    job = _wait(job_id, timeout=4)
+    assert job["status"] == "cancelled"
+
+
+def test_get_and_list_return_deep_copies():
+    def ok(log):
+        log("line")
+
+    job_id = J.start("copy-wf", [{"type": "python", "title": "s", "fn": ok}])
+    _wait(job_id)
+    j = J.get(job_id)
+    j["log"].append("tampered")
+    j["steps"][0]["status"] = "tampered"
+    again = J.get(job_id)
+    assert "tampered" not in again["log"]
+    assert again["steps"][0]["status"] == "done"
+    assert "_cancel" not in again
+    listing = J.list_jobs()
+    for entry in listing["active"] + listing["recent"]:
+        assert "log" not in entry and "_cancel" not in entry
+
+
+def test_finished_jobs_are_evicted(monkeypatch):
+    monkeypatch.setattr(J, "MAX_KEEP_FINISHED", 3)
+    ids = []
+    for i in range(6):
+        jid = J.start(f"ev{i}", [{"type": "python", "title": "s", "fn": lambda log: None}])
+        _wait(jid)
+        ids.append(jid)
+    with J._LOCK:
+        assert len(J._JOBS) <= 3

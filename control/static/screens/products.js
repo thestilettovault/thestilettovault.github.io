@@ -200,7 +200,7 @@
       } else {
         var link = p.aff_link || p.url;
         if (link) {
-          var openBtn = h('<a class="btn small secondary" target="_blank" rel="noopener" href="' + esc(link) + '">פתח מוצר ↗</a>');
+          var openBtn = h('<a class="btn small secondary" target="_blank" rel="noopener" href="' + esc(CC.safeUrl(link)) + '">פתח מוצר ↗</a>');
           actions.appendChild(openBtn);
         }
       }

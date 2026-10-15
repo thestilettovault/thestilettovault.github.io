@@ -20,7 +20,14 @@
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // Only http(s) URLs may reach an href built from scraped data.
+  function safeUrl(u) {
+    var s = String(u === null || u === undefined ? "" : u).trim();
+    return /^https?:\/\//i.test(s) ? s : "#";
   }
 
   function toast(msg, kind) {
@@ -194,7 +201,7 @@
 
   window.CC = {
     productImg: productImg,
-    h: h, esc: esc, toast: toast, api: api, safeFetch: safeFetch,
+    h: h, esc: esc, safeUrl: safeUrl, toast: toast, api: api, safeFetch: safeFetch,
     relTime: relTime, fmtDateHe: fmtDateHe, fmtTimeHe: fmtTimeHe, money: money,
     card: card, unavailableCard: unavailableCard, emptyState: emptyState,
     skeletonBlock: skeletonBlock, statusBadgeHtml: statusBadgeHtml,
@@ -483,7 +490,7 @@
               '<td>' + esc(r.commission || "—") + "</td>" +
               '<td>' + money(r.avg_price) + "</td>" +
               '<td>' + money(r.value_per_sale) + "</td>" +
-              '<td>' + (signup ? '<a href="' + esc(signup) + '" target="_blank" rel="noopener">הרשמה ↗</a>' : "—") + "</td>" +
+              '<td>' + (signup ? '<a href="' + esc(safeUrl(signup)) + '" target="_blank" rel="noopener">הרשמה ↗</a>' : "—") + "</td>" +
               '<td class="reg-actions" data-domain="' + esc(r.domain) + '">' +
                 '<button class="btn small reg-activate" type="button">הפעל</button></td></tr>';
           }).join("");
@@ -534,7 +541,7 @@
             '<strong>' + esc(a.service || "—") + "</strong>" +
             '<span class="kpi-sub">' + esc(a.purpose || "") + "</span>" +
             (a.login ? '<span class="kpi-sub">' + esc(a.login) + "</span>" : "") +
-            (a.login_url ? '<a href="' + esc(a.login_url) + '" target="_blank" rel="noopener" class="btn small secondary" style="margin-top:6px;text-align:center">פתח התחברות ↗</a>' : "") +
+            (a.login_url ? '<a href="' + esc(safeUrl(a.login_url)) + '" target="_blank" rel="noopener" class="btn small secondary" style="margin-top:6px;text-align:center">פתח התחברות ↗</a>' : "") +
             "</div>";
         }).join("") + "</div>";
       });
@@ -599,7 +606,7 @@
         var links = (res.data && res.data.links) || [];
         if (!links.length) { body.innerHTML = emptyState("אין קישורים"); return; }
         body.innerHTML = '<div class="cards-grid">' + links.map(function (l) {
-          return '<div class="link-card"><a href="' + esc(l.url) + '" target="_blank" rel="noopener">' +
+          return '<div class="link-card"><a href="' + esc(safeUrl(l.url)) + '" target="_blank" rel="noopener">' +
             esc(l.label || l.url) + " ↗</a></div>";
         }).join("") + "</div>";
       });

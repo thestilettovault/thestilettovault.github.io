@@ -12,6 +12,7 @@ import secrets
 import socket
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 if sys.stdout is None:
     sys.stdout = open(os.devnull, "w", encoding="utf-8")
@@ -40,6 +41,34 @@ app = Flask(__name__)
 
 
 # ── auth helpers ─────────────────────────────────────────────────────
+
+_LOCAL_HOSTS = ("127.0.0.1", "localhost")
+
+
+def _hostname_of_host_header(value: str):
+    try:
+        return urlsplit("//" + (value or "")).hostname
+    except ValueError:
+        return None
+
+
+@app.before_request
+def _guard_local_only():
+    """DNS-rebinding / cross-site protection: Host must be loopback, and state-changing
+    requests carrying an Origin must come from a loopback origin."""
+    if _hostname_of_host_header(request.host) not in _LOCAL_HOSTS:
+        return jsonify({"error": "forbidden host"}), 403
+    if request.method in ("POST", "PUT", "DELETE", "PATCH"):
+        origin = request.headers.get("Origin")
+        if origin is not None:
+            try:
+                oh = urlsplit(origin).hostname
+            except ValueError:
+                oh = None
+            if oh not in _LOCAL_HOSTS:
+                return jsonify({"error": "forbidden origin"}), 403
+    return None
+
 
 def _require_token():
     token = request.headers.get("X-Token", "")
@@ -351,10 +380,14 @@ def api_niche():
     guard = _require_token()
     if guard:
         return guard
-    body = request.get_json(silent=True) or {}
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return _err("body must be a JSON object")
     try:
         merged = _niche.update(body)
         return jsonify(merged)
+    except ValueError as e:
+        return _err(e, 400)
     except Exception as e:
         return _err(e, 500)
 
@@ -373,6 +406,8 @@ def api_niche_clone():
     try:
         result = _niche.clone(src, dst, name)
         return jsonify(result)
+    except ValueError as e:
+        return _err(e, 400)
     except Exception as e:
         return _err(e, 500)
 
@@ -489,10 +524,15 @@ def acquire_single_instance():
 # ── thumbnails (any product → a picture) ────────────────────────────
 @app.route("/api/thumb")
 def api_thumb():
-    kind, val = _thumbs.resolve(request.args.get("url", ""), request.args.get("slug", ""))
+    slug = request.args.get("slug", "")
+    if slug and not _thumbs.valid_slug(slug):
+        return _err("invalid slug", 400)
+    kind, val = _thumbs.resolve(request.args.get("url", ""), slug)
     if kind == "file":
         return send_file(val, max_age=86400)
     if kind == "url":
+        if not str(val).lower().startswith(("http://", "https://")):
+            return Response(_thumbs.PLACEHOLDER_SVG, mimetype="image/svg+xml")
         return redirect(val, 302)
     return Response(_thumbs.PLACEHOLDER_SVG, mimetype="image/svg+xml")
 

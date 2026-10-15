@@ -190,3 +190,49 @@ def test_events_summary(client):
     assert r.status_code == 200
     data = r.get_json()
     assert "needs_you" in data and "running_jobs" in data and "failed_posts" in data
+
+
+def _tok():
+    return {"X-Token": control_app.CONTROL_TOKEN}
+
+
+def test_foreign_host_header_rejected(client):
+    assert client.get("/api/health", headers={"Host": "evil.com"}).status_code == 403
+    assert client.get("/api/health", headers={"Host": "127.0.0.1:8787"}).status_code == 200
+    assert client.get("/api/health").status_code == 200  # test client default: localhost
+
+
+def test_foreign_origin_rejected_on_post(client):
+    r = client.post("/api/jobs/x/cancel", headers={**_tok(), "Origin": "http://evil.com"})
+    assert r.status_code == 403
+    r = client.post("/api/jobs/x/cancel", headers={**_tok(), "Origin": "http://localhost:8787"})
+    assert r.status_code == 404  # passed the guard, job simply doesn't exist
+
+
+def test_niche_clone_traversal_is_400(client):
+    r = client.post("/api/niche/clone", json={"from": "../x", "to": "okay-id", "name": "N"}, headers=_tok())
+    assert r.status_code == 400
+    r = client.post("/api/niche/clone", json={"from": "okay-id", "to": "..\\..\\evil", "name": "N"}, headers=_tok())
+    assert r.status_code == 400
+
+
+def test_niche_put_rejects_non_dict(client):
+    r = client.put("/api/niche", json=[1, 2], headers=_tok())
+    assert r.status_code == 400
+
+
+def test_thumb_rejects_traversal_slug(client):
+    assert client.get("/api/thumb?slug=../../etc/passwd").status_code == 400
+    assert client.get("/api/thumb?slug=a/../b").status_code == 400
+
+
+def test_job_detail_has_log_but_no_cancel_flag(client):
+    from control import jobs as J
+    jid = J.start("detail-wf", [{"type": "python", "title": "s", "fn": lambda log: log("hi")}])
+    import time
+    for _ in range(100):
+        d = client.get(f"/api/jobs/{jid}").get_json()
+        if d["status"] not in ("queued", "running"):
+            break
+        time.sleep(0.02)
+    assert "hi" in d["log"] and "_cancel" not in d

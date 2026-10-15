@@ -13,13 +13,17 @@ containing a value from scripts/.env redacted.
 """
 from __future__ import annotations
 
+import copy
 import json
+import os
 import subprocess
 import sys
 import threading
 import time
 import uuid
 from pathlib import Path
+
+from .atomic import write_json
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -34,6 +38,7 @@ _ACTIVE_BY_NAME: dict[str, str] = {}  # workflow name -> job_id (queued/running 
 
 MAX_LOG_LINES = 500
 MAX_HISTORY = 100
+MAX_KEEP_FINISHED = 50
 
 
 # ── secret redaction ────────────────────────────────────────────────
@@ -97,25 +102,60 @@ def _run_subprocess_step(job: dict, step: dict):
     _append_log(job, f"$ {' '.join(str(c) for c in cmd)}")
     proc = subprocess.Popen(
         cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        text=True, bufsize=1,
+        text=True, bufsize=1, encoding="utf-8", errors="replace",
+        env={**os.environ, "PYTHONUTF8": "1"},
     )
-    start = time.time()
+    flags = {"timeout": False, "cancel": False}
+    done = threading.Event()
+
+    def _kill():
+        try:
+            proc.kill()
+        except Exception:
+            pass
+
+    def _on_timeout():
+        flags["timeout"] = True
+        _kill()
+
+    def _cancel_poll():
+        while not done.wait(0.1):
+            with _LOCK:
+                cancelled = bool(job.get("_cancel"))
+            if cancelled:
+                flags["cancel"] = True
+                _kill()
+                return
+
+    timer = threading.Timer(timeout, _on_timeout)
+    timer.daemon = True
+    timer.start()
+    poller = threading.Thread(target=_cancel_poll, daemon=True)
+    poller.start()
     try:
         for raw_line in proc.stdout:  # type: ignore[union-attr]
             with _LOCK:
                 _append_log(job, raw_line.rstrip("\n"))
-            if time.time() - start > timeout:
-                proc.kill()
-                raise TimeoutError(f"step timed out after {timeout}s")
-            if job.get("_cancel"):
-                proc.kill()
-                raise InterruptedError("cancelled")
     finally:
+        timer.cancel()
         try:
             proc.wait(timeout=10)
         except Exception:
-            proc.kill()
-    if proc.returncode != 0 and not job.get("_cancel"):
+            _kill()
+            try:
+                proc.wait(timeout=5)
+            except Exception:
+                pass
+        done.set()
+        try:
+            proc.stdout.close()  # type: ignore[union-attr]
+        except Exception:
+            pass
+    if flags["timeout"]:
+        raise TimeoutError(f"step timed out after {timeout}s")
+    if flags["cancel"] or job.get("_cancel"):
+        raise InterruptedError("cancelled")
+    if proc.returncode != 0:
         raise RuntimeError(f"exit code {proc.returncode}")
 
 
@@ -128,7 +168,9 @@ def _run_python_step(job: dict, step: dict):
 
 def _worker(job_id: str, steps: list[dict]):
     with _LOCK:
-        job = _JOBS[job_id]
+        job = _JOBS.get(job_id)
+        if job is None:
+            return
         job["status"] = "running"
         job["started_at"] = time.time()
 
@@ -136,7 +178,6 @@ def _worker(job_id: str, steps: list[dict]):
     cancelled = False
     for i, step in enumerate(steps):
         with _LOCK:
-            job = _JOBS[job_id]
             if job.get("_cancel"):
                 cancelled = True
                 job["steps"][i]["status"] = "cancelled"
@@ -162,7 +203,6 @@ def _worker(job_id: str, steps: list[dict]):
             break
 
     with _LOCK:
-        job = _JOBS[job_id]
         job["finished_at"] = time.time()
         if job.get("_cancel") or cancelled:
             job["status"] = "cancelled"
@@ -170,8 +210,20 @@ def _worker(job_id: str, steps: list[dict]):
             job["status"] = "failed"
         else:
             job["status"] = "done"
-        _ACTIVE_BY_NAME.pop(job["name"], None)
+        if _ACTIVE_BY_NAME.get(job["name"]) == job_id:
+            _ACTIVE_BY_NAME.pop(job["name"], None)
         _persist_history(job)
+        _evict_finished()
+
+
+def _evict_finished():
+    """Keep only the most recent MAX_KEEP_FINISHED finished jobs in memory (call under _LOCK)."""
+    finished = [j for j in _JOBS.values() if j["status"] not in ("queued", "running")]
+    if len(finished) <= MAX_KEEP_FINISHED:
+        return
+    finished.sort(key=lambda j: j.get("finished_at") or 0, reverse=True)
+    for j in finished[MAX_KEEP_FINISHED:]:
+        _JOBS.pop(j["id"], None)
 
 
 def _persist_history(job: dict):
@@ -190,7 +242,7 @@ def _persist_history(job: dict):
         }
         hist.append(summary)
         hist = hist[-MAX_HISTORY:]
-        HISTORY_FILE.write_text(json.dumps(hist, ensure_ascii=False, indent=2), encoding="utf-8")
+        write_json(HISTORY_FILE, hist)
     except Exception:
         pass
 
@@ -212,9 +264,17 @@ def start(name: str, steps: list[dict], params: dict | None = None) -> str:
     return job["id"]
 
 
+def _public(job: dict, with_log: bool = True) -> dict:
+    """Deep copy of a job without internal fields (call under _LOCK)."""
+    out = {k: copy.deepcopy(v) for k, v in job.items() if k != "_cancel" and not (k == "log" and not with_log)}
+    return out
+
+
 def get(job_id: str) -> dict | None:
+    """Deep copy of the job (mutating it never affects the runner), or None."""
     with _LOCK:
-        return _JOBS.get(job_id)
+        job = _JOBS.get(job_id)
+        return _public(job) if job is not None else None
 
 
 def cancel(job_id: str) -> bool:
@@ -229,21 +289,21 @@ def cancel(job_id: str) -> bool:
 
 
 def list_jobs() -> dict:
-    """Active jobs (queued/running) + recent finished history."""
+    """Active jobs (queued/running) + recent finished history (copies, no logs)."""
     with _LOCK:
-        active = [j for j in _JOBS.values() if j["status"] in ("queued", "running")]
+        active = [_public(j, with_log=False) for j in _JOBS.values() if j["status"] in ("queued", "running")]
         recent = sorted(
             [j for j in _JOBS.values() if j["status"] not in ("queued", "running")],
             key=lambda j: j.get("finished_at") or 0, reverse=True,
         )[:20]
-        return {"active": active, "recent": recent}
+        return {"active": active, "recent": [_public(j, with_log=False) for j in recent]}
 
 
 def last_run(name: str) -> dict | None:
     """Most recent finished (or active) job for a workflow name — in-memory first, then
     data/jobs_history.json so "last run" survives a server restart."""
     with _LOCK:
-        candidates = [j for j in _JOBS.values() if j["name"] == name]
+        candidates = [_public(j) for j in _JOBS.values() if j["name"] == name]
     if not candidates:
         try:
             hist = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
