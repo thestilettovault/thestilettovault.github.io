@@ -18,6 +18,17 @@ Colour, finish (patent / suede / satin / metallic / clear), silhouette (pump, sa
 platform), mood (sexy, playful, edgy, elegant), what makes it special (straps, bow, flowers,
 spikes, chain, pearls).
 
+## Pedicure (every shot where feet or toes show) — Ofer 2026-10-15
+Ina always has a fresh pedicure; it sells the shoe. Pick the toenail polish per shot
+and write it in the brief as `PEDICURE: <colour, finish>`:
+- Classic red shoe / black shoe → cherry red or deep red gloss.
+- Nude / beige / white shoe → soft nude-pink or milky white gloss.
+- Pastel / denim / light shoe → soft pink, lilac or clear gloss.
+- Metallic / party shoe → chrome, gold shimmer or black.
+- Boots (toes hidden) → skip.
+Match or complement the shoe, never clash with it; play with it (a red toe peeking out
+of a black open-toe sandal is a hook). Short, neat, square-round nails.
+
 ## Golden rules
 1. The shoe is the hero. Nothing covers it: no wide-leg or long trousers over the shoe,
    no maxi hem over the foot. Legs bare, sheer tights, or cropped / slim hems above the ankle.
