@@ -454,6 +454,24 @@ _POSTS_CACHE = {"ts": 0.0, "data": None}
 _POSTS_TTL = 60
 
 
+def zernio_all_posts(**params):
+    """Every Zernio post, all pages. The API caps a page at 200; past 230 posts
+    (2026-10-15) a single page silently dropped the newest ones."""
+    import requests
+    url, _ = _zernio()
+    out, page = [], 1
+    while True:
+        r = requests.get(f"{url}/posts", headers=_zernio_headers(),
+                         params={"limit": 200, "page": page, **params}, timeout=30)
+        r.raise_for_status()
+        j = r.json()
+        out += j.get("posts", [])
+        pg = j.get("pagination") or {}
+        if page >= int(pg.get("pages") or 1):
+            return out
+        page += 1
+
+
 def posts_list(fresh=False):
     now = time.time()
     if not fresh and _POSTS_CACHE["data"] is not None and (now - _POSTS_CACHE["ts"]) < _POSTS_TTL:
@@ -461,10 +479,7 @@ def posts_list(fresh=False):
     try:
         import requests
         url, _ = _zernio()
-        r = requests.get(f"{url}/posts", headers=_zernio_headers(),
-                          params={"limit": 200}, timeout=15)
-        r.raise_for_status()
-        raw = r.json().get("posts", [])
+        raw = zernio_all_posts()
         out = []
         for p in raw:
             platforms = p.get("platforms") or []

@@ -26,13 +26,8 @@ QUEUE = ROOT / "data" / "production_queue.json"
 
 def scheduled_days():
     """Dates (YYYY-MM-DD) that already hold a scheduled post."""
-    import requests
-    url, _ = services._zernio()
-    r = requests.get(f"{url}/posts", headers=services._zernio_headers(),
-                     params={"limit": 200}, timeout=30)
-    r.raise_for_status()
-    return {(p.get("scheduledFor") or "")[:10] for p in r.json().get("posts", [])
-            if p.get("status") == "scheduled"}
+    return {(p.get("scheduledFor") or "")[:10]
+            for p in services.zernio_all_posts(status="scheduled")}
 
 
 def next_free_day(taken):

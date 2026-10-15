@@ -38,7 +38,13 @@ def is_tt(p):
 
 
 def load_posts():
-    return requests.get(f"{U}/posts", headers=H, params={"limit": 200}).json()["posts"]
+    out, page = [], 1
+    while True:   # all pages: one page is capped at 200 posts
+        j = requests.get(f"{U}/posts", headers=H, params={"limit": 200, "page": page}).json()
+        out += j.get("posts", [])
+        if page >= int((j.get("pagination") or {}).get("pages") or 1):
+            return out
+        page += 1
 
 
 def next_slots(load, taken, n, start):
