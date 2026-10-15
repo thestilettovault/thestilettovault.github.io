@@ -21,9 +21,14 @@ if sys.stdout is None:
     sys.stdout = open(os.devnull, "w", encoding="utf-8")
 if sys.stderr is None:
     sys.stderr = open(os.devnull, "w", encoding="utf-8")
-sys.stdout.reconfigure(encoding="utf-8")
-sys.path.insert(0, os.path.dirname(__file__))
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import affiliate_links
+import jsonio
+from heel_filter import passes as _passes_heel_filter
 
 # Niche config (niches/<active>/niche.json, editable in the Control Center → Tuning).
 # cfg() never raises and falls back to the literal default below.
@@ -130,11 +135,27 @@ MIN_PRICE = _cfg("thresholds.MIN_PRICE", 20.0)
 
 
 def _sold_n(txt):
-    m = re.search(r"([\d,.]+)\s*(k)?\+?", str(txt or "").lower())
+    """'286 sold' -> 286, '1.2k+ sold' -> 1200, '1,234 sold' -> 1234.
+    No digits ('Sold out.', '', None) -> 0. Never raises."""
+    m = re.search(r"(\d[\d,.]*)\s*(k)?", str(txt or "").lower())
     if not m:
         return 0
-    n = float(m.group(1).replace(",", ""))
+    num = m.group(1).replace(",", "").rstrip(".")
+    try:
+        n = float(num)
+    except ValueError:
+        return 0
     return int(n * 1000) if m.group(2) else int(n)
+
+
+def _title_ok(raw_title):
+    """Heel gate on the RAW AliExpress title (the display label is a category we
+    set ourselves, so the search term alone can't be trusted: "stiletto heels"
+    also returns sneakers). Titles with no readable English (nothing to judge)
+    are not filtered."""
+    if len(re.findall(r"[A-Za-z]", raw_title or "")) < 3:
+        return True
+    return _passes_heel_filter(raw_title)
 
 
 def _proven(deal, price):
@@ -171,38 +192,49 @@ def scout(write=False, per_term=8):
         for it in items:
             if kept >= per_term:
                 break
-            pid = it.get("productId") or it.get("redirectedId")
-            if not pid or pid in seen:
-                continue
-            seen.add(pid)
-            deal = _deal(it)
-            ok, why = _proven(deal, _price(it))
-            if not ok:
-                skipped[why.split()[0]] = skipped.get(why.split()[0], 0) + 1
-                continue
-            img = (it.get("image") or {}).get("imgUrl", "")
-            if img.startswith("//"): img = "https:" + img
-            url = f"https://www.aliexpress.com/item/{pid}.html"
-            found.append({
-                "title": label,                                # clean English category
-                "url": url,
-                "aff_link": affiliate_links.aliexpress(url),   # Admitad deeplink 6.9%
-                "image_url": img,
-                "price": _price(it),
-                "deal": deal,                                  # sale/was/discount/rating/sold
-                "commission": "6.9%",
-                "domain": "aliexpress.com",
-            })
-            kept += 1
+            try:
+                pid = it.get("productId") or it.get("redirectedId")
+                if not pid or pid in seen:
+                    continue
+                seen.add(pid)
+                raw_title = _title(it)
+                if raw_title and not _title_ok(raw_title):
+                    skipped["title"] = skipped.get("title", 0) + 1
+                    continue
+                deal = _deal(it)
+                ok, why = _proven(deal, _price(it))
+                if not ok:
+                    skipped[why.split()[0]] = skipped.get(why.split()[0], 0) + 1
+                    continue
+                img = (it.get("image") or {}).get("imgUrl", "")
+                if img.startswith("//"): img = "https:" + img
+                url = f"https://www.aliexpress.com/item/{pid}.html"
+                found.append({
+                    "title": label,                                # clean English category
+                    "raw_title": raw_title,                        # as listed on AliExpress (traceability)
+                    "url": url,
+                    "aff_link": affiliate_links.aliexpress(url),   # Admitad deeplink 6.9%
+                    "image_url": img,
+                    "price": _price(it),
+                    "deal": deal,                                  # sale/was/discount/rating/sold
+                    "commission": "6.9%",
+                    "domain": "aliexpress.com",
+                })
+                kept += 1
+            except Exception as e:                  # one malformed item must not abort the run
+                skipped["error"] = skipped.get("error", 0) + 1
+                print(f"  '{term}': skipped bad item ({type(e).__name__}: {e})")
         print(f"  '{term}': {len(items)} scanned → {kept} added")
     print(f"\nTOTAL proven high heels: {len(found)}  (rejected: {skipped})")
     for h in found[:8]:
         print(f"  ${h['price']}  {h['title'][:55]}")
-    if write:
-        POOL.write_text(json.dumps(
-            {"_note": "Auto-filled from AliExpress search scrape (free). Admitad deeplinks in aff_link.",
-             "products": found}, ensure_ascii=False, indent=2), encoding="utf-8")
+    if write and found:
+        jsonio.save(POOL,
+                    {"_note": "Auto-filled from AliExpress search scrape (free). Admitad deeplinks in aff_link.",
+                     "products": found}, ensure_ascii=False, indent=2)
         print(f"\nwrote {len(found)} products → {POOL}")
+    elif write:
+        print("\nnothing found (rate-limited / all rejected) - existing pool left untouched")
     return found
 
 

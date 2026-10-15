@@ -23,7 +23,7 @@ Registry entry (data/affiliate_registry.json -> {"brands": {domain: {...}}}):
     commission (float %), avg_price (USD-ish), value_per_sale, signup_url,
     our_id, affiliate_ref (query suffix appended to product URLs), shopify (bool)
 """
-import os, re, sys, json, html, datetime, argparse
+import os, re, sys, json, html, hashlib, datetime, argparse
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -43,7 +43,8 @@ try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
     pass
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import jsonio
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -78,10 +79,14 @@ HEEL_WORDS = re.compile(r"(?i)stiletto|heel|pump|platform|slingback|thigh.high|k
 
 # ── registry io ──────────────────────────────────────────────────────
 def _load(p, default):
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except Exception:
-        return default
+    """Default ONLY when the file is missing. A corrupt file is backed up
+    (<name>.corrupt-<ts>) and the parse error is raised — it must never read as
+    empty, or the next save would wipe the affiliate registry."""
+    return jsonio.load(p, default)
+
+
+def _save(p, obj):
+    jsonio.save(p, obj, ensure_ascii=False, indent=2)
 
 
 def load_reg():
@@ -89,7 +94,7 @@ def load_reg():
 
 
 def save_reg(reg):
-    REG.write_text(json.dumps(reg, ensure_ascii=False, indent=2), encoding="utf-8")
+    _save(REG, reg)
 
 
 def norm(domain):
@@ -184,37 +189,39 @@ def value_per_sale(e):
 
 
 def upsert(domain, note=""):
-    reg = load_reg()
-    info = probe(domain)
+    info = probe(domain)                    # slow network call — outside the lock
     d = info["domain"]
-    old = reg["brands"].get(d, {})
-    e = {**old, **{k: v for k, v in info.items() if v not in (None, "")}}
-    if old.get("our_id"):
-        e["status"] = "active"
-    elif not e.get("program"):
-        e["status"] = "no_program"
-    elif old.get("status") in ("carded",):
-        e["status"] = old["status"]
-    else:
-        e["status"] = "to_register"
-    e["value_per_sale"] = value_per_sale(e)
-    e["updated"] = datetime.date.today().isoformat()
-    if note:
-        e["note"] = note
-    reg["brands"][d] = e
-    save_reg(reg)
+    with jsonio.locked(REG):
+        reg = load_reg()
+        old = reg["brands"].get(d, {})
+        e = {**old, **{k: v for k, v in info.items() if v not in (None, "")}}
+        if old.get("our_id"):
+            e["status"] = "active"
+        elif not e.get("program"):
+            e["status"] = "no_program"
+        elif old.get("status") in ("carded",):
+            e["status"] = old["status"]
+        else:
+            e["status"] = "to_register"
+        e["value_per_sale"] = value_per_sale(e)
+        e["updated"] = datetime.date.today().isoformat()
+        if note:
+            e["note"] = note
+        reg["brands"][d] = e
+        save_reg(reg)
     return e
 
 
 # ── trends ───────────────────────────────────────────────────────────
 def add_trend(name, views, url, domain=""):
-    t = _load(TRENDS, [])
     reg = load_reg()["brands"]
     d = norm(domain) if domain else ""
     status = reg.get(d, {}).get("status", "unknown") if d else "unknown"
-    t.append({"date": datetime.date.today().isoformat(), "name": name, "views": views,
-              "url": url, "domain": d, "affiliate_status": status})
-    TRENDS.write_text(json.dumps(t[-200:], ensure_ascii=False, indent=2), encoding="utf-8")
+    with jsonio.locked(TRENDS):
+        t = _load(TRENDS, [])
+        t.append({"date": datetime.date.today().isoformat(), "name": name, "views": views,
+                  "url": url, "domain": d, "affiliate_status": status})
+        _save(TRENDS, t[-200:])
     return status
 
 
@@ -227,27 +234,74 @@ def todays_trends():
 AFF_RE = re.compile(r"^\s*aff\s+(\S+)\s+(\S+)", re.I)
 
 
+# Affiliate-network hosts: the link is a redirect/deeplink builder, not a "?ref=" suffix.
+# Stored as-is in our_id; affiliate_ref stays empty so it is never appended to product URLs.
+NETWORK_HOSTS = ("awin1.com", "prf.hn", "linksynergy.com", "shareasale.com", "rzekl.com",
+                 "ad.admitad.com", "tkqlhce.com", "anrdoezrs.net", "jdoqocy.com",
+                 "dpbolvw.net", "kqzyfj.com", "sjv.io", "pxf.io", "tidd.ly",
+                 "tradedoubler.com", "clk.tradedoubler.com", "go.skimresources.com",
+                 "click.linksynergy.com", "partnerize.com", "gopjn.com", "jdoqocy.com")
+
+
+def _is_network_link(link):
+    host = (urlparse(link).hostname or "").lower()
+    return any(host == h or host.endswith("." + h) for h in NETWORK_HOSTS)
+
+
 def activate_one(domain, link):
     """Activate a single brand with its approved tracking link. Mutates and
     saves the registry; returns the updated entry. Shared by the Telegram
-    inbox flow (activate()) and the control-center API."""
-    reg = load_reg()
+    inbox flow (activate()) and the control-center API.
+
+    entry["tracking"]: "network" (affiliate-network deeplink, stored as-is, no
+    affiliate_ref), "query" (simple ?ref=... suffix → affiliate_ref set),
+    "path" (tracking lives in the URL path, e.g. /OFER123 — can't be appended to
+    product URLs) or "none" (bare link). The last two set entry["warning"]."""
     d = norm(domain)
-    e = reg["brands"].setdefault(d, {"domain": d})
-    q = urlparse(link).query
-    e.update(our_id=link, status="active",
-             affiliate_ref=("?" + q) if q else "",
-             activated=datetime.date.today().isoformat())
-    save_reg(reg)
+    pu = urlparse(link)
+    q = pu.query
+    if _is_network_link(link):
+        tracking, ref = "network", ""
+    elif q:
+        tracking, ref = "query", "?" + q
+    else:
+        tracking = "path" if pu.path.strip("/") else "none"
+        ref = ""
+    with jsonio.locked(REG):
+        reg = load_reg()
+        e = reg["brands"].setdefault(d, {"domain": d})
+        e.update(our_id=link, status="active", affiliate_ref=ref, tracking=tracking,
+                 activated=datetime.date.today().isoformat())
+        if tracking in ("path", "none"):
+            e["warning"] = ("link has no query string - product URLs will NOT carry "
+                            "tracking (untracked) unless the link itself is used")
+            print(f"[heel_hunter] WARNING {d}: {e['warning']}")
+        else:
+            e.pop("warning", None)
+        save_reg(reg)
     return e
 
 
+def _line_hash(line):
+    return hashlib.sha1(line.strip().encode("utf-8", "replace")).hexdigest()[:16]
+
+
 def activate():
-    reg = load_reg()
+    """Process NEW "aff <domain> <link>" lines from the Telegram inbox. Processed
+    line hashes are kept in registry meta (meta.inbox_done) so the inbox is not
+    replayed every run (a replay would overwrite later manual registry edits)."""
     done = []
     if not INBOX.exists():
         return done
-    for line in INBOX.read_text(encoding="utf-8").splitlines():
+    reg = load_reg()
+    meta = reg.get("meta") or {}
+    first_run = "inbox_done" not in meta
+    seen = set(meta.get("inbox_done") or [])
+    new_hashes = []
+    for line in INBOX.read_text(encoding="utf-8-sig").splitlines():
+        h = _line_hash(line)
+        if h in seen:
+            continue
         try:
             m = AFF_RE.match(json.loads(line).get("text", ""))
         except Exception:
@@ -255,12 +309,24 @@ def activate():
         if not m:
             continue
         d, link = norm(m.group(1)), m.group(2)
-        e = reg["brands"].get(norm(d), {})
-        if e.get("our_id") == link:
+        e = reg["brands"].get(d, {})
+        # First run after this change: historic messages for brands that are already
+        # active are just marked processed, never replayed over the current entry.
+        if e.get("our_id") == link or (first_run and e.get("status") == "active" and e.get("our_id")):
+            new_hashes.append(h)
+            seen.add(h)
             continue
         activate_one(d, link)
         reg = load_reg()  # refresh after activate_one's own save
-        done.append(norm(d))
+        new_hashes.append(h)
+        seen.add(h)
+        done.append(d)
+    if new_hashes or first_run:
+        with jsonio.locked(REG):
+            reg = load_reg()
+            meta = reg.setdefault("meta", {})
+            meta["inbox_done"] = (list(meta.get("inbox_done") or []) + new_hashes)[-1000:]
+            save_reg(reg)
     return done
 
 
@@ -280,17 +346,18 @@ def active_sources():
 
 # ── telegram ─────────────────────────────────────────────────────────
 def _send(text):
+    """Returns True only if Telegram accepted the message."""
     import telegram_sender as ts
-    ts.send_text(text, parse_mode=None)
+    return bool(ts.send_text(text, parse_mode=None))
 
 
 def cards():
     reg = load_reg()
     trends = {x["domain"]: x for x in todays_trends() if x.get("domain")}
     sent = 0
-    for d, e in sorted(reg["brands"].items(), key=lambda kv: -kv[1].get("value_per_sale", 0)):
-        if e.get("status") != "to_register" or e.get("value_per_sale", 0) < MIN_VALUE:
-            continue
+    todo = [(d, dict(e)) for d, e in sorted(reg["brands"].items(), key=lambda kv: -kv[1].get("value_per_sale", 0))
+            if e.get("status") == "to_register" and e.get("value_per_sale", 0) >= MIN_VALUE]
+    for d, e in todo:
         t = trends.get(d)
         lines = [f"🟡 הרשמה לשותפים: {d}",
                  f"💰 {e.get('commission') or '~8?'}% × ${e.get('avg_price')} ≈ ${e['value_per_sale']} למכירה"
@@ -303,11 +370,19 @@ def cards():
         lines += [f"🔗 {e.get('signup_link') or e.get('signup_url')}",
                   "📋 טקסטים לטופס: data/affiliate_form_kit.md",
                   f"אחרי אישור שלח לי:  aff {d} <הלינק שקיבלת>"]
-        _send("\n".join(lines))
-        e["status"] = "carded"
-        e["carded"] = datetime.date.today().isoformat()
+        if not _send("\n".join(lines)):
+            print(f"[heel_hunter] card for {d} NOT delivered - stays to_register")
+            continue
+        # Mark carded only after a confirmed send, on a FRESH registry (no stale
+        # copy held across sends) so concurrent activations are not overwritten.
+        with jsonio.locked(REG):
+            fresh = load_reg()
+            cur = fresh["brands"].get(d)
+            if cur is not None and cur.get("status") == "to_register":
+                cur["status"] = "carded"
+                cur["carded"] = datetime.date.today().isoformat()
+                save_reg(fresh)
         sent += 1
-    save_reg(reg)
     return sent
 
 

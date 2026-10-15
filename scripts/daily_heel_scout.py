@@ -21,16 +21,21 @@ except Exception:
     def _cfg(_path, default=None):
         return default
 
-sys.stdout.reconfigure(encoding="utf-8") if sys.stdout else None
 # pythonw (scheduled task) has no console — guard so it runs headless
 if sys.stdout is None:
     sys.stdout = open(os.devnull, "w", encoding="utf-8")
 if sys.stderr is None:
     sys.stderr = open(os.devnull, "w", encoding="utf-8")
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import jsonio
 import telegram_sender as ts
 from product_scout import is_high_heel, scout_shopify, SHOPIFY_SOURCES
+from heel_filter import passes as passes_heel
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 SENT_LOG = DATA / "heel_sent_log.json"
@@ -38,14 +43,23 @@ TAG = "thegothicvaul-20"
 NO_REPEAT_DAYS = _cfg("thresholds.NO_REPEAT_DAYS", 10)
 BATCH = _cfg("thresholds.BATCH", 5)
 BRAND_MIN_PRICE = _cfg("thresholds.BRAND_MIN_PRICE", 100.0)   # premium brand lane (registry-activated brands)
+# Python weekday numbering (Mon=0 ... Sat=5, Sun=6). Default [5] = Saturday (Sabbath).
+SKIP_WEEKDAYS = _cfg("schedule.skip_weekdays", [5])
+if not isinstance(SKIP_WEEKDAYS, (list, tuple, set)):
+    SKIP_WEEKDAYS = [5]
+# Heel-carrying Shopify stores scanned every morning (niche.json sourcing.shops).
+HEEL_SHOPS = tuple(_cfg("sourcing.shops", None) or (
+    "caperobbin.com", "www.publicdesire.com", "www.simmi.com",
+    "nakedwolfe.com", "www.killstar.com",
+    "www.darkinlove.com", "tukshoes.co.uk"))
 
 # ── Curated Amazon HIGH-HEELS pool — MULTI-CATEGORY ──
-# The store is "high heels", not "gothic": gothic is ONE category among many.
+# The store is "high heels": lace-up/studded is ONE category among many.
 # Every amazon.com/dp earns on our tag, so the pool spans the whole high-heel
 # space. Grow it by live WebSearch (amazon.com blocks WebFetch/browser) and drop
-# verified ASINs into the matching category. Keep the mix balanced, not goth-only.
+# verified ASINs into the matching category. Keep the mix balanced.
 AMAZON_POOL = [
-    # — Gothic / alt (one category, not the whole store) —
+    # — Lace-up / studded statement (one category, not the whole store) —
     ("B088DYDY5T", "LISHAN — Lace-Up Gladiator Stiletto, Knee-High Black"),
     ("B0F7LSL3G1", "FancyQueen — Knee-High Gladiator Stiletto, Suede Fringe"),
     ("B0FT2YGHWR", "Foklysp — Studded Spike Pointed-Toe Stiletto Pumps"),
@@ -72,13 +86,23 @@ AMAZON_POOL = [
 
 
 def load_sent():
-    if SENT_LOG.exists():
-        return json.load(open(SENT_LOG, encoding="utf-8-sig"))
-    return {}
+    """{key: iso-timestamp}. Missing file → {}; a corrupt file is backed up and raises
+    (never silently reset — that would re-send everything from the last 10 days)."""
+    return jsonio.load(SENT_LOG, {})
 
 
 def save_sent(d):
-    json.dump(d, open(SENT_LOG, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    jsonio.save(SENT_LOG, d, ensure_ascii=False, indent=2)
+
+
+def mark_sent(key, when=None):
+    """Record one successful send immediately (read-modify-write under a lock) so a
+    crash mid-batch cannot cause the same shoes to be sent again next run."""
+    with jsonio.locked(SENT_LOG):
+        d = load_sent()
+        d[key] = (when or datetime.datetime.now()).isoformat()
+        save_sent(d)
+    return d
 
 
 def _norm_url(u):
@@ -129,6 +153,9 @@ def gather():
     for it in load_aliexpress_pool():
         title = it.get("title", "")
         url = it.get("url", "")
+        raw = it.get("raw_title") or ""
+        if raw and not passes_heel(raw):     # raw AliExpress title must be a heel too
+            continue
         if url and is_high_heel(title):
             cands.append({
                 "url": url, "title": title, "image_url": it.get("image_url", ""),
@@ -146,14 +173,15 @@ def gather():
     # Shopify affiliates (reliable images) — only high heels pass the filter.
     # Every registered/verified heel-carrying store, to keep the pool deep enough
     # for a fresh batch every morning (10-day no-repeat window).
-    HEEL_SHOPS = ("caperobbin.com", "www.publicdesire.com", "www.simmi.com",
-                  "nakedwolfe.com", "www.killstar.com",
-                  "www.darkinlove.com", "tukshoes.co.uk")
     # Affiliate registry (heel_hunter.py): brands Ofer activated via "aff <domain> <link>"
     # override the static our_id/ref, and new active brands join the scan. New
     # registry brands are the premium lane → only heels >= BRAND_MIN_PRICE.
     import heel_hunter
-    reg = heel_hunter.load_reg()["brands"]
+    try:
+        reg = heel_hunter.load_reg()["brands"]
+    except Exception as e:      # corrupt registry is backed up + raised by jsonio; scan without it
+        print(f"  affiliate registry unreadable ({e}) - scanning static sources only")
+        reg = {}
     known = {heel_hunter.norm(s["domain"]) for s in SHOPIFY_SOURCES}
     sources = []
     for src in SHOPIFY_SOURCES:
@@ -164,7 +192,11 @@ def gather():
             src = {**src, "affiliate": {**src["affiliate"], "our_id": e["our_id"]},
                    "affiliate_ref": e.get("affiliate_ref") or src.get("affiliate_ref", "")}
         sources.append(src)
-    premium = [s for s in heel_hunter.active_sources() if heel_hunter.norm(s["domain"]) not in known]
+    try:
+        premium = [s for s in heel_hunter.active_sources() if heel_hunter.norm(s["domain"]) not in known]
+    except Exception as e:
+        print(f"  registry brands unavailable ({e})")
+        premium = []
     for src in sources + premium:
         is_premium = src in premium
         try:
@@ -187,9 +219,10 @@ def gather():
 
 def main(dry=False):
     print(f"\nDaily Heel Scout — {datetime.datetime.now():%Y-%m-%d %H:%M}")
-    # Affiliate runs every day EXCEPT Saturday (Sabbath). weekday(): Sat == 5.
-    if not dry and datetime.datetime.now().weekday() == 5:
-        print("  Saturday — scout paused, no batch today.")
+    # Affiliate runs every day EXCEPT niche schedule.skip_weekdays (default [5] =
+    # Saturday/Sabbath). weekday(): Mon == 0 ... Sat == 5.
+    if not dry and datetime.datetime.now().weekday() in SKIP_WEEKDAYS:
+        print("  Skip-day (schedule.skip_weekdays) — scout paused, no batch today.")
         return
     sent = load_sent()
     rejected = load_rejected()
@@ -241,16 +274,17 @@ def main(dry=False):
         ts.send_text("🤖 סריקת בוקר — אין נעליים חדשות היום (כולן נשלחו לאחרונה).")
         return
 
-    ts.send_text("👠 *The Stiletto Vault — נעל היום*\nאשר ✅ נעל אחת להפקה:")
+    name = _cfg("identity.name", "The Stiletto Vault")
+    emoji = _cfg("identity.emoji", "👠")
+    ts.send_text(f"{emoji} *{name} — נעל היום*\nאשר ✅ נעל אחת להפקה:")
     ok = 0
     for i, c in enumerate(batch):
         if ts.send_product(url=c["url"], title=c["title"], commission=c["commission"],
                            image_url=c["image_url"], domain=c["domain"]):
-            sent[c["key"]] = datetime.datetime.now().isoformat()
+            mark_sent(c["key"])          # persist after EACH successful send
             ok += 1
         if i < len(batch) - 1 and c["domain"] == "amazon.com":
             time.sleep(11)   # gentle — avoid Amazon rate-limit
-    save_sent(sent)
     ts.send_summary(ok)
     print(f"  sent {ok}/{len(batch)}")
 

@@ -11,7 +11,9 @@ deeplink (joined 2026-08-12, ad space "Stiletto Vault Website" 2984135):
 The wrapper token is per-account/program/ad-space; override via env
 ALIEXPRESS_DEEPLINK_BASE if it ever changes.
 """
-import os, urllib.parse
+import os, json, logging, urllib.parse
+
+log = logging.getLogger("affiliate_links")
 
 try:
     from dotenv import load_dotenv
@@ -25,6 +27,10 @@ ALIEXPRESS_DEEPLINK_BASE = os.getenv(
 ).rstrip("/") + "/"
 
 AMAZON_TAG = os.getenv("AMAZON_TAG", "thegothicvaul-20")
+
+# Brands Ofer activated via heel_hunter ("aff <domain> <link>") live here.
+REGISTRY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
+                             "data", "affiliate_registry.json")
 
 # ── Awin (higher-commission brand merchants; also the network Public Desire runs
 # on, and ShareASale's successor after Awin absorbed it in 2025) ───────────────
@@ -90,9 +96,55 @@ def amazon(url):
     return urllib.parse.urlunparse(parts._replace(query=urllib.parse.urlencode(qs)))
 
 
+def _host(url):
+    h = (urllib.parse.urlparse(url if "://" in (url or "") else "https://" + (url or "")).hostname or "").lower()
+    return h[4:] if h.startswith("www.") else h
+
+
+def _registry_brands():
+    try:
+        with open(REGISTRY_PATH, encoding="utf-8-sig") as f:
+            return (json.load(f) or {}).get("brands", {}) or {}
+    except Exception as e:
+        log.warning("affiliate registry unreadable (%s) — registry brands not counted as earning", e)
+        return {}
+
+
+def is_earning(url):
+    """True when `url` will be attributed to us: an AliExpress link wrapped in the
+    Admitad deeplink, an Amazon link carrying our tag, an Awin deeplink with our
+    publisher id, or a product of a registry brand that is status=active with an
+    our_id. Pass the AFFILIATE link (aff_link), not the raw product url."""
+    if not url:
+        return False
+    host = _host(url)
+    if url.startswith(ALIEXPRESS_DEEPLINK_BASE.rstrip("/")) or host == _host(ALIEXPRESS_DEEPLINK_BASE):
+        return True
+    q = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+    if host.endswith("awin1.com"):
+        return bool(AWIN_PUBLISHER_ID) and AWIN_PUBLISHER_ID in q.get("awinaffid", [])
+    if "amazon." in host:
+        return AMAZON_TAG in q.get("tag", [])
+    for dom, e in _registry_brands().items():
+        dom = (dom or "").lower()
+        if dom and (host == dom or host.endswith("." + dom)):
+            return e.get("status") == "active" and bool(str(e.get("our_id") or "").strip())
+    return False
+
+
 def affiliate_link(item, subid="", channel=""):
     """Best affiliate link for a catalog item, chosen by domain.
-    Falls back to any pre-set aff_link, then the raw url."""
+    Falls back to any pre-set aff_link, then the raw url — and logs a warning when
+    the result is NOT an earning link (so an untracked raw URL is never silent).
+    Return type unchanged (str); use is_earning(link) to test it."""
+    link = _pick_link(item, subid, channel)
+    if not is_earning(link):
+        log.warning("affiliate_link: no earning link for %s — falling back to %s",
+                    item.get("url") or item.get("aff_link"), link)
+    return link
+
+
+def _pick_link(item, subid="", channel=""):
     url = item.get("url", "") or item.get("aff_link", "")
     domain = (item.get("domain", "") or url).lower()
     # Awin first — it holds the high-commission brand merchants (incl. Public

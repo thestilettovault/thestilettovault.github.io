@@ -1,5 +1,5 @@
 """
-TheGothicVault Taste Bot — Long-running polling bot
+Stiletto Vault Taste Bot — Long-running polling bot
 Handles:
   - ✅/❌ button callbacks on products sent by gothic_scout
   - URLs sent by user (learns their taste from what they share)
@@ -53,7 +53,7 @@ from telegram.ext import (
 
 BOT_TOKEN    = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID      = int(os.getenv("TELEGRAM_CHAT_ID", "0"))
-PROJECT_ROOT = Path("E:/PROJECTS/thegothicvault")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 INBOX_FILE   = Path(__file__).parent / "tg_inbox.jsonl"
 APPROVAL_FILE= Path(__file__).parent / "tg_approval.json"
 TASTE_REFS   = Path(r"E:\BOLD vault\LEARNING\taste-profile\references")
@@ -124,7 +124,7 @@ def _write_approval(data: str, text: str):
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🖤 *TheGothicVault Taste Bot*\n\n"
+        "👠 *The Stiletto Vault Bot*\n\n"
         "שלח לי לינק למוצר שאתה אוהב — אלמד ממנו.\n"
         "על מוצרים שאני שולח — לחץ ✅ לאישור או ❌ לדחייה.\n\n"
         "*/taste* — הצג פרופיל טעם נוכחי\n"
@@ -138,7 +138,7 @@ async def cmd_taste(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🖤 *TheGothicVault Bot*\n\n"
+        "👠 *The Stiletto Vault Bot*\n\n"
         "*/run* `<cmd>` — הרץ פקודת טרמינל\n"
         "*/status* — קבצים אחרונים + git\n"
         "*/taste* — פרופיל טעם\n\n"
@@ -253,6 +253,13 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         product   = taste_engine.get_pending(pid)
+        if not product and action in ("ok", "no", "user_ok"):
+            # pending entry gone (double tap / pruned) - never record the hash as a URL
+            try:
+                await query.answer("המוצר הזה כבר טופל או פג תוקף", show_alert=True)
+            except Exception:
+                pass
+            return
         url       = product.get("url", pid)
         title     = product.get("title", url)
         image_url = product.get("image_url", "")
@@ -262,27 +269,29 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.info(f"Product: {title[:50]} | url={url[:60]}")
 
         if action == "ok":
-            taste_engine.record_approval(url, title,
-                                         image_url=image_url,
-                                         commission=commission,
-                                         domain=domain)
+            res = taste_engine.record_approval(url, title,
+                                               image_url=image_url,
+                                               commission=commission,
+                                               domain=domain) or {}
             taste_engine.remove_pending(pid)
-            new_caption = f"✅ *נוסף לטעם שלך*\n🖤 {title[:60]}"
+            new_caption = f"✅ נוסף לטעם שלך\n👠 {title[:60]}"
+            if res.get("warning"):
+                new_caption += f"\n{res['warning']}"
             try:
-                await query.edit_message_caption(caption=new_caption, parse_mode="Markdown")
+                await query.edit_message_caption(caption=new_caption)
             except Exception as e:
                 logger.warning(f"edit_message_caption failed ({e}), trying edit_message_text")
-                await query.edit_message_text(text=new_caption, parse_mode="Markdown")
+                await query.edit_message_text(text=new_caption)
 
         elif action == "no":
             taste_engine.record_rejection(url, title)
             taste_engine.remove_pending(pid)
-            new_caption = f"❌ *נדחה*\n{title[:60]}"
+            new_caption = f"❌ נדחה\n{title[:60]}"
             try:
-                await query.edit_message_caption(caption=new_caption, parse_mode="Markdown")
+                await query.edit_message_caption(caption=new_caption)
             except Exception as e:
                 logger.warning(f"edit_message_caption failed ({e}), trying edit_message_text")
-                await query.edit_message_text(text=new_caption, parse_mode="Markdown")
+                await query.edit_message_text(text=new_caption)
 
         elif action == "open":
             await context.bot.send_message(
@@ -292,12 +301,11 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
         elif action == "user_ok":
-            taste_engine.record_approval(url, title)
+            res = taste_engine.record_approval(url, title) or {}
             taste_engine.remove_pending(pid)
             await query.edit_message_text(
-                text=f"✅ נוסף לפרופיל הטעם שלך!\n🖤 {title[:60]}",
-                parse_mode="Markdown"
-            )
+                text=f"✅ נוסף לפרופיל הטעם שלך!\n👠 {title[:60]}"
+                     + (f"\n{res['warning']}" if res.get("warning") else ""))
 
         elif action == "user_no":
             taste_engine.remove_pending(pid)
@@ -338,7 +346,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         name, _, fname = product_title.partition("|")
         which = "תמונה ראשית (source)" if fname == "source.jpg" else f"תמונה נוספת ({fname})"
         await update.message.reply_text(
-            f"🖤 {which} נשמרה לספרייה:\n{name[:70]}\n"
+            f"👠 {which} נשמרה לספרייה:\n{name[:70]}\n"
             f"אפשר להעלות עוד זוויות, או להמשיך למוצר הבא."
         )
         return
@@ -457,8 +465,8 @@ def main():
     backoff = 5
     while True:
         try:
-            logger.info("TheGothicVault Bot — starting polling")
-            print("TheGothicVault Bot — running (Ctrl+C to stop)")
+            logger.info("Stiletto Vault Bot — starting polling")
+            print("Stiletto Vault Bot — running (Ctrl+C to stop)")
             app = build_app()
             app.run_polling(
                 allowed_updates=Update.ALL_TYPES,

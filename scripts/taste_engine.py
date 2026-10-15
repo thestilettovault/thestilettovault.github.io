@@ -1,5 +1,5 @@
 """
-Taste Engine — TheGothicVault
+Taste Engine — The Stiletto Vault
 Learns user's aesthetic taste from approve/reject signals.
 Scores new products against the accumulated profile.
 """
@@ -9,7 +9,14 @@ import os
 from datetime import datetime
 from urllib.parse import urlparse
 
-sys.stdout.reconfigure(encoding="utf-8")
+if sys.stdout is None:          # pythonw (scheduled task) has no console
+    sys.stdout = open(os.devnull, "w", encoding="utf-8")
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import jsonio
 
 DATA_DIR       = os.path.join(os.path.dirname(__file__), "..", "data")
 TASTE_FILE     = os.path.join(DATA_DIR, "taste_profile.json")
@@ -22,6 +29,16 @@ GELEM_ROOT     = os.path.join(PROJECT_ROOT, "GELEM")
 
 os.makedirs(DATA_DIR, exist_ok=True)
 
+def _brand_name():
+    """Niche display name from niches/<active>/niche.json (literal fallback)."""
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+        from control.niche import cfg
+        return cfg("identity.name", "The Stiletto Vault")
+    except Exception:
+        return "The Stiletto Vault"
+
+
 # ── Affiliate injection rules ─────────────────────────────────────────
 # Maps domain → how to inject affiliate ID into a product URL.
 AFFILIATE_RULES = {
@@ -30,9 +47,27 @@ AFFILIATE_RULES = {
     # add more as programs are registered
 }
 
+def _set_query_param(url: str, param: str, value: str) -> str:
+    """Return url with query param `param` set to `value`: a foreign value is
+    replaced, our value is left alone, a missing param is appended."""
+    base, hashsep, frag = url.partition("#")
+    path, _, query = base.partition("?")
+    parts = query.split("&") if query else []
+    found = False
+    for i, seg in enumerate(parts):
+        if seg.split("=", 1)[0] == param:
+            parts[i] = f"{param}={value}"
+            found = True
+    if not found:
+        parts.append(f"{param}={value}")
+    return path + "?" + "&".join(p for p in parts if p) + (hashsep + frag if hashsep else "")
+
+
 def inject_affiliate_link(url: str) -> str:
     """Return url with our affiliate link. AliExpress → Admitad deeplink wrapper
-    (central source); Amazon/Dark In Love → tag param. Unknown domains unchanged."""
+    (central source); Amazon/Dark In Love → tag param (a foreign tag is replaced
+    by ours). Unknown domains unchanged — call affiliate_links.is_earning() on the
+    result to learn whether it will actually earn."""
     domain = get_domain(url)
     # AliExpress is wrapped through the Admitad deeplink, not a query param.
     if "aliexpress." in domain:
@@ -44,29 +79,22 @@ def inject_affiliate_link(url: str) -> str:
             return url
     for d, rule in AFFILIATE_RULES.items():
         if d in domain:
-            p, v = rule["param"], rule["value"]
-            if p + "=" in url:
-                return url  # already tagged
-            sep = "&" if "?" in url else "?"
-            return f"{url}{sep}{p}={v}"
+            return _set_query_param(url, rule["param"], rule["value"])
     return url
 
 # ── Helpers ───────────────────────────────────────────────────────────
 
 def load_json(path, default):
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    return default
+    """Default only when the file is missing; a corrupt file is backed up and raises."""
+    return jsonio.load(path, default)
 
 def save_json(path, data):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    jsonio.save(path, data, ensure_ascii=False, indent=2)
 
 def get_domain(url):
     try:
-        host = urlparse(url).netloc
-        return host.replace("www.", "").replace("eu.", "").replace("uk.", "")
+        host = urlparse(url).netloc.lower()
+        return host[4:] if host.startswith("www.") else host
     except Exception:
         return ""
 
@@ -81,45 +109,48 @@ def get_keywords(text):
 # ── Pending reviews (short-id → product data) ─────────────────────────
 
 def save_pending(product_id, url, title, image_url="", commission="", domain=""):
-    pending = load_json(PENDING_FILE, {})
-    pending[product_id] = {
-        "url": url, "title": title,
-        "image_url": image_url, "commission": commission,
-        "domain": domain or get_domain(url),
-        "ts": datetime.now().isoformat()
-    }
-    # Keep only last 200 pending items
-    if len(pending) > 200:
-        oldest = sorted(pending.items(), key=lambda x: x[1].get("ts", ""))
-        for k, _ in oldest[:len(pending) - 200]:
-            del pending[k]
-    save_json(PENDING_FILE, pending)
+    with jsonio.locked(PENDING_FILE):
+        pending = load_json(PENDING_FILE, {})
+        pending[product_id] = {
+            "url": url, "title": title,
+            "image_url": image_url, "commission": commission,
+            "domain": domain or get_domain(url),
+            "ts": datetime.now().isoformat()
+        }
+        # Keep only last 200 pending items
+        if len(pending) > 200:
+            oldest = sorted(pending.items(), key=lambda x: x[1].get("ts", ""))
+            for k, _ in oldest[:len(pending) - 200]:
+                del pending[k]
+        save_json(PENDING_FILE, pending)
 
 def get_pending(product_id):
     pending = load_json(PENDING_FILE, {})
     return pending.get(product_id, {})
 
 def remove_pending(product_id):
-    pending = load_json(PENDING_FILE, {})
-    pending.pop(product_id, None)
-    save_json(PENDING_FILE, pending)
+    with jsonio.locked(PENDING_FILE):
+        pending = load_json(PENDING_FILE, {})
+        pending.pop(product_id, None)
+        save_json(PENDING_FILE, pending)
 
 # ── Scoring ───────────────────────────────────────────────────────────
 
 def _update_scores(url, title, approved):
-    scores  = load_json(SCORES_FILE, {"brands": {}, "keywords": {}})
     domain  = get_domain(url)
     keywords = get_keywords(title)
     weight  = 2 if approved else 1   # approvals count more
     delta   = +weight if approved else -weight
 
-    if domain:
-        scores["brands"][domain] = scores["brands"].get(domain, 0) + delta
+    with jsonio.locked(SCORES_FILE):
+        scores  = load_json(SCORES_FILE, {"brands": {}, "keywords": {}})
+        if domain:
+            scores["brands"][domain] = scores["brands"].get(domain, 0) + delta
 
-    for kw in keywords:
-        scores["keywords"][kw] = scores["keywords"].get(kw, 0) + (1 if approved else -1)
+        for kw in keywords:
+            scores["keywords"][kw] = scores["keywords"].get(kw, 0) + (1 if approved else -1)
 
-    save_json(SCORES_FILE, scores)
+        save_json(SCORES_FILE, scores)
 
 def score_product(url, title):
     """Return a taste score for a product. Higher = better match."""
@@ -234,9 +265,39 @@ def download_to_gelem(url, title, domain="", image_url="", aff_link="", commissi
     return rel_dir, False
 
 
+def _is_real_image(path):
+    """True if `path` is a decodable image (PIL verify; magic bytes if PIL is missing)."""
+    try:
+        if not os.path.exists(path) or os.path.getsize(path) == 0:
+            return False
+        try:
+            from PIL import Image
+        except ImportError:
+            with open(path, "rb") as f:
+                head = f.read(16)
+            return (head.startswith(b"\xff\xd8\xff") or head.startswith(b"\x89PNG\r\n\x1a\n")
+                    or head[:6] in (b"GIF87a", b"GIF89a")
+                    or (head[:4] == b"RIFF" and head[8:12] == b"WEBP"))
+        with Image.open(path) as im:
+            im.verify()
+        return True
+    except Exception:
+        return False
+
+
+def _discard(path):
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+    except OSError:
+        pass
+
+
 def _fetch_image(src, dest):
     """Fetch an image to dest. Try requests first; fall back to curl, which gets
-    past the AliExpress media-CDN TLS fingerprint that rejects requests under load."""
+    past the AliExpress media-CDN TLS fingerprint that rejects requests under load.
+    The file must decode as a real image — an HTML block page saved as .jpg is
+    deleted and counts as a failure."""
     ua = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
           "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     try:
@@ -246,16 +307,24 @@ def _fetch_image(src, dest):
         if r.content:
             with open(dest, "wb") as f:
                 f.write(r.content)
-            return True
+            if _is_real_image(dest):
+                return True
+            print("[gelem] downloaded file is not an image; trying curl")
+            _discard(dest)
     except Exception as e:
         print(f"[gelem] requests fetch failed ({e}); trying curl")
+        _discard(dest)
     try:
         import subprocess
         rc = subprocess.run(["curl", "-s", "-L", "-A", ua, "-o", dest, src],
                             timeout=60).returncode
-        return rc == 0 and os.path.exists(dest) and os.path.getsize(dest) > 0
+        if rc == 0 and _is_real_image(dest):
+            return True
+        _discard(dest)
+        return False
     except Exception as e:
         print(f"[gelem] curl fetch failed ({e})")
+        _discard(dest)
         return False
 
 def _autobuild_worklib(item):
@@ -311,7 +380,13 @@ def attach_photo_to_pending(photo_path, window_min=45):
         shutil.copyfile(photo_path, os.path.join(dest_dir, fname))
         item["image_ok"] = True
         item["downloaded"] = now.strftime("%Y-%m-%d")
-        save_json(CATALOG_FILE, catalog)
+        with jsonio.locked(CATALOG_FILE):       # reload so a concurrent approval isn't lost
+            fresh = load_json(CATALOG_FILE, [])
+            for it in fresh:
+                if it.get("local_asset") == item["local_asset"]:
+                    it["image_ok"] = True
+                    it["downloaded"] = item["downloaded"]
+            save_json(CATALOG_FILE, fresh)
         set_photo_target(item["local_asset"])      # stay on this product
         print(f"[gelem] photo attached → {item['local_asset']}/{fname}")
         _autobuild_worklib(item)
@@ -356,29 +431,50 @@ def _enqueue_production(url, title, local_asset, image_url="", deal=None):
     up, runs the Space to 4 ads, and pushes them to Telegram for the A/B/C/D pick.
     Idempotent by url. This is the missing link that makes approval → production
     automatic instead of stranding the lead after record_approval."""
-    q = load_json(_PROD_QUEUE, [])
-    if any(e.get("url") == url for e in q):
-        return
-    q.append({
-        "url": url, "title": title, "local_asset": local_asset,
-        "image_url": image_url, "deal": deal or {},
-        "status": "approved", "approved_ts": datetime.now().isoformat(),
-    })
-    save_json(_PROD_QUEUE, q)
+    with jsonio.locked(_PROD_QUEUE):
+        q = load_json(_PROD_QUEUE, [])
+        if any(e.get("url") == url for e in q):
+            return
+        q.append({
+            "url": url, "title": title, "local_asset": local_asset,
+            "image_url": image_url, "deal": deal or {},
+            "status": "approved", "approved_ts": datetime.now().isoformat(),
+        })
+        save_json(_PROD_QUEUE, q)
     print(f"[queue] enqueued for production: {title[:40]}")
 
+def _earning_check(aff_link):
+    try:
+        import affiliate_links
+        return bool(affiliate_links.is_earning(aff_link))
+    except Exception as e:
+        print(f"[aff] earning check failed: {e}")
+        return False
+
+
 def record_approval(url, title, image_url="", commission="", domain=""):
+    """Record an approval. Never blocks on a non-earning link, but sets
+    `earning` on the catalog entry and returns
+    {"earning": bool, "warning": str} so the bot can tell the owner when a
+    product has NO active affiliate tracking."""
     aff_link = inject_affiliate_link(url)
+    earning = _earning_check(aff_link)
+    warning = "" if earning else (
+        f"⚠️ אין לינק שותפים פעיל ל-{get_domain(url) or url[:40]} — "
+        "לא תרוויח על המוצר הזה (חסר our_id / רישום)")
+    if warning:
+        print(f"[aff] NOT EARNING: {url[:70]}")
     if not domain:
         domain = get_domain(url)
 
     # Taste profile (legacy — keep for backward compat)
-    profile = load_json(TASTE_FILE, {"approved": []})
-    profile["approved"].append({
-        "title": title, "link": url,
-        "date": datetime.now().isoformat()
-    })
-    save_json(TASTE_FILE, profile)
+    with jsonio.locked(TASTE_FILE):
+        profile = load_json(TASTE_FILE, {"approved": []})
+        profile["approved"].append({
+            "title": title, "link": url,
+            "date": datetime.now().isoformat()
+        })
+        save_json(TASTE_FILE, profile)
 
     # Approved catalog — structured for content creation
     catalog = load_json(CATALOG_FILE, [])
@@ -390,10 +486,11 @@ def record_approval(url, title, image_url="", commission="", domain=""):
         local_asset, image_ok = download_to_gelem(
             url, title, domain=domain, image_url=image_url,
             aff_link=aff_link, commission=commission)
-        catalog.append({
+        entry = {
             "title":       title,
             "url":         url,
             "aff_link":    aff_link,
+            "earning":     earning,              # False = no active affiliate tracking
             "domain":      domain,
             "image_url":   image_url,
             "commission":  commission,
@@ -402,12 +499,16 @@ def record_approval(url, title, image_url="", commission="", domain=""):
             "local_asset": local_asset,
             "image_ok":    image_ok,
             "downloaded":  datetime.now().strftime("%Y-%m-%d") if image_ok else "",
-        })
-        save_json(CATALOG_FILE, catalog)
+        }
+        with jsonio.locked(CATALOG_FILE):        # reload: the download above can take a while
+            catalog = load_json(CATALOG_FILE, [])
+            if product_key(url) not in {product_key(i.get("url")) for i in catalog}:
+                catalog.append(entry)
+                save_json(CATALOG_FILE, catalog)
         # If the image is already in place (non-AliExpress), build the work
         # library (captions) right now — fully automatic, no "done" needed.
         if image_ok:
-            _autobuild_worklib(catalog[-1])
+            _autobuild_worklib(entry)
             # source is in place → hand the lead to the production queue so the
             # runner turns it into ads automatically (no manual kick needed).
             _enqueue_production(url, title, local_asset,
@@ -417,15 +518,17 @@ def record_approval(url, title, image_url="", commission="", domain=""):
             set_photo_target(local_asset)
 
     _update_scores(url, title, approved=True)
-    print(f"[taste] APPROVED: {url[:60]}")
+    print(f"[taste] APPROVED: {url[:60]}" + ("" if earning else "  (NOT EARNING)"))
+    return {"earning": earning, "warning": warning}
 
 def record_rejection(url, title):
-    profile = load_json(REJECT_FILE, {"rejected": []})
-    profile["rejected"].append({
-        "title": title, "link": url,
-        "date": datetime.now().isoformat()
-    })
-    save_json(REJECT_FILE, profile)
+    with jsonio.locked(REJECT_FILE):
+        profile = load_json(REJECT_FILE, {"rejected": []})
+        profile["rejected"].append({
+            "title": title, "link": url,
+            "date": datetime.now().isoformat()
+        })
+        save_json(REJECT_FILE, profile)
     _update_scores(url, title, approved=False)
     print(f"[taste] REJECTED: {url[:60]}")
 
@@ -441,14 +544,14 @@ def get_summary():
     bad_brands = sorted(scores["brands"].items(), key=lambda x: x[1])[:3]
 
     lines = [
-        f"📊 *פרופיל טעם — TheGothicVault*",
+        f"📊 *פרופיל טעם — {_brand_name()}*",
         f"✅ אושרו: {len(approved)}  |  ❌ נדחו: {len(rejected)}",
         "",
-        "🖤 *Brands מובילים:*",
+        "👠 *Brands מובילים:*",
     ]
     for brand, sc in top_brands:
         lines.append(f"  {brand}: {sc:+d}")
-    lines += ["", "💀 *מילות מפתח מובילות:*"]
+    lines += ["", "🏷 *מילות מפתח מובילות:*"]
     for kw, sc in top_kw:
         lines.append(f"  #{kw}: {sc:+d}")
     if bad_brands and bad_brands[0][1] < 0:
