@@ -17,6 +17,17 @@ P08 · pointed toe on chair · leg extended, toe of the shoe on a chair seat · 
 P09 · dance spin · mid-turn, skirt flaring, one heel lifted · slight motion blur on fabric, shoes sharp · club / party lights
 P10 · heel close-up in hand · hand holding the shoe by the heel next to the worn pair · macro, shallow DOF · vanity / dressing table
 
+## Ina story scenes (life / vlog / behind the scenes) — phone-camera realism
+S01 · mirror before going out · full-length bedroom mirror, phone covering face, heels on, warm lamp light
+S02 · date under the table · restaurant table edge, candle light, her crossed legs and heels peeking under the tablecloth
+S03 · taxi exit · night street, one heel touching the pavement from the open car door, city bokeh
+S04 · front door · keys in hand, heels on the doormat, hallway light, shot from her POV
+S05 · after the shoot · feet resting on a sofa cushion, heels just kicked off beside her, soft evening light
+S06 · choosing a pair · two shoe boxes open on the bed, one heel on, one in hand
+S07 · on set · studio with softboxes in the background, photographer's light stand, heel on a posing block
+Mix per shoe: 2 work shots (P..) + 2 story shots (S..). Story shots look like an iPhone
+photo: natural light, slight grain, not studio-perfect.
+
 ## Rules
 - Four shots per shoe = four DIFFERENT entries; at least two must be knee-down / shoe-dominant.
 - Never a split-screen, collage or before/after.

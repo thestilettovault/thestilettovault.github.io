@@ -2,6 +2,17 @@
 
 Edit freely; the producer reads this file before every shoe.
 
+## The model is INA (from 2026-10-15)
+Every shot is Ina, a heel and foot model who makes her living from it. The feed is her
+story: work (shoots), life (vlog moments), behind the scenes. Dress HER for the moment:
+- **Work / shoot:** editorial and sexy, built around the shoe, special locations.
+- **Life / vlog:** what she would really wear there. Date night = slip dress or fitted
+  mini, heels peeking under the restaurant table. Home = oversized shirt or lounge set,
+  heels on in front of the mirror before going out. Taxi / street = trend outfit of the week.
+- **Behind the scenes:** robe, cropped tee and shorts, shoe boxes around her.
+Her reference photos all show a black blazer + white camisole. Never copy that outfit:
+take only her face, hair and body from the reference.
+
 ## Read the shoe first (from source.jpg)
 Colour, finish (patent / suede / satin / metallic / clear), silhouette (pump, sandal, boot,
 platform), mood (sexy, playful, edgy, elegant), what makes it special (straps, bow, flowers,
