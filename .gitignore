@@ -34,3 +34,47 @@ niches/*/hub.json
 data/jobs_history.json
 dashboard/
 data/thumb_cache.json
+
+# ── private / local-only (added 2026-10-15 audit; repo is PUBLIC) ──
+magnific-profile/
+CONTEXT_FOR_NEXT_SESSION.md
+nul
+**/nul
+scripts/_pin_oauth_state.txt
+scripts/*.log.*
+*.lock
+*.tmp
+*.corrupt-*
+.pytest_cache/
+# working folders (raw media, edits, exports)
+GELEM/*
+!GELEM/INA/
+ANALYTICS/
+CAMPAIGNS/
+LIBRARY/
+PRODUCTION/
+PROMPTS/
+TEMP/
+RAW/
+EXPORT/
+*.prproj
+*.pek
+*.cfa
+uppromote-*.png
+WECHAT*.png
+# local state / personal data (data/ files that are tracked stay tracked)
+data/*_log.json
+data/taste_*.json
+data/seen_products.json
+data/pending_reviews.json
+data/pinned_to_review.json
+data/rejected_profile.json
+data/orchestrator_state.json
+data/aliexpress_pool.json
+data/new_affiliate_findings.json
+data/last_review_pins.json
+data/_*.json
+data/*.csv
+LOGO.jpeg
+there-is-butterfly-*.jpg
+curator.html
