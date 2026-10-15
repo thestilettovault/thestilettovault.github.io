@@ -26,8 +26,11 @@ QUEUE = ROOT / "data" / "production_queue.json"
 
 def scheduled_days():
     """Dates (YYYY-MM-DD) that already hold a scheduled post."""
+    # Instagram sets the one-heel-a-day rhythm; TikTok is re-spread separately to
+    # one a day (tiktok_retry --spread), so its tail must not push new heels out.
     return {(p.get("scheduledFor") or "")[:10]
-            for p in services.zernio_all_posts(status="scheduled")}
+            for p in services.zernio_all_posts(status="scheduled")
+            if any((x.get("platform") or "") == "instagram" for x in (p.get("platforms") or []))}
 
 
 def next_free_day(taken):
