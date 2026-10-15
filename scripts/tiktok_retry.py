@@ -29,8 +29,8 @@ load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 K = os.getenv("ZERNIO_API_KEY"); U = "https://zernio.com/api/v1"
 H = {"Authorization": f"Bearer {K}", "Content-Type": "application/json"}
 
-MAX_TT_PER_DAY = 3                     # never more than this many TikTok direct posts/day
-SLOT_TIMES     = ["08:00", "14:00", "20:00"]   # widely-separated UTC slots (no every-2h clustering)
+MAX_TT_PER_DAY = 1                     # Ofer 2026-10-15: one TikTok post a day (capacity errors at 2-3)
+SLOT_TIMES     = ["13:00"]           # 16:00 Israel, same slot as the image posts
 
 
 def is_tt(p):
