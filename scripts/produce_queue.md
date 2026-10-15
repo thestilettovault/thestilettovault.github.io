@@ -1,7 +1,9 @@
 # Stiletto Vault — Auto-Producer (queue runner)
 
-You are running headless. Task: drain the production queue by turning each approved
-lead into 4 ad candidates and pushing them to Telegram for Ofer's A/B/C/D pick.
+You are running headless. Task: PREPARE the Magnific board for the next approved
+lead and tell Ofer it is ready. Ofer presses Run himself in the Magnific app, because
+Unlimited (free) applies only there; API runs (spaces_run) cost credits.
+**NEVER call spaces_run.** One lead at a time: the board holds one shoe.
 **Stop at the ads. Never generate video** — the video (the expensive step) runs
 only after Ofer picks an ad, in a separate flow.
 
@@ -11,7 +13,10 @@ only after Ofer picks an ad, in a separate flow.
    If it is missing, empty, or no entry has `status == "approved"` → print
    "queue empty — nothing to produce" and STOP. Do nothing else.
 
-2. For EACH entry with `status == "approved"` (process at most 5 per run):
+   If ANY entry already has `status == "board_ready"` → the board is waiting for Ofer.
+   Print "board busy: waiting for Ofer's Run on <slug>" and STOP.
+
+2. Take the OLDEST entry with `status == "approved"` (exactly ONE per run):
 
    a. slug = run `py -3 E:/PROJECTS/thegothicvault/scripts/space_runner.py` is not
       needed — derive it the same way: AliExpress `/item/<id>` → `<title-slug>-<id>`.
@@ -49,38 +54,17 @@ only after Ofer picks an ad, in a separate flow.
       exactly as the reference, sharp, fully visible, worn. Single frame, no text.`
       Also save the 4 shots to `GELEM/<slug>/_BRIEF.md` (so we can learn which briefs win).
 
-   d. Run the ads chain (NOT the video):
-      `mcp__magnific__spaces_run(spaceId="a2796464-3570-4e02-aa77-65f3f4322d9f",
-        startNodeId="5ec8e287-6633-44a9-bcaf-2562c656728e", mode="downstream")`
-      Poll `spaces_run_status` until `allTerminal`. Collect the 4 creation ids from
-      node `93b85932-6752-4bfa-a801-28fd3c0c097c`.
+   d. Tell Ofer the board is ready (Telegram message with a "done" button):
+      `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py ready <slug>`
+      (copy source.jpg into GELEM/<slug>/ first so the message shows the shoe).
 
-   e. `mcp__magnific__creations_wait` on the 4 ids → 4 render URLs.
-
-   f. Download to `E:/PROJECTS/thegothicvault/GELEM/<slug>/ad_A.jpg … ad_D.jpg`
-      with curl (also copy source.jpg there). Order A,B,C,D = the 4 ids in order.
-
-   f2. QA every ad (data/agents/qa.md): open ad_A…ad_D next to source.jpg and LOOK at
-      them. Write `GELEM/<slug>/_QA.md` with one line per ad (`A ✅` / `B ⚠️ <reason>`).
-      Never regenerate on your own — the verdicts travel to Telegram with the ads and
-      Ofer decides.
-
-   g. Send for the pick:
-      `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py send <slug>`
-
-   h. Set that entry's `status = "awaiting_choice"` in production_queue.json and save.
+   e. Set that entry's `status = "board_ready"` in production_queue.json and save. STOP.
+      When Ofer taps the button, run_collect.bat follows collect_queue.md.
 
 3. Print a one-line summary: how many leads produced, how many skipped, any errors.
 
 ## Guardrails
-- Cap: 5 leads per run. If more are approved, leave the rest for the next run.
-- Never touch entries whose status is not `approved`.
-- Never run the video generator node here.
-- CREDIT GUARD: one ads run must produce exactly 4 creations (all from 93b85932);
-  FEWER than 4 (e.g. 1 collage) is also a failure → STOP and report, do not retry.
-  After `spaces_run_status` is terminal, if `creationIdentifiers` has MORE than 4
-  ids, the board was re-wired downstream of the ads node → STOP the whole run, do
-  not process further leads, and print "CREDIT GUARD: run produced N images" so it
-  is visible in producer.log. (2026-10-09: an extra chain made 24 images/run.)
-- If any single lead errors, log it, leave its status as `approved`, and continue
-  to the next — do not abort the whole run.
+- NEVER call spaces_run / spaces_run_status here (credits). Ofer runs the board.
+- One lead per run. Never touch entries whose status is not `approved`.
+- Never run the video generator node.
+- If the lead errors, log it, leave its status as `approved`, and STOP.

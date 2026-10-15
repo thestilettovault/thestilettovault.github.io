@@ -215,6 +215,17 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.edit_message_text(f"{'Approved' if action == 'YES' else 'Rejected'} — Claude Code notified.")
             return
 
+        # Ofer pressed Run in the Magnific app (free: Unlimited applies only in the UI).
+        # Collect the 4 ads in the background: run_collect.bat -> collect_queue.md.
+        if action == "boardrun":
+            import orchestrator
+            orchestrator.set_state(pid, status="run_clicked", run_clicked_ts=time.time())
+            subprocess.Popen(["cmd", "/c", str(Path(__file__).parent / "run_collect.bat")],
+                             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            await query.edit_message_text(
+                f"👍 קיבלתי. אוסף את 4 המודעות של {pid.split('/')[-1]} ושולח לבחירה בעוד כמה דקות.")
+            return
+
         # Ad A/B winner pick (from orchestrator.send_ad_choice). pid = "<slug>|A".
         if action == "adpick":
             slug, _, choice = pid.partition("|")

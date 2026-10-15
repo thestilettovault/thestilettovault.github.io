@@ -115,6 +115,27 @@ def send_ad_choice(slug):
 
 # ---------------- called by the Telegram callback ----------------
 
+def board_ready(slug):
+    """The Space now holds THIS shoe + its 4-shot brief. Ofer presses Run in the
+    Magnific app (free there — Unlimited does not apply to API runs) and taps the
+    button; the bot then collects the 4 ads (run_collect.bat)."""
+    src = GELEM / slug / "source.jpg"
+    caption = (f"🎬 הלוח מוכן: {slug.split('/')[-1]}\n"
+               "1. פתח את Magnific > הלוח thestilettovault Ad campaign\n"
+               "2. לחץ Run על Creative concept builder\n"
+               "3. כשרואים 4 תמונות, לחץ על הכפתור כאן")
+    btn = [[{"text": "✅ הרצתי, יש 4 תמונות", "callback_data": f"boardrun|{slug}"}]]
+    if src.exists():
+        _send_photo(src, caption, buttons=btn)
+    else:
+        import requests
+        requests.post(f"{API}/sendMessage", json={"chat_id": CHAT_ID, "text": caption,
+                      "reply_markup": {"inline_keyboard": btn}}, timeout=20)
+    set_state(slug, status="board_ready", board_ready_ts=time.time())
+    print(f"{slug}: board ready, Telegram notice sent")
+    return True
+
+
 def record_choice(slug, choice):
     """choice in {'A','B'} — mark the winner. The agent watches for status=chosen,
     then runs the two videos from GELEM/<slug>/ad_<choice>.jpg."""
@@ -192,13 +213,15 @@ def finalize(slug):
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["send", "choose", "finalize", "pending", "state"])
+    ap.add_argument("cmd", choices=["send", "choose", "finalize", "pending", "state", "ready"])
     ap.add_argument("args", nargs="*")
     a = ap.parse_args()
     if sys.stdout:
         try: sys.stdout.reconfigure(encoding="utf-8")
         except Exception: pass
-    if a.cmd == "send":
+    if a.cmd == "ready":
+        board_ready(a.args[0])
+    elif a.cmd == "send":
         send_ad_choice(a.args[0])
     elif a.cmd == "choose":
         print(record_choice(a.args[0], a.args[1]))
