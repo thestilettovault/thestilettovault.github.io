@@ -451,7 +451,7 @@
       "rating": "4.9",
       "sold": "500+ sold"
     },
-    "status": "approved",
+    "status": "skipped",
     "approved_ts": "2026-09-28T08:11:50.784879"
   },
   {
@@ -616,7 +616,7 @@
     "local_asset": "GELEM/2026-10-07/rare-brown-tpu",
     "image_url": "https://cdn.shopify.com/s/files/1/1117/4418/files/RARE-BROWN-01_grey.jpg?v=1773925459",
     "deal": {},
-    "status": "awaiting_choice",
+    "status": "scheduled",
     "approved_ts": "2026-10-07T08:01:29.978864"
   },
   {
@@ -703,7 +703,7 @@
       "rating": "4.7",
       "sold": "428 sold"
     },
-    "status": "approved",
+    "status": "board_ready",
     "approved_ts": "2026-10-13T09:34:33.508888"
   }
 ]

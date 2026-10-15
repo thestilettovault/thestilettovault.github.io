@@ -201,8 +201,18 @@ def main(dry=False):
     # deeplink), Amazon (tag), Dark In Love. Awin stores (Public Desire/Simmi/
     # Cape Robbin/Koi/Lamoda) stay hidden until their our_id is filled in.
     seen, fresh, skipped_track = set(), [], 0
+    # Never offer a shoe we already approved/produced (2026-10-15: River Black Patent,
+    # already scheduled, came back and was approved twice). Same identity as the site.
+    from product_key import product_key
+    try:
+        _cat = json.loads((DATA / "approved_catalog.json").read_text(encoding="utf-8-sig"))
+        owned = {product_key(i.get("url")) for i in _cat}
+    except Exception:
+        owned = set()
     for c in cands:
         if c["key"] in seen or recently_sent(sent, c["key"]) or _norm_url(c["url"]) in rejected:
+            continue
+        if product_key(c.get("url")) in owned:
             continue
         if not str(c.get("our_id") or "").strip():
             skipped_track += 1

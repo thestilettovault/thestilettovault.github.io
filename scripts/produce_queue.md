@@ -16,7 +16,8 @@ only after Ofer picks an ad, in a separate flow.
    If ANY entry already has `status == "board_ready"` → the board is waiting for Ofer.
    Print "board busy: waiting for Ofer's Run on <slug>" and STOP.
 
-2. Take the OLDEST entry with `status == "approved"` (exactly ONE per run):
+2. Take the NEWEST entry with `status == "approved"` (the shoe Ofer approved most
+   recently; exactly ONE per run):
 
    a. slug = run `py -3 E:/PROJECTS/thegothicvault/scripts/space_runner.py` is not
       needed — derive it the same way: AliExpress `/item/<id>` → `<title-slug>-<id>`.
