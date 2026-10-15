@@ -34,9 +34,10 @@ only after Ofer picks an ad, in a separate flow.
         patches=[{"nodeId":"0114e22a-6027-490e-aeca-b1b428d8ca91",
                   "patch":{"data":{"creationIdentifier":"<SOURCE_ID>"}}}])`
       Verify with `spaces_get_nodes` that 0114e22a has `creationIdentifier == SOURCE_ID`
-      AND that 93b85932 has exactly FIVE incoming `reference` connections: the shoe
-      (0114e22a) + Ina's character sheet (04bad276 body/hair, 427d4b28 legs in heels,
-      e7ab3fd2 bare feet, f738222d arched foot). Never change Ina's nodes. Anything else
+      AND that 93b85932 has the shoe (0114e22a) + Ina's body (04bad276) + legs in heels
+      (427d4b28) as `reference`. OPEN-TOE shoe (toes show): also wire bare feet (e7ab3fd2)
+      and arched foot (f738222d); CLOSED toe: leave those two unwired (they confuse it).
+      The generator model stays Nano Banana Pro (imagen-nano-banana-2). Never change Ina's nodes. Anything else
       feeding it → STOP and report (wrong-shoe / wrong-model blend risk).
       In QA, also fail any ad where the shoe is the plain nude pump from Ina's sheet
       instead of the product.
@@ -44,7 +45,7 @@ only after Ofer picks an ad, in a separate flow.
    c2. Write the shot brief for THIS shoe (stylist + trend agents). Look at
       source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/ina.md`,
       `.../data/agents/stylist.md` and `.../data/agents/poses.md`. Every shot is INA
-      (face never visible). Pick 2 WORK poses (P..) + 2 STORY scenes (S..), all different,
+      (face never visible). Pick 4 DIFFERENT shots from "Ina's camera roll" in poses.md (2 set + 2 life), all different,
       >=2 knee-down / shoe-dominant, and one outfit per shot from the stylist for that
       moment (never the same outfit twice in this run).
       Also write Ina's post caption for this shoe (ina.md "Her voice") into

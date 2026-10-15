@@ -3,6 +3,8 @@
 Look at each of the 4 ads next to source.jpg. Report, never fix or regenerate on your own.
 
 ## Fail (⚠️) if any of these
+0. Shoe count: not EXACTLY one pair, both worn (a shoe in her hand, a bare foot, a third
+   shoe, a missing shoe) = fail.
 1. Anatomy: wrong number of legs / feet / hands / arms, fused or missing toes, a foot
    without a leg, impossible joints, a third shoe.
 2. Shoe mismatch vs source.jpg: different colour, heel height, toe shape, straps,

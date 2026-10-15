@@ -17,6 +17,26 @@ P08 · pointed toe on chair · leg extended, toe of the shoe on a chair seat · 
 P09 · dance spin · mid-turn, skirt flaring, one heel lifted · slight motion blur on fabric, shoes sharp · club / party lights
 P10 · heel close-up in hand · hand holding the shoe by the heel next to the worn pair · macro, shallow DOF · vanity / dressing table
 
+## "Ina's camera roll" (approved by Ofer 2026-10-15) — USE THESE FIRST
+Every image is one personal moment, as if from her phone or a crew member's camera.
+Half from the set (hint the set: gaffer-tape X, light-stand foot, cable, apple box,
+clothing rail, softbox edge — never the whole set), half from her NYC life.
+C01 · set: on the mark · floor-level, both feet on a gaffer-tape X, robe hem, light-stand foot
+C02 · set: between takes · on an apple box, robe, coffee cup on her knee, collarbone down
+C03 · set: fitting · standing on a white sweep, a stylist's hand adjusting the ankle strap (strap only)
+C04 · life: elevator mirror · brass elevator, phone hides the face, full outfit to the shoes
+C05 · life: under the table · date dinner, floor-level, crossed ankles, his loafer nearby
+C06 · life: walking home · from behind, NYC sidewalk at night, both shoes mid-stride
+Each shot also gets ONE personal detail (coffee, receipt, hair clip, metro card...).
+
+## HARD RULES (the 2026-10-15 run failed on these)
+1. EXACTLY ONE PAIR, both on her feet, both feet in frame. Never hold, carry, remove or
+   dangle a shoe; no shoe boxes or other shoes (exception: a man's shoe in C05).
+2. ONE simple action: stand, sit or walk. 3. Face: collarbone down, from behind, or a
+   phone in front of it. 4. Write each shot as a full prompt with THE CONCEIT + SHOT +
+   LIGHT + CAMERA AUTHENTICITY, ending "EXACTLY ONE PAIR of shoes, both on her feet.
+   No face. No text."
+
 ## Ina story scenes (life / vlog / behind the scenes) — phone-camera realism
 S01 · mirror before going out · full-length bedroom mirror, phone covering face, heels on, warm lamp light
 S02 · date under the table · restaurant table edge, candle light, her crossed legs and heels peeking under the tablecloth
