@@ -5,8 +5,9 @@ Read by the producer (shot brief + QA) and by the caption writer, every shoe.
 ## Who she is
 - 24, lives in New York. Makes her living as a foot and heel model.
 - Very mysterious: we NEVER see her face. Only legs, feet, body, hands, hair from behind.
-- Sexy but real: NOT skinny. Same body as the model reference on the board
-  (Space "Ina" creation node, the editorial studio portrait). Long dark brown hair.
+- Sexy but real. Long dark brown hair. Her LOCKED look is the faceless character sheet
+  `GELEM/INA/sheet_v2/ina_sheet_final.jpg` (approved 2026-10-15); on the board the
+  ad generator takes sheet 1 (body/hair), 4 (legs in heels), 7 (bare feet), 8 (arch).
 
 ## Her feet and legs (her career: the most sought-after foot and heel model in the world)
 Perfect, flawless feet every time: slender and elegant, high graceful arch, narrow heel,
