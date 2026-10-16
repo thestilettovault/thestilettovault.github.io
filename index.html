@@ -116,16 +116,6 @@
     .product-card.hide{display:none}
     #empty{display:none;text-align:center;color:var(--muted);padding:72px 0;font-size:17px}
 
-    /* archive: horizontal scroll-snap rail, a different layout family */
-    .lookbook{padding:48px 0 32px;border-top:1px solid var(--line)}
-    .lookbook > .grid{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 0 24px;
-      scrollbar-width:thin}
-    .lookbook .tour-label{flex:0 0 100%;font-weight:900;font-size:clamp(24px,3vw,34px);letter-spacing:-.03em}
-    .lookbook .product-card{flex:0 0 min(240px,62vw);scroll-snap-align:start}
-    .lookbook .tour-label{display:none}
-    .lookbook h2{font-weight:900;font-size:clamp(26px,3vw,36px);letter-spacing:-.03em}
-    .lookbook .sub{color:var(--muted);margin-top:6px}
-
     .contact{display:inline-flex;gap:10px;align-items:center;margin:24px 0 40px;height:48px;padding:0 22px;
       border-radius:999px;border:1px solid var(--line);font-weight:700}
     .contact:hover{border-color:var(--text)}
@@ -146,7 +136,7 @@
 <body>
 <header class="topbar"><div class="page">
   <a class="logo" href="/">stiletto<span>vault</span></a>
-  <nav class="nav-links" aria-label="Main"><a href="#shop">Shop</a><a href="#archive">Archive</a><a href="about.html">About</a></nav>
+  <nav class="nav-links" aria-label="Main"><a href="#shop">Shop</a><a href="about.html">About</a></nav>
   <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <input id="q" type="search" placeholder="Search heels, colors, stores" aria-label="Search heels" autocomplete="off"></label>
 </div></header>
@@ -752,131 +742,6 @@
     <p id="empty">No heels match that. Try another search.</p>
   </section>
 
-  <section class="lookbook" id="archive">
-    <h2>From the archive</h2>
-    <p class="sub">Earlier picks and dark-fashion favourites.</p>
-    <div class="grid">
-
-    <div class="tour-label"><span>Dark World Tour</span></div>
-
-    <!-- Pair 1: Stone Arch -->
-    <div class="pair-grid">
-      <a class="product-card" href="https://gthic.com/products/stylish-glossy-pointed-toe-stiletto-heel-knight-high-boots?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/stylish_glossy_pointed-toe_stiletto_heel_knight_high_boots_gthic_3_1024x.jpg?v=1761903411" alt="Stiletto Knight High Boots" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Stiletto Knight Boots</span>
-          <span class="card-price">$89</span>
-        </div>
-      </a>
-      <a class="product-card" href="https://gthic.com/products/stylish-riveted-large-capacity-shoulder-pu-leather-handbag?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/stylish_riveted_large_capacity_shoulder_pu_leather_handbag_gthic_3_1024x.jpg?v=1772704166" alt="Riveted Shoulder Handbag" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Riveted Shoulder Bag</span>
-          <span class="card-price">$75</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="pair-sep">· · ·</div>
-
-    <!-- Pair 2: Cathedral -->
-    <div class="pair-grid">
-      <a class="product-card" href="https://gthic.com/products/black-butterfly-embroidered-block-heel-martin-boots?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/black_butterfly_embroidered_block_heel_martin_boots_gthic_7_1024x.jpg?v=1762272524" alt="Butterfly Block Heel Martin Boots" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Butterfly Block Heel Boots</span>
-          <span class="card-price">$86</span>
-        </div>
-      </a>
-      <a class="product-card" href="https://gthic.com/products/gothic-bat-eye-pu-leather-punk-crossbody-bag?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/gothic_bat_eye_pu_leather_punk_crossbody_bag_gthic_1_1024x.jpg?v=1762269797" alt="Gothic Bat Eye Crossbody Bag" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Bat Eye Crossbody Bag</span>
-          <span class="card-price">$96</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="pair-sep">· · ·</div>
-
-    <!-- Pair 3: Bridge -->
-    <div class="pair-grid">
-      <a class="product-card" href="https://gthic.com/products/fashion-chunky-high-heel-pointed-toe-slip-on-high-boots?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/fashion_chunky_high_heel_pointed_toe_slip-on_high_boots_gthic_7_1024x.jpg?v=1761902840" alt="Chunky Slip-on High Boots" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Chunky Slip-on Boots</span>
-          <span class="card-price">$93</span>
-        </div>
-      </a>
-      <a class="product-card" href="https://gthic.com/products/vintage-brown-turquoise-inlaid-leather-bag?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/vintage_brown_leather_crossbody_bag_gthic_7_1024x.jpg?v=1762269252" alt="Vintage Brown Turquoise Bag" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Vintage Turquoise Bag</span>
-          <span class="card-price">$45</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="pair-sep">· · ·</div>
-
-    <!-- Pair 4: Cathedral Stairs -->
-    <div class="pair-grid">
-      <a class="product-card" href="https://gthic.com/products/classic-red-plaid-print-canvas-shoes?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/classic_red_plaid_print_canvas_shoes_gthic_2_1024x.jpg?v=1762273199" alt="Classic Red Plaid Canvas Shoes" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Red Plaid Canvas Shoes</span>
-          <span class="card-price">$66</span>
-        </div>
-      </a>
-      <a class="product-card" href="https://gthic.com/products/retro-y2k-motorcycle-shoulder-pu-leather-handbag?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/retro_y2k_motorcycle_shoulder_pu_leather_handbag_gthic_2_1024x.jpg?v=1772703490" alt="Retro Y2K Motorcycle Handbag" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Y2K Motorcycle Bag</span>
-          <span class="card-price">$50</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="pair-sep">· · ·</div>
-
-    <!-- Pair 5: EU Street -->
-    <div class="pair-grid">
-      <a class="product-card" href="https://www.killstar.com/products/doom-platform-boots" target="_blank" rel="noopener">
-        <img src="https://cdn.shopify.com/s/files/1/0228/2373/files/DOOM-PLATFORM-BOOT-E.jpg?v=1777365892" alt="Doom Platform Boots" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Doom Platform Boots</span>
-          <span class="card-price">£90</span>
-        </div>
-      </a>
-      <a class="product-card" href="https://gthic.com/products/retro-denim-jeans-style-versatile-handbag?aff=826" target="_blank" rel="noopener">
-        <img src="https://gthic.com/cdn/shop/files/retro_denim_jeans-style_versatile_handbag_gthic_1_1024x.jpg?v=1772703515" alt="Retro Denim Jeans-Style Handbag" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Retro Denim Bag</span>
-          <span class="card-price">$63</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="pair-sep">· · ·</div>
-
-    <div class="tour-label"><span>Dark Fashion</span></div>
-
-    <!-- BW108: Cat Haunt Zipper Top -->
-    <div class="single-grid">
-      <a class="product-card" href="https://www.darkinlove.com/products/alternative-fashion-cat-haunt-zipper-top-bw108?sca_ref=ll249558.3UXnWnByxo" target="_blank" rel="noopener">
-        <img src="img/BW108.jpg" alt="Cat Haunt Zipper Top" loading="lazy">
-        <div class="card-info">
-          <span class="card-name">Cat Haunt Zipper Top</span>
-          <span class="card-price">$63.50</span>
-        </div>
-      </a>
-    </div>
-
-  </div>
-
-    </div>
-  </section>
-
   <a class="contact" href="mailto:affiliatesbybold@gmail.com">
     <span>✉</span>
     <span>Collabs &amp; Inquiries</span>
@@ -945,7 +810,7 @@
       c.classList.toggle('hide',!ok);if(ok){shown++;c.classList.add('in');}grid.appendChild(c);});
     count.textContent=shown+' styles';empty.style.display=shown?'none':'block';
   }
-  // reveal on scroll (archive rail + first paint of the grid)
+  // reveal on scroll (first paint of the grid)
   var all=[].slice.call(document.querySelectorAll('.product-card'));
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{rootMargin:'0px 0px -8% 0px'});
