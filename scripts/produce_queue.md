@@ -44,11 +44,16 @@ only after Ofer picks an ad, in a separate flow.
    c2. Write the shot brief for THIS shoe (stylist + trend agents). Look at
       source.jpg, then read `E:/PROJECTS/thegothicvault/data/agents/ina.md`,
       `.../data/agents/stylist.md` and `.../data/agents/poses.md`. Every shot is INA
-      (face never visible). Pick 4 DIFFERENT shots from "Ina's camera roll" in poses.md (2 set + 2 life), all different,
-      >=2 knee-down / shoe-dominant, and one outfit per shot from the stylist for that
-      moment (never the same outfit twice in this run).
+      (face never visible). Pick 4 DIFFERENT ids from poses.md with the camera mix
+      2 PHONE + 1 SET + 1 BTS (one PHONE may be FRIEND), >=2 knee-down / shoe-dominant, and one
+      outfit per shot from the stylist for that moment (never the same outfit twice in this run).
+      Each shot text MUST start with its CAMERA line exactly as poses.md "How to write each
+      shot" shows: a PHONE shot is written as an iPhone photo (grain, available light, real
+      room), a SET shot as a campaign photo. Ask "who is holding the camera?" for every shot;
+      if nobody plausibly could, pick another id.
       Also write Ina's post caption for this shoe (ina.md "Her voice") into
-      `GELEM/<slug>/_CAPTION.md`: 1-3 short first-person lines, no URL. The publisher
+      `GELEM/<slug>/_CAPTION.md`: 1-3 short first-person lines, no URL, matching the
+      moment the PHONE shots show (poses.md "Captions follow the camera"). The publisher
       appends the deal (if any) and `link in bio 🔗 #ad #affiliate` itself.
       The Space needs FOUR SEPARATE texts (one per shot): four text nodes feed the list
       "Shot brief list (4 shots)" (3250b608), which feeds the concept builder once per

@@ -3,6 +3,15 @@
 STATUS: SKELETON. Replace with a real library built from measured trend data for {product_noun_plural}
 (saved posts, TikTok / Instagram scans). Each entry: id | frame | pose | camera | setting. Add `score:` when known.
 
+## Camera logic (engine rule, keep it)
+Every shot answers first: WHO IS HOLDING THE CAMERA, AND WHY WOULD THE PERSONA POST THIS?
+Define the cameras for this niche and a mix per {product_noun}, e.g.
+PHONE (the persona's own phone: selfie / mirror / POV / self-timer, iPhone look) x2 +
+SET (a photographer on a paid shoot, campaign finish) x1 + BTS (crew phone between takes) x1.
+Each library id below belongs to one camera; every shot brief starts with `CAMERA: ...`.
+A cinematic third-person view of a private moment with nobody there = QA fail.
+Captions follow the camera (a PHONE moment is captioned as her moment, SET as work).
+
 ## Library
 P01 | TODO frame | TODO pose | TODO camera | TODO setting
 P02 | TODO

@@ -1,49 +1,69 @@
-# Trend agent: pose & frame library for heel content
+# Ina's camera roll: shot library (camera-logic first)
 
-STATUS: SEED LIBRARY (2026-10-09). Built from general heel-content practice, NOT yet from
-measured trend data. Replace / re-rank entries once the trend scan runs
-(needs SCRAPECREATORS_API_KEY or APIFY_API_TOKEN for TikTok/Instagram, or posts Ofer saves).
-Each entry: id · frame · pose · camera · setting. Add `score:` (likes/shares) when known.
+STATUS: v2 (2026-10-16, Ofer: "who took this photo?"). Replaces the pose list of 2026-10-09/15.
+Every shot must answer ONE question before anything else: **WHO IS HOLDING THE CAMERA, AND WHY
+WOULD INA POST THIS?** If the honest answer is "nobody could have" (a stranger filming her
+step out of a taxi, a drone over her walk home), the shot is out.
 
-## Library
-P01 · low-angle walk · mid-stride on a city crosswalk, shoes in sharp focus, blurred traffic · camera at ankle height, 24mm · golden hour street
-P02 · stair step · one foot on the step above, calf flexed, heel on the edge · side profile, knee-down crop · marble or concrete stairs
-P03 · car exit · one leg out of an open car door, foot planted on pavement · from the kerb, low · night, city lights bokeh
-P05 · mirror selfie full look · full body in a mirror, one knee bent, phone covering face · straight on · bedroom / hotel mirror, warm light
-P06 · POV look-down · looking down at own feet, toes pointed, shoes in centre · top-down POV · rug, tiles or sidewalk with texture
-P07 · lean on wall · back to wall, one foot up against it showing the sole and heel · three-quarter, knee-down · graffiti or textured wall
-P08 · pointed toe on chair · leg extended, toe of the shoe on a chair seat · side, low · studio with seamless coloured backdrop
-P09 · dance spin · mid-turn, skirt flaring, one heel lifted · slight motion blur on fabric, shoes sharp · club / party lights
+## The three cameras (and the mix per shoe)
+Ina is a working heel model. Her feed is her life seen through her own phone, plus the odd
+frame from work.
 
-## "Ina's camera roll" (approved by Ofer 2026-10-15) — USE THESE FIRST
-Every image is one personal moment, as if from her phone or a crew member's camera.
-Half from the set (hint the set: gaffer-tape X, light-stand foot, cable, apple box,
-clothing rail, softbox edge — never the whole set), half from her NYC life.
-C01 · set: on the mark · floor-level, both feet on a gaffer-tape X, robe hem, light-stand foot
-C02 · set: between takes · on an apple box, robe, coffee cup on her knee, collarbone down
-C03 · set: fitting · standing on a white sweep, a stylist's hand adjusting the ankle strap (strap only)
-C04 · life: elevator mirror · brass elevator, phone hides the face, full outfit to the shoes
-C05 · life: under the table · date dinner, floor-level, crossed ankles, his loafer nearby
-C06 · life: walking home · from behind, NYC sidewalk at night, both shoes mid-stride
-Each shot also gets ONE personal detail (coffee, receipt, hair clip, metro card...).
+| Camera | Who | Look | Per shoe |
+|---|---|---|---|
+| **PHONE** | Ina herself: selfie, mirror, POV looking down, or phone propped on a self-timer | iPhone look: natural/available light, slight grain, a little imperfect framing, real rooms | **2** |
+| **SET** | The photographer on a paid shoot (her job) | Clean campaign photo: studio light, seamless or styled set, sharp, the product hero | **1** |
+| **BTS** | A crew member / stylist with a phone between takes, or Ina's own phone on set | Phone look inside a studio: softbox edge, light stand, gaffer tape, robe, coffee | **1** |
 
-## HARD RULES (the 2026-10-15 run failed on these)
-1. EXACTLY ONE PAIR, both on her feet, both feet in frame. Never hold, carry, remove or
-   dangle a shoe; no shoe boxes or other shoes (exception: a man's shoe in C05).
-2. ONE simple action: stand, sit or walk. 3. Face: collarbone down, from behind, or a
-   phone in front of it. 4. Write each shot as a full prompt with THE CONCEIT + SHOT +
-   LIGHT + CAMERA AUTHENTICITY, ending "EXACTLY ONE PAIR of shoes, both on her feet.
-   No face. No text."
+So every shoe = 2 PHONE + 1 SET + 1 BTS. At least two of the four must be knee-down /
+shoe-dominant (the shoe fills the frame).
+A friend's phone (FRIEND) may replace one PHONE shot only when the moment makes it
+obvious someone she knows took it (walking ahead of a friend, a friend's photo at dinner).
 
-## Ina story scenes (life / vlog / behind the scenes) — phone-camera realism
-S01 · mirror before going out · full-length bedroom mirror, phone covering face, heels on, warm lamp light
-S02 · date under the table · restaurant table edge, candle light, her crossed legs and heels peeking under the tablecloth
-S04 · front door · keys in hand, heels on the doormat, hallway light, shot from her POV
-S07 · on set · studio with softboxes in the background, photographer's light stand, heel on a posing block
-Mix per shoe: 2 work shots (P..) + 2 story shots (S..). Story shots look like an iPhone
-photo: natural light, slight grain, not studio-perfect.
+## Library (pick 4 different ids, respecting the mix)
 
-## Rules
-- Four shots per shoe = four DIFFERENT entries; at least two must be knee-down / shoe-dominant.
-- Never a split-screen, collage or before/after.
-- Shoe always worn (one pair, both on her feet), fully visible, sharp.
+### PHONE: Ina's own phone
+- PH01 · mirror check before going out · full-length bedroom or hallway mirror, phone held at chest height, frame from the collarbone down, outfit + shoes, lamp light · *why post:* "outfit check"
+- PH02 · POV look-down, standing · her own view down at her feet on a textured floor (old wood, hex tiles, a doormat, a crosswalk stripe), toes slightly pointed · *why post:* "new pair"
+- PH03 · POV look-down, back seat of a cab · sitting in a yellow-cab back seat, phone looking down at her crossed legs and shoes on the floor mat, city lights through the window · *why post:* "on my way" (this replaces every "stepping out of a taxi" shot: nobody films that)
+- PH04 · POV under the table · at dinner, phone lowered under the tablecloth edge, her crossed ankles and heels, candle glow from above · *why post:* "date night"
+- PH05 · feet up · sitting on a sofa or bed edge, legs stretched toward the camera, phone held at her hip, shoes in front, a cosy room behind · *why post:* "finally home"
+- PH06 · elevator mirror · brass/steel elevator mirror, phone at chest height, collarbone down, full outfit to the shoes · *why post:* "going up"
+- PH07 · self-timer outfit shot · phone propped low on a step or shelf, she stands/walks into the frame, knee-down to full legs, slightly off-centre framing · *why post:* "the look"
+
+### SET: the photographer on a paid shoot
+- ST01 · seamless studio, standing · coloured or white seamless, full legs to the shoes, three-quarter angle, softbox light, campaign finish
+- ST02 · posing block · seated on a white posing block, legs crossed, shoe in the foreground, low camera, crisp shadows
+- ST03 · styled location shoot · an editorial NYC location (marble lobby, staircase, rooftop) lit by the crew, knee-down hero of the shoe
+
+### BTS: between takes (crew phone or her own phone on set)
+- BT01 · on the mark · floor-level, both feet on a gaffer-tape X on the studio floor, robe hem, a light-stand foot at the edge
+- BT02 · between takes · sitting on an apple box in a robe, coffee cup on her knee, collarbone down, softbox glow behind
+- BT03 · fitting · standing on the seamless, a stylist's hand adjusting the ankle strap (hand + strap only), clothing rail behind
+
+### FRIEND: only when the moment says who took it
+- FR01 · walking ahead · from behind on a NYC sidewalk at night, both shoes mid-stride, her friend obviously a step behind (slight motion, phone-photo look)
+
+## How to write each shot (the brief the producer sends to the Space)
+`<id> · CAMERA: <PHONE|SET|BTS|FRIEND> (<who exactly>). <moment>. FRAME: <crop/angle>.
+LIGHT: <source>. LOOK: <iPhone grain | campaign finish>. OUTFIT: <stylist>. ONE personal
+detail: <coffee, receipt, metro card, hair clip...>. The shoes exactly as the reference,
+sharp, fully visible, worn. EXACTLY ONE PAIR of shoes, both on her feet. No face. No text.`
+The CAMERA line is mandatory: it decides the look (a PHONE shot must NOT look like a studio
+campaign; a SET shot must NOT look like a phone snap).
+
+## HARD RULES
+1. Camera logic: every image has a plausible photographer from the table above. A
+   third-person "cinematic" view of a private moment with nobody there = fail.
+2. EXACTLY ONE PAIR, both on her feet, both feet in frame. Never hold, carry, remove or
+   dangle a shoe; no shoe boxes or other shoes (a man's shoe at the edge of PH04 is the
+   only exception).
+3. ONE simple action: stand, sit or walk.
+4. Face: collarbone down, from behind, or POV (her own view never shows her face).
+5. Four DIFFERENT ids per shoe; never a split-screen, collage or before/after.
+
+## Captions follow the camera (see ina.md "Her voice")
+PHONE → a moment in her own words ("on my way. cab smelled like rain."). SET → work
+("12 hours on set. these were the only pair that didn't hurt."). BTS → behind the scenes
+("between takes. robe on, heels stay on."). The caption must never describe a moment the
+photos contradict.

@@ -23,8 +23,10 @@ toned legs. Luxury beauty-campaign finish, never "real-life" feet. Ugly or odd f
   no text, price or headline burned in.
 - Take only her body, skin tone and hair from the reference. Never copy the reference
   outfit (black blazer + white camisole). The stylist dresses her (stylist.md).
-- Mix per shoe: 2 work shots (shoots, special NYC locations) + 2 life / vlog shots
-  (poses.md S-scenes): phone-photo realism, natural light, slight grain.
+- Every photo has a believable photographer (poses.md "The three cameras"). Mostly her own
+  phone (selfie / mirror / POV / self-timer); sometimes the photographer on a paid shoot or
+  a crew phone between takes. Mix per shoe: 2 PHONE + 1 SET + 1 BTS. Never a "cinematic"
+  third-person view of a private moment (nobody filmed her stepping out of a taxi).
 
 ## Her voice (captions, first person)
 - Short. 1-3 lines, lowercase-friendly, no hard selling. English (US/UK audience).

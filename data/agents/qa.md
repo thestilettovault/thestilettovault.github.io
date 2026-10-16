@@ -20,6 +20,10 @@ Look at each of the 4 ads next to source.jpg. Report, never fix or regenerate on
 8. Face / skin badly distorted (melted, double face).
 9. Feet not campaign-perfect (veins, redness, crooked or odd toes, wide or flat feet).
 10. Toes visible but no pedicure, or polish that clashes with the shoe.
+11. Camera logic: nobody could plausibly have taken this photo (a cinematic third-person
+    view of a private moment, e.g. stepping out of a taxi, alone on a street at night), or
+    the look contradicts its camera (a "phone" shot that looks like a studio campaign,
+    a "set" shot that looks like a snapshot). Check against `_BRIEF.md`.
 
 ## Output (one line per ad, written to GELEM/<slug>/_QA.md and into the Telegram caption)
 `A ✅` or `A ⚠️ <short reason in Hebrew>` (e.g. `B ⚠️ 3 רגליים`, `C ⚠️ טקסט בתמונה`).
