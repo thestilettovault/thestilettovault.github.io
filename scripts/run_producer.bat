@@ -11,6 +11,8 @@ set "BLOCK=mcp__magnific__spaces_run mcp__magnific__flows_run mcp__magnific__ima
 cd /d E:\PROJECTS\thegothicvault
 echo ================================================================ >> scripts\producer.log
 echo producer run: %date% %time% >> scripts\producer.log
+REM learn first: rank Ina's shot ids by real post performance -> poses.md LEARNING section
+py -3 scripts\creative_learning.py --write >> scripts\producer.log 2>&1
 "C:\Users\ofera\.local\bin\claude.exe" -p "Read scripts/produce_queue.md and follow it exactly to drain the Stiletto production queue. Prepare the board and tell Ofer on Telegram; never run it and never generate anything." --disallowedTools "%BLOCK%" --dangerously-skip-permissions >> scripts\producer.log 2>&1
 echo producer done: %date% %time% >> scripts\producer.log
 REM close the loop: ads Ofer picked in Telegram -> image-only post, next free day (0 credits)

@@ -67,3 +67,9 @@ PHONE → a moment in her own words ("on my way. cab smelled like rain."). SET �
 ("12 hours on set. these were the only pair that didn't hurt."). BTS → behind the scenes
 ("between takes. robe on, heels stay on."). The caption must never describe a moment the
 photos contradict.
+
+<!-- LEARNING:START -->
+## Measured ranking (auto, 2026-10-16, 0 posts)
+
+Sample too small (0 usable posts, need 5). No ranking is applied yet; keep the standard 2 PHONE + 1 SET + 1 BTS mix and vary ids.
+<!-- LEARNING:END -->

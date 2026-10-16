@@ -7,4 +7,6 @@ echo ================================================================ >> heel_hu
 echo heel hunter run: %date% %time% >> heel_hunter.log
 py -3 heel_hunter.py activate >> heel_hunter.log 2>&1
 py -3 heel_hunter.py cards >> heel_hunter.log 2>&1
+REM morning brief to Telegram: what needs Ofer today, today's posts, deltas, failures
+py -3 morning_brief.py --send >> heel_hunter.log 2>&1
 echo heel hunter done: %date% %time% >> heel_hunter.log

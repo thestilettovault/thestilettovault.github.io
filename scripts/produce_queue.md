@@ -47,6 +47,11 @@ only after Ofer picks an ad, in a separate flow.
       (face never visible). Pick 4 DIFFERENT ids from poses.md with the camera mix
       2 PHONE + 1 SET + 1 BTS (one PHONE may be FRIEND), >=2 knee-down / shoe-dominant, and one
       outfit per shot from the stylist for that moment (never the same outfit twice in this run).
+      Read the "Measured ranking (auto)" section at the end of poses.md (between the
+      LEARNING markers, refreshed every morning from real post performance) and follow its
+      rule: prefer the higher-ranked ids within the camera mix, but keep ONE of the 4 shots
+      for an id with fewer than 3 posts (exploration). If it says the sample is too small,
+      pick freely from the library.
       Each shot text MUST start with its CAMERA line exactly as poses.md "How to write each
       shot" shows: a PHONE shot is written as an iPhone photo (grain, available light, real
       room), a SET shot as a campaign photo. Ask "who is holding the camera?" for every shot;
