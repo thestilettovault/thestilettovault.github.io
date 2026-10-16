@@ -106,13 +106,14 @@
     },
     "gthic.com": {
       "domain": "gthic.com",
-      "status": "active",
+      "status": "dropped",
       "program": "Direct",
       "commission": 15.0,
       "our_id": "826",
       "affiliate_ref": "?aff=826",
       "shopify": true,
-      "note": "jewelry+boots; already wired"
+      "note": "turned off by Ofer 2026-10-16 (program deleted; gothic, off-niche)",
+      "updated": "2026-10-16"
     },
     "jessicasimpson.com": {
       "domain": "jessicasimpson.com",
@@ -243,5 +244,8 @@
       "updated": "2026-09-29",
       "note": "heel_hunter run 1 (2026-09-29)"
     }
+  },
+  "meta": {
+    "inbox_done": []
   }
 }
