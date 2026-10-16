@@ -78,3 +78,5 @@ data/*.csv
 LOGO.jpeg
 there-is-butterfly-*.jpg
 curator.html
+data/creative_learning.json
+data/brief_state.json
