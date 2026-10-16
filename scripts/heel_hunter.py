@@ -340,7 +340,8 @@ def active_sources():
                         "affiliate": {"commission": f"{e.get('commission') or '?'}%",
                                       "program": e.get("program"), "our_id": e.get("our_id")},
                         "affiliate_ref": e.get("affiliate_ref", ""),
-                        "max_per_collection": 10})
+                        "max_per_collection": _cfg("thresholds.BRAND_MAX_PER_COLLECTION", 50),
+                        "full_catalog": True})
     return out
 
 

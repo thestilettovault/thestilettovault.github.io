@@ -103,18 +103,33 @@ def scout_shopify(source):
     affiliate = source["affiliate"]
     found = []
 
-    for collection in source["collections"]:
-        url = f"https://{domain}/collections/{collection}/products.json?limit=50"
+    # An EARNING brand (source["full_catalog"]) is read whole: /products.json, every
+    # page. Collections cap at the first page - Naked Wolfe showed 14 of its 63 in-stock
+    # heels that way (2026-10-16). Other stores keep the lighter per-collection scan.
+    if source.get("full_catalog"):
+        pages = [f"https://{domain}/products.json?limit=250&page={n}" for n in range(1, 9)]
+        cap = 10_000
+    else:
+        pages = [f"https://{domain}/collections/{c}/products.json?limit=50" for c in source["collections"]]
+        cap = source["max_per_collection"]
+    seen_handles = set()
+
+    for url in pages:
+        collection = url.split("/collections/")[-1].split("/")[0] if "/collections/" in url else "all"
         try:
             r = requests.get(url, headers=HEADERS, timeout=15)
             if not r.ok:
                 continue
             products = r.json().get("products", [])
+            if not products and source.get("full_catalog"):
+                break                                   # past the last page
 
             count = 0
             for p in products:
-                if count >= source["max_per_collection"]:
+                if count >= cap:
                     break
+                if p.get("handle") in seen_handles:
+                    continue
 
                 title = p.get("title", "")
                 tags  = p.get("tags", [])
@@ -144,6 +159,7 @@ def scout_shopify(source):
                 product_url = f"https://{domain}/products/{handle}"
                 tracked_url = product_url + ref if ref else product_url
 
+                seen_handles.add(handle)
                 found.append({
                     "title":     title,
                     "url":       tracked_url,

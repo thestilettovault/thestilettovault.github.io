@@ -16,8 +16,12 @@ only after Ofer picks an ad, in a separate flow.
    If ANY entry already has `status == "board_ready"` → the board is waiting for Ofer.
    Print "board busy: waiting for Ofer's Run on <slug>" and STOP.
 
-2. Take the NEWEST entry with `status == "approved"` (the shoe Ofer approved most
-   recently; exactly ONE per run):
+2. Take the approved entry that PAYS MOST per sale (exactly ONE per run). Never choose it
+   yourself; run:
+   `py -3 E:/PROJECTS/thegothicvault/scripts/orchestrator.py queue-next`
+   It prints `<local_asset>\t$<value>/sale` (highest commission per sale first - a $300
+   brand boot at 10% beats an $18 AliExpress pump; ties = newest approval), or `none`
+   (exit 1) → nothing approved, STOP. Use the entry whose `local_asset` matches:
 
    a. slug = the entry's `local_asset` WITHOUT the leading `GELEM/` (so it includes the
       date folder, e.g. `2026-10-13/stiletto-heels-3256...`). Never just the basename.

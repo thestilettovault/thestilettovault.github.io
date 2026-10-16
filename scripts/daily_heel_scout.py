@@ -42,6 +42,11 @@ SENT_LOG = DATA / "heel_sent_log.json"
 TAG = "thegothicvaul-20"
 NO_REPEAT_DAYS = _cfg("thresholds.NO_REPEAT_DAYS", 10)
 BATCH = _cfg("thresholds.BATCH", 5)
+# value-first: the first BRAND_SLOTS cards of a batch go to the highest commission-
+# per-sale products (a $300 brand boot at 10% = $30 vs a $18 AliExpress pump = $1.24).
+BRAND_SLOTS = _cfg("thresholds.BRAND_SLOTS", 2)
+MIN_VALUE = _cfg("thresholds.MIN_VALUE", 5.0)       # $ per sale to earn a value-first slot
+BRAND_MAX_PER_COLLECTION = _cfg("thresholds.BRAND_MAX_PER_COLLECTION", 50)
 BRAND_MIN_PRICE = _cfg("thresholds.BRAND_MIN_PRICE", 100.0)   # premium brand lane (registry-activated brands)
 # Python weekday numbering (Mon=0 ... Sat=5, Sun=6). Default [5] = Saturday (Sabbath).
 SKIP_WEEKDAYS = _cfg("schedule.skip_weekdays", [5])
@@ -160,6 +165,7 @@ def gather():
             cands.append({
                 "url": url, "title": title, "image_url": it.get("image_url", ""),
                 "commission": "6.9%", "domain": "aliexpress.com",
+                "price": it.get("price") or (it.get("deal") or {}).get("sale"),
                 "our_id": "admitad", "key": url,
             })
     # Amazon curated (right aesthetic)
@@ -190,7 +196,10 @@ def gather():
         e = reg.get(heel_hunter.norm(src["domain"]), {})
         if e.get("status") == "active" and e.get("our_id"):
             src = {**src, "affiliate": {**src["affiliate"], "our_id": e["our_id"]},
-                   "affiliate_ref": e.get("affiliate_ref") or src.get("affiliate_ref", "")}
+                   "affiliate_ref": e.get("affiliate_ref") or src.get("affiliate_ref", ""),
+                   # an earning brand: read its whole catalogue, not the first dozen
+                   "max_per_collection": max(src.get("max_per_collection", 10), BRAND_MAX_PER_COLLECTION),
+                   "full_catalog": True}
         sources.append(src)
     try:
         premium = [s for s in heel_hunter.active_sources() if heel_hunter.norm(s["domain"]) not in known]
@@ -210,11 +219,39 @@ def gather():
                 cands.append({
                     "url": p["url"], "title": p["title"], "image_url": p.get("image", ""),
                     "commission": p["affiliate"].get("commission", ""), "domain": p["domain"],
+                    "price": p.get("price"),
                     "our_id": p["affiliate"].get("our_id"), "key": p["url"],
                 })
         except Exception as e:
             print(f"  shopify {src['domain']} error: {e}")
     return cands
+
+
+def order_by_value(fresh, brand_slots=2, min_value=5):
+    """Batch order. Every candidate gets c['value'] (USD commission per sale).
+    1) up to `brand_slots` highest-value products worth >= min_value (one per store),
+    2) then round-robin across stores, each store's list highest-value first, so no
+       single store floods the batch (AliExpress used to fill all 5 slots, 2026-09-29)."""
+    import sale_value
+    for c in fresh:
+        c["value"] = sale_value.value_per_sale(c.get("domain"), c.get("price"), c.get("commission"))
+    ranked = sorted(fresh, key=lambda c: -c["value"])
+    head, used_dom = [], set()
+    for c in ranked:
+        if len(head) >= brand_slots or c["value"] < min_value:
+            break
+        if c["domain"] not in used_dom:
+            head.append(c); used_dom.add(c["domain"])
+    rest = [c for c in ranked if c not in head]
+    by_dom = {}
+    for c in rest:
+        by_dom.setdefault(c["domain"], []).append(c)
+    mixed = []
+    while any(by_dom.values()):
+        for dom in list(by_dom):
+            if by_dom[dom]:
+                mixed.append(by_dom[dom].pop(0))
+    return head + mixed
 
 
 def main(dry=False):
@@ -253,22 +290,12 @@ def main(dry=False):
         seen.add(c["key"]); fresh.append(c)
     if skipped_track:
         print(f"  skipped {skipped_track} product(s) with no active tracking (our_id)")
-    # Round-robin across stores — AliExpress is gathered first and used to fill
-    # the whole batch, so Amazon/Dark In Love never reached Telegram (2026-09-29).
-    by_dom = {}
-    for c in fresh:
-        by_dom.setdefault(c["domain"], []).append(c)
-    mixed = []
-    while any(by_dom.values()):
-        for dom in list(by_dom):
-            if by_dom[dom]:
-                mixed.append(by_dom[dom].pop(0))
-    fresh = mixed
+    fresh = order_by_value(fresh, BRAND_SLOTS, MIN_VALUE)
     batch = fresh[:BATCH]
     print(f"  {len(cands)} candidates → {len(fresh)} fresh → sending {len(batch)}")
     if dry:
         for c in batch:
-            print(f"   - {c['title'][:55]}")
+            print(f"   - ${c.get('value', 0):>6.2f}/sale  {c['domain'][:18]:18}  {c['title'][:50]}")
         return
     if not batch:
         ts.send_text("🤖 סריקת בוקר — אין נעליים חדשות היום (כולן נשלחו לאחרונה).")
@@ -279,7 +306,8 @@ def main(dry=False):
     ts.send_text(f"{emoji} *{name} — נעל היום*\nאשר ✅ נעל אחת להפקה:")
     ok = 0
     for i, c in enumerate(batch):
-        if ts.send_product(url=c["url"], title=c["title"], commission=c["commission"],
+        comm = c["commission"] + (f" · ≈${c['value']:.0f} למכירה" if c.get("value", 0) >= 1 else "")
+        if ts.send_product(url=c["url"], title=c["title"], commission=comm,
                            image_url=c["image_url"], domain=c["domain"]):
             mark_sent(c["key"])          # persist after EACH successful send
             ok += 1

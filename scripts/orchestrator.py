@@ -155,6 +155,26 @@ def queue_set(slug, status):
             _write_json_atomic(QUEUE_FILE, q)
     return hit
 
+def queue_next():
+    """The approved lead to produce next: highest commission per sale first (a $30
+    Naked Wolfe boot beats a $1.24 AliExpress pump), ties -> newest approval.
+    Returns (slug, local_asset, value) or None. Read-only."""
+    import sale_value
+    q = _read_json(QUEUE_FILE, [])
+    best = None
+    for e in q:
+        if e.get("status") != "approved" or not e.get("local_asset"):
+            continue
+        v = sale_value.value_of_entry(e)
+        key = (v, str(e.get("approved_ts") or ""))
+        if best is None or key > best[0]:
+            best = (key, e)
+    if not best:
+        return None
+    e = best[1]
+    return slug_of(e["local_asset"]), e["local_asset"], best[0][0]
+
+
 COLLECT_STALE_S = 30 * 60
 
 
@@ -367,7 +387,8 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["send", "choose", "finalize", "pending", "state", "ready",
-                                    "slug-of", "set-status", "queue-set", "claim", "resolve-cb"])
+                                    "slug-of", "set-status", "queue-set", "claim", "resolve-cb",
+                                    "queue-next"])
     ap.add_argument("args", nargs="*")
     a = ap.parse_args()
     if sys.stdout:
@@ -395,6 +416,11 @@ if __name__ == "__main__":
         ok = claim_collect(a.args[0])
         print("claimed" if ok else "not claimable")
         sys.exit(0 if ok else 1)
+    elif a.cmd == "queue-next":
+        n = queue_next()
+        if not n:
+            print("none"); sys.exit(1)
+        print(f"{n[1]}	${n[2]:.2f}/sale")
     elif a.cmd == "resolve-cb":
         print(resolve_cb(a.args[0]))
     elif a.cmd == "state":

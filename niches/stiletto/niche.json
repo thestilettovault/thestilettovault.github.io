@@ -63,7 +63,9 @@
     "BATCH": 5,
     "BRAND_MIN_PRICE": 100,
     "NO_REPEAT_DAYS": 10,
-    "MIN_VALUE": 5
+    "MIN_VALUE": 5,
+    "BRAND_SLOTS": 2,
+    "BRAND_MAX_PER_COLLECTION": 50
   },
   "schedule": {
     "slots": [
