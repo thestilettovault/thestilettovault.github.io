@@ -505,19 +505,6 @@
     "site_image": "img/heels/store/black-red-soled-10cm-pointed-t-3256810250961501.jpg"
   },
   {
-    "title": "cbb1ca",
-    "url": "cbb1ca",
-    "aff_link": "cbb1ca",
-    "domain": "",
-    "image_url": "",
-    "commission": "",
-    "date": "2026-08-24T08:30:14.292610",
-    "local_asset": "GELEM/2026-08-24/cbb1ca",
-    "image_ok": true,
-    "downloaded": "2026-08-24",
-    "on_site": true
-  },
-  {
     "title": "11cm Slingback Pointed-Toe Stiletto Party Heels",
     "url": "https://www.aliexpress.com/item/3256808390900535.html",
     "aff_link": "https://rzekl.com/g/1e8d1144949a9d9ab95916525dc3e8/?ulp=https%3A%2F%2Fwww.aliexpress.com%2Fitem%2F3256808390900535.html",
@@ -2219,7 +2206,9 @@
       "image_1x1": "https://thestilettovault.github.io/img/heels/rare-brown-tpu/ig_image_1.jpg"
     },
     "variations_ready": true,
-    "on_site": true
+    "on_site": true,
+    "posted": true,
+    "posted_date": "2026-10-15T10:04:31.414033"
   },
   {
     "title": "Heeled Ankle Boots",

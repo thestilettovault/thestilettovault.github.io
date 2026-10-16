@@ -267,7 +267,13 @@ def rebuild(limit):
     # heels we only approved but never produced are held back until they have art.
     items = [it for it in items
              if (it.get("aff_link") or it.get("url"))
-             and (it.get("site_image") or find_variation_image(slugify(it)) or our_hosted_image(it))][:limit]
+             and (it.get("site_image") or find_variation_image(slugify(it)) or our_hosted_image(it))]
+    # earning-only: a card whose link is not attributed to us (no active affiliate
+    # tracking) earns nothing and makes the site look like a link farm -> hidden.
+    held = [it for it in items if not affiliate_links.is_earning(affiliate_links.affiliate_link(it))]
+    for it in held:
+        print(f"  skip not-earning: {it.get('title','')[:50]} ({it.get('url','')[:60]})")
+    items = [it for it in items if it not in held][:limit]
 
     inner = build_cards(items)
     injection = f"{START_MARK}\n{inner}\n    {END_MARK}"
