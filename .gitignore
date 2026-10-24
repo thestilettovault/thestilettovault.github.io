@@ -80,3 +80,7 @@ there-is-butterfly-*.jpg
 curator.html
 data/creative_learning.json
 data/brief_state.json
+
+# Automation folders are tracked by a separate local repo and excluded from
+# this one via .git/info/exclude — do NOT list them here: this file is shared
+# by both repos (same worktree) and would hide them from the other one too.
