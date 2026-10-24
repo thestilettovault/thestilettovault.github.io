@@ -2395,7 +2395,10 @@
     "date": "2026-10-18T09:25:29.411202",
     "local_asset": "GELEM/2026-10-18/dallas-black-suede",
     "image_ok": true,
-    "downloaded": "2026-10-18"
+    "downloaded": "2026-10-18",
+    "site_image": "img/heels/dallas-black-suede/ina_B.jpg",
+    "on_site": true,
+    "featured_date": "2026-10-26T23:59:59"
   },
   {
     "title": "Reptile Brown Leather",
@@ -2409,7 +2412,10 @@
     "date": "2026-10-20T09:53:26.359220",
     "local_asset": "GELEM/2026-10-20/reptile-brown-leather",
     "image_ok": true,
-    "downloaded": "2026-10-20"
+    "downloaded": "2026-10-20",
+    "site_image": "img/heels/reptile-brown-leather/ina_A.jpg",
+    "on_site": true,
+    "featured_date": "2026-10-21T23:59:59"
   },
   {
     "title": "Stiletto Heels",
@@ -2471,6 +2477,9 @@
     "date": "2026-10-23T08:25:27.213784",
     "local_asset": "GELEM/2026-10-23/tulip-tan",
     "image_ok": true,
-    "downloaded": "2026-10-23"
+    "downloaded": "2026-10-23",
+    "site_image": "img/heels/tulip-tan/ina_A.jpg",
+    "on_site": true,
+    "featured_date": "2026-10-25T23:59:59"
   }
 ]
